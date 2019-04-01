@@ -55,9 +55,10 @@ class LandingActionButton extends Component {
             shadowOpacity: 0.8,
             shadowRadius: 5,
             elevation: 1,
-            width: Dimensions.window.width / 1.4,
+            width: Dimensions.window.width / 1.5,
             height: Dimensions.window.height * 0.06,
             borderRadius: 30,
+            borderColor: "transparent",
             backgroundColor: "transparent",
             justifyContent: "center",
             alignItems: "center"

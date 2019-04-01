@@ -13,7 +13,15 @@ export const SettingsConsumer = SettingsContext.Consumer;
 export class SettingsProvider extends React.Component {
   state = {
     scores: 0,
-    _addScore: async () => {
+    bestScores: 0,
+    _addScore: async scores => {
+      if (scores > this.state.bestScores) {
+        await Expo.SecureStore.setItemAsync(
+          "WordsMeaningBest",
+          JSON.stringify(this.state.scores)
+        );
+        this.setState({ bestScores: scores });
+      }
       this.setState({ scores: this.state.scores + 1 });
     },
     backgroundColor: {
@@ -103,6 +111,12 @@ export class SettingsProvider extends React.Component {
           color2: savedStyles.buttonColors.color2.toString()
         }
       });
+    }
+
+    let bestScores = await Expo.SecureStore.getItemAsync("WordsMeaningBest");
+    if (bestScores !== null) {
+      bestScores = Number(JSON.parse(bestScores));
+      this.setState({ bestScores });
     }
   }
 

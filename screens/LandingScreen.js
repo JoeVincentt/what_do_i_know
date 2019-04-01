@@ -32,20 +32,15 @@ export default class LandingScreen extends Component {
           }}
         >
           <LandingActionButton
-            buttonText={"N e w   G a m e"}
+            buttonText={" P L A Y   G A M E "}
             navigation={this.props.navigation}
             option={"newgame"}
           />
-          <View style={{ marginVertical: 10 }} />
-          <LandingActionButton
-            buttonText={"C o n t i n u e"}
-            navigation={this.props.navigation}
-            option={"continue"}
-          />
+
           <View style={{ marginVertical: 10 }} />
 
           <LandingActionButton
-            buttonText={"S e t t i n g s"}
+            buttonText={" S e t t i n g s "}
             navigation={this.props.navigation}
             modalOpen={this._modalOpen}
             option={"settings"}
