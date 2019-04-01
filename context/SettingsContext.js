@@ -12,6 +12,10 @@ export const SettingsConsumer = SettingsContext.Consumer;
 
 export class SettingsProvider extends React.Component {
   state = {
+    scores: 0,
+    _addScore: async () => {
+      this.setState({ scores: this.state.scores + 1 });
+    },
     backgroundColor: {
       color1: "#ffff00",
       color2: "#ffcc00",
