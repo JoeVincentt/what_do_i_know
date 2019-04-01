@@ -127,22 +127,24 @@ export default class LandingScreen extends Component {
                     }}
                   >
                     <HeaderText>Score: {context.scores} </HeaderText>
-                    <HeaderText>Best: {context.bestScores} </HeaderText>
+
+                    <HeaderText>🏆 {context.bestScores} </HeaderText>
                   </View>
                 )}
               </SettingsConsumer>
               <View
                 style={{
                   shadowColor: "red",
-                  shadowOpacity: 0.8,
-                  shadowRadius: 10
+                  shadowOpacity: 0.5,
+                  shadowRadius: 10,
+                  elevation: 1
                 }}
               >
                 <StarRating
                   disabled={true}
                   maxStars={5}
                   rating={rating}
-                  fullStarColor="yellow"
+                  fullStarColor="#ff8f00"
                 />
               </View>
             </View>
@@ -282,7 +284,8 @@ export default class LandingScreen extends Component {
                             color: "#00e676",
                             shadowColor: "green",
                             shadowOpacity: 0.8,
-                            shadowRadius: 20
+                            shadowRadius: 20,
+                            elevation: 1
                           }}
                         >
                           C O R R E C T{" "}
@@ -293,7 +296,8 @@ export default class LandingScreen extends Component {
                             color: "#ef5350",
                             shadowColor: "red",
                             shadowOpacity: 0.8,
-                            shadowRadius: 20
+                            shadowRadius: 20,
+                            elevation: 1
                           }}
                         >
                           I N C O R R E C T{" "}
@@ -341,6 +345,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 30,
     shadowColor: "black",
+    elevation: 1,
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 15,

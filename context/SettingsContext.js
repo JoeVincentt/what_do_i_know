@@ -15,14 +15,14 @@ export class SettingsProvider extends React.Component {
     scores: 0,
     bestScores: 0,
     _addScore: async scores => {
-      if (scores > this.state.bestScores) {
+      await this.setState({ scores: this.state.scores + 1 });
+      if (this.state.scores > this.state.bestScores) {
+        this.setState({ bestScores: this.state.scores });
         await Expo.SecureStore.setItemAsync(
           "WordsMeaningBest",
           JSON.stringify(this.state.scores)
         );
-        this.setState({ bestScores: scores });
       }
-      this.setState({ scores: this.state.scores + 1 });
     },
     backgroundColor: {
       color1: "#ffff00",
