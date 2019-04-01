@@ -25,13 +25,13 @@ export class SettingsProvider extends React.Component {
       }
     },
     backgroundColor: {
-      color1: "#ffff00",
-      color2: "#ffcc00",
-      color3: "#ff9933"
+      color1: "#9e9e9e",
+      color2: "#616161",
+      color3: "#424242"
     },
     buttonColors: {
-      color1: "#ff9900",
-      color2: "#cc6600"
+      color1: "#ff7043",
+      color2: "#ff3d00"
     },
     _backgroundColorChange: async (dark, light) => {
       if (dark !== null) {
@@ -68,7 +68,7 @@ export class SettingsProvider extends React.Component {
           backgroundColor: {
             color1: "#ffff00",
             color2: "#ffcc00",
-            color3: "#ff9933"
+            color3: "#fbc02d"
           },
           buttonColors: {
             color1: "#ff9900",

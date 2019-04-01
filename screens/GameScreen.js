@@ -24,6 +24,7 @@ import Dimensions from "../constants/Layout";
 import { LinearGradient } from "expo";
 import { SettingsConsumer } from "../context/SettingsContext";
 import { db } from "../db/db";
+import TimerCountdown from "react-native-timer-countdown";
 
 export default class LandingScreen extends Component {
   state = {
@@ -36,7 +37,9 @@ export default class LandingScreen extends Component {
     loading: true,
     showModal: false,
     correctAnswer: null,
-    rating: null
+    rating: null,
+    time: 0,
+    timeExpired: false
   };
 
   componentDidMount() {
@@ -44,6 +47,19 @@ export default class LandingScreen extends Component {
   }
 
   async componentWillMount() {
+    await this._loadQuestion();
+  }
+
+  _openModal = () => {
+    this.setState({ showModal: true });
+  };
+
+  _closeModal = async () => {
+    this.setState({ showModal: false, choiceMade: false });
+    await this._loadQuestion();
+  };
+
+  _loadQuestion = async () => {
     getRandomInt = max => {
       return Math.floor(Math.random() * Math.floor(max));
     };
@@ -53,25 +69,17 @@ export default class LandingScreen extends Component {
       actualAnswer: question.rightAnswer,
       answers: question.answers,
       rating: question.rating,
-      loading: true
+      time: 15000
     });
-  }
-
-  _openModal = () => {
-    this.setState({ showModal: true });
   };
 
-  _closeModal = async () => {
-    this.setState({ showModal: false, choiceMade: false });
-    getRandomInt = max => {
-      return Math.floor(Math.random() * Math.floor(max));
-    };
-    const question = db[getRandomInt(4)];
+  _timeExpired = async () => {
     await this.setState({
-      question: question.question,
-      actualAnswer: question.rightAnswer,
-      answers: question.answers,
-      rating: question.rating
+      choiceMade: false,
+      showModal: true,
+      timeExpired: true,
+      correctAnswer: null,
+      time: 0
     });
   };
 
@@ -82,21 +90,91 @@ export default class LandingScreen extends Component {
         await this.setState({
           choiceMade: true,
           showModal: true,
-          correctAnswer: true
+          correctAnswer: true,
+          time: 0
         });
       }
       if (this.state.actualAnswer !== answer) {
         await this.setState({
           choiceMade: true,
           showModal: true,
-          correctAnswer: false
+          correctAnswer: false,
+          time: 0
         });
       }
     }
   };
 
+  _timerSettings = milliseconds => {
+    const remainingSec = Math.round(milliseconds / 1000);
+    const seconds = parseInt((remainingSec % 60).toString(), 10);
+    const minutes = parseInt(((remainingSec / 60) % 60).toString(), 10);
+    const hours = parseInt((remainingSec / 3600).toString(), 10);
+    const s = seconds < 10 ? "0" + seconds : seconds;
+    const m = minutes < 10 ? "0" + minutes : minutes;
+    let h = hours < 10 ? "0" + hours : hours;
+    h = h === "00" ? "" : h + ":";
+    return h + m + ":" + s;
+  };
+
+  _showModalText = () => {
+    if (this.state.correctAnswer === true) {
+      return (
+        <HeaderText
+          style={{
+            color: "#00e676",
+            shadowColor: "green",
+            shadowOpacity: 0.8,
+            shadowRadius: 20,
+            elevation: 1
+          }}
+        >
+          🎉 C O R R E C T{" "}
+        </HeaderText>
+      );
+    }
+    if (this.state.correctAnswer === false) {
+      return (
+        <HeaderText
+          style={{
+            color: "#ef5350",
+            shadowColor: "red",
+            shadowOpacity: 0.8,
+            shadowRadius: 20,
+            elevation: 1
+          }}
+        >
+          ❌ I N C O R R E C T{" "}
+        </HeaderText>
+      );
+    }
+    if (this.state.timeExpired) {
+      return (
+        <HeaderText
+          style={{
+            color: "#fdd835",
+            shadowColor: "yellow",
+            shadowOpacity: 0.8,
+            shadowRadius: 20,
+            elevation: 1
+          }}
+        >
+          🛎 T I M E E X P I R E D{" "}
+        </HeaderText>
+      );
+    }
+  };
+
   render() {
-    const { question, answers, loading, correctAnswer, rating } = this.state;
+    const {
+      question,
+      answers,
+      loading,
+      correctAnswer,
+      rating,
+      time,
+      timeExpired
+    } = this.state;
     if (loading) {
       return (
         <BaseLayout>
@@ -119,33 +197,64 @@ export default class LandingScreen extends Component {
             }}
           >
             <View style={styles.baseBox}>
-              <SettingsConsumer>
-                {context => (
-                  <View
-                    ref={ref => {
-                      this.context = context;
-                    }}
-                  >
-                    <HeaderText>Score: {context.scores} </HeaderText>
+              <View>
+                <SettingsConsumer>
+                  {context => (
+                    <View
+                      ref={ref => {
+                        this.context = context;
+                      }}
+                    >
+                      <HeaderText style={{ paddingTop: 10 }}>
+                        Score: {context.scores}{" "}
+                      </HeaderText>
 
-                    <HeaderText>🏆 {context.bestScores} </HeaderText>
+                      <HeaderText style={{ paddingTop: 6 }}>
+                        🏆 {context.bestScores}{" "}
+                      </HeaderText>
+                    </View>
+                  )}
+                </SettingsConsumer>
+              </View>
+              <View style={{ width: Dimensions.window.width * 0.5 }}>
+                <View
+                  style={{
+                    shadowColor: "red",
+                    shadowOpacity: 0.5,
+                    shadowRadius: 10,
+                    elevation: 40,
+                    paddingTop: 10
+                  }}
+                >
+                  <View>
+                    <StarRating
+                      disabled={true}
+                      maxStars={5}
+                      rating={rating}
+                      starSize={35}
+                      fullStarColor="#ff8f00"
+                    />
                   </View>
-                )}
-              </SettingsConsumer>
-              <View
-                style={{
-                  shadowColor: "red",
-                  shadowOpacity: 0.5,
-                  shadowRadius: 10,
-                  elevation: 1
-                }}
-              >
-                <StarRating
-                  disabled={true}
-                  maxStars={5}
-                  rating={rating}
-                  fullStarColor="#ff8f00"
-                />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginLeft: 70
+                  }}
+                >
+                  <HeaderText style={{ paddingRight: 3 }}>⏳</HeaderText>
+                  <View>
+                    <TimerCountdown
+                      initialMilliseconds={time}
+                      onExpire={() => this._timeExpired()}
+                      formatMilliseconds={milliseconds =>
+                        this._timerSettings(milliseconds)
+                      }
+                      allowFontScaling={true}
+                      style={styles.timerStyle}
+                    />
+                  </View>
+                </View>
               </View>
             </View>
             <View style={styles.questionBox}>
@@ -159,102 +268,33 @@ export default class LandingScreen extends Component {
               }}
             >
               {/* answers boxes start here */}
-              <TouchableOpacity
-                onPress={() => this._checkAnswer(answers[0], true)}
-              >
-                <View style={styles.animatedBox}>
-                  <SettingsConsumer>
-                    {context => (
-                      <LinearGradient
-                        ref={ref => {
-                          this.context = context;
-                        }}
-                        colors={[
-                          context.buttonColors.color1,
-                          context.buttonColors.color2
-                        ]}
-                        style={styles.answerBox}
-                      >
-                        <HeaderText>{answers[0]} </HeaderText>
-                      </LinearGradient>
-                    )}
-                  </SettingsConsumer>
-                </View>
-              </TouchableOpacity>
-              <View style={{ marginVertical: 10 }} />
-              <TouchableOpacity
-                onPress={() => this._checkAnswer(answers[1], false)}
-              >
-                <View style={styles.animatedBox}>
-                  <SettingsConsumer>
-                    {context => (
-                      <LinearGradient
-                        ref={ref => {
-                          this.context = context;
-                        }}
-                        colors={[
-                          context.buttonColors.color1,
-                          context.buttonColors.color2
-                        ]}
-                        style={styles.answerBox}
-                      >
-                        <HeaderText>{answers[1]} </HeaderText>
-                      </LinearGradient>
-                    )}
-                  </SettingsConsumer>
-                </View>
-              </TouchableOpacity>
-              <View style={{ marginVertical: 10 }} />
-              <TouchableOpacity
-                onPress={() => this._checkAnswer(answers[2], false)}
-              >
-                <View style={styles.animatedBox}>
-                  <SettingsConsumer>
-                    {context => (
-                      <LinearGradient
-                        ref={ref => {
-                          this.context = context;
-                        }}
-                        colors={[
-                          context.buttonColors.color1,
-                          context.buttonColors.color2
-                        ]}
-                        style={styles.answerBox}
-                      >
-                        <HeaderText>{answers[2]} </HeaderText>
-                      </LinearGradient>
-                    )}
-                  </SettingsConsumer>
-                </View>
-              </TouchableOpacity>
-              <View style={{ marginVertical: 10 }} />
-              <TouchableOpacity
-                onPress={() => this._checkAnswer(answers[3], false)}
-              >
-                <View
-                  ref={
-                    this.state.animatedButton === 4 ? this.handleViewRef : null
-                  }
-                  style={styles.animatedBox}
-                >
-                  <SettingsConsumer>
-                    {context => (
-                      <LinearGradient
-                        ref={ref => {
-                          this.context = context;
-                        }}
-                        colors={[
-                          context.buttonColors.color1,
-                          context.buttonColors.color2
-                        ]}
-                        style={styles.answerBox}
-                      >
-                        <HeaderText>{answers[3]} </HeaderText>
-                      </LinearGradient>
-                    )}
-                  </SettingsConsumer>
-                </View>
-              </TouchableOpacity>
+              {answers.map((answer, i) => (
+                <React.Fragment key={i}>
+                  <TouchableOpacity
+                    onPress={() => this._checkAnswer(answer, true)}
+                  >
+                    <View style={styles.animatedBox}>
+                      <SettingsConsumer>
+                        {context => (
+                          <LinearGradient
+                            ref={ref => {
+                              this.context = context;
+                            }}
+                            colors={[
+                              context.buttonColors.color1,
+                              context.buttonColors.color2
+                            ]}
+                            style={styles.answerBox}
+                          >
+                            <HeaderText>{answer} </HeaderText>
+                          </LinearGradient>
+                        )}
+                      </SettingsConsumer>
+                    </View>
+                  </TouchableOpacity>
+                  <View style={{ marginVertical: 10 }} />
+                </React.Fragment>
+              ))}
               {/* answer boxes ends here */}
               {/* Modal starts here */}
               <SettingsConsumer>
@@ -278,31 +318,7 @@ export default class LandingScreen extends Component {
                         borderRadius: 20
                       }}
                     >
-                      {correctAnswer ? (
-                        <HeaderText
-                          style={{
-                            color: "#00e676",
-                            shadowColor: "green",
-                            shadowOpacity: 0.8,
-                            shadowRadius: 20,
-                            elevation: 1
-                          }}
-                        >
-                          C O R R E C T{" "}
-                        </HeaderText>
-                      ) : (
-                        <HeaderText
-                          style={{
-                            color: "#ef5350",
-                            shadowColor: "red",
-                            shadowOpacity: 0.8,
-                            shadowRadius: 20,
-                            elevation: 1
-                          }}
-                        >
-                          I N C O R R E C T{" "}
-                        </HeaderText>
-                      )}
+                      {this._showModalText()}
 
                       <Button
                         dark
@@ -332,7 +348,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 5,
-    elevation: 1,
+    elevation: 40,
     width: Dimensions.window.width,
     height: Dimensions.window.height * 0.06,
     backgroundColor: "transparent",
@@ -345,7 +361,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 30,
     shadowColor: "black",
-    elevation: 1,
+    elevation: 20,
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 0 },
     shadowRadius: 15,
@@ -357,12 +373,22 @@ const styles = StyleSheet.create({
     width: Dimensions.window.width,
     height: Dimensions.window.height * 0.06,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    elevation: 30
   },
   baseBox: {
     width: Dimensions.window.width * 0.9,
     flexDirection: "row",
     alignContent: "space-between",
     justifyContent: "space-between"
+  },
+  timerStyle: {
+    color: "white",
+    fontFamily: "bangers",
+    fontSize: 30,
+    textShadowColor: "#424242",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 5,
+    paddingHorizontal: 5
   }
 });
