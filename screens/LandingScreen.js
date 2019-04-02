@@ -1,6 +1,15 @@
 import React, { Component } from "react";
-import { Button, Content } from "native-base";
-import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
+import {
+  Button,
+  Content,
+  Switch,
+  Icon,
+  Left,
+  Right,
+  Body,
+  ListItem
+} from "native-base";
+import { View, TouchableWithoutFeedback, StyleSheet, Text } from "react-native";
 import HeaderText from "../constants/HeaderText";
 import Modal from "react-native-modal";
 import { LinearGradient } from "expo";
@@ -10,7 +19,8 @@ import BaseLayout from "../components/BaseLayout";
 
 export default class LandingScreen extends Component {
   state = {
-    isModalVisible: false
+    isModalVisible: false,
+    darkTheme: false
   };
 
   _modalOpen = () => {
@@ -37,16 +47,13 @@ export default class LandingScreen extends Component {
             navigation={this.props.navigation}
             option={"newgame"}
           />
-
           <View style={{ marginVertical: 10 }} />
-
           <LandingActionButton
             buttonText={" S e t t i n g s "}
             navigation={this.props.navigation}
             modalOpen={this._modalOpen}
             option={"settings"}
           />
-
           <SettingsConsumer>
             {context => (
               <Modal
@@ -64,7 +71,7 @@ export default class LandingScreen extends Component {
                   style={{
                     padding: 15,
                     alignItems: "center",
-                    justifyContent: "center",
+                    justifyContent: "flex-start",
                     borderRadius: 20
                   }}
                 >

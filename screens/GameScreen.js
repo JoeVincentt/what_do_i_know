@@ -11,20 +11,30 @@ import {
   Right,
   Body,
   Icon,
+  Toast,
   Spinner
 } from "native-base";
 import { StyleSheet } from "react-native";
 import Modal from "react-native-modal";
-import { View, Text, TouchableOpacity, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Platform,
+  TouchableNativeFeedback
+} from "react-native";
 import StarRating from "react-native-star-rating";
 import HeaderText from "../constants/HeaderText";
 import BaseLayout from "../components/BaseLayout";
-
+import { _showModalText } from "../components/ShowModalText";
 import Dimensions from "../constants/Layout";
 import { LinearGradient } from "expo";
 import { SettingsConsumer } from "../context/SettingsContext";
 import { db } from "../db/db";
 import TimerCountdown from "react-native-timer-countdown";
+import { getStatusBarHeight } from "react-native-status-bar-height";
+import AnswerBoxes from "../components/AnswerBoxes";
+import { _timerSettings } from "../utils/TimerSettings";
 
 export default class LandingScreen extends Component {
   state = {
@@ -39,7 +49,9 @@ export default class LandingScreen extends Component {
     correctAnswer: null,
     rating: null,
     time: 0,
-    timeExpired: false
+    timeExpired: false,
+    notEnoughCrystals: null,
+    showToast: false
   };
 
   componentDidMount() {
@@ -69,24 +81,14 @@ export default class LandingScreen extends Component {
       actualAnswer: question.rightAnswer,
       answers: question.answers,
       rating: question.rating,
-      time: 10000
+      time: 1000000
     });
   };
 
-  _timeExpired = async () => {
-    await this.setState({
-      choiceMade: false,
-      showModal: true,
-      timeExpired: true,
-      correctAnswer: null,
-      time: 0
-    });
-  };
-
-  _checkAnswer = async (answer, indicator) => {
+  _checkAnswer = async answer => {
     if (!this.state.choiceMade) {
       if (this.state.actualAnswer === answer) {
-        this.context._addScore(this.context.scores);
+        this.context._addScore(this.state.rating);
         await this.setState({
           choiceMade: true,
           showModal: true,
@@ -101,20 +103,84 @@ export default class LandingScreen extends Component {
           correctAnswer: false,
           time: 0
         });
+        this.context._removeLife();
       }
     }
   };
 
-  _timerSettings = milliseconds => {
-    const remainingSec = Math.round(milliseconds / 1000);
-    const seconds = parseInt((remainingSec % 60).toString(), 10);
-    const minutes = parseInt(((remainingSec / 60) % 60).toString(), 10);
-    const hours = parseInt((remainingSec / 3600).toString(), 10);
-    const s = seconds < 10 ? "0" + seconds : seconds;
-    const m = minutes < 10 ? "0" + minutes : minutes;
-    let h = hours < 10 ? "0" + hours : hours;
-    h = h === "00" ? "" : h + ":";
-    return h + m + ":" + s;
+  _timeExpired = async () => {
+    await this.setState({
+      choiceMade: false,
+      showModal: true,
+      timeExpired: true,
+      correctAnswer: null,
+      time: 0
+    });
+  };
+  _getLifeAdd = async () => {
+    this.context._getLifeAdd();
+  };
+  _buyLife = async () => {
+    if (this.context.crystal < 35) {
+      await Toast.show({
+        text: <HeaderText> Need 35 💎</HeaderText>,
+        buttonText: " ❌ ",
+        duration: 3000,
+        position: "bottom",
+        type: ""
+      });
+      return;
+    }
+    this.context._addLife();
+    await Toast.show({
+      text: <HeaderText> + 1 ❤️ </HeaderText>,
+      buttonText: " ❌ ",
+      duration: 4000,
+      position: "bottom",
+      type: "success"
+    });
+  };
+  _addTime = async () => {
+    if (this.context.crystal < 15) {
+      await Toast.show({
+        text: <HeaderText> Need 15 💎</HeaderText>,
+        buttonText: " ❌ ",
+        duration: 3000,
+        position: "bottom",
+        type: ""
+      });
+      return;
+    }
+    this.setState({ time: this.state.time + 10000 });
+    this.context._addTime();
+    await Toast.show({
+      text: <HeaderText> + 10 ⏳ </HeaderText>,
+      buttonText: " ❌ ",
+      duration: 3000,
+      position: "bottom",
+      type: "success"
+    });
+  };
+
+  _showHint = async () => {
+    if (this.context.crystal < 15) {
+      await Toast.show({
+        text: <HeaderText> Need 15 💎</HeaderText>,
+        buttonText: " ❌ ",
+        duration: 3000,
+        position: "bottom",
+        type: ""
+      });
+      return;
+    }
+    this.context._getHint();
+    await Toast.show({
+      text: <HeaderText> {this.state.actualAnswer} </HeaderText>,
+      buttonText: " ❌ ",
+      duration: 4000,
+      position: "bottom",
+      type: "success"
+    });
   };
 
   render() {
@@ -140,13 +206,60 @@ export default class LandingScreen extends Component {
     } else {
       return (
         <BaseLayout>
+          <SettingsConsumer>
+            {context => (
+              <Header
+                ref={ref => {
+                  this.context = context;
+                }}
+                transparent
+                style={{
+                  paddingTop: getStatusBarHeight(),
+                  height: 54 + getStatusBarHeight()
+                }}
+              >
+                <Left style={{ marginLeft: Dimensions.window.width * 0.02 }}>
+                  <Button onPress={() => this._buyLife()} transparent>
+                    <HeaderText style={{}}> +❤️ </HeaderText>
+                  </Button>
+                </Left>
+                <Body>
+                  <HeaderText
+                    style={{
+                      paddingBottom:
+                        Platform.OS === "ios"
+                          ? Dimensions.window.height * 0.12
+                          : 0,
+                      paddingLeft:
+                        Platform.OS === "ios"
+                          ? 0
+                          : Dimensions.window.width * 0.2
+                    }}
+                  >
+                    🏆 {context.bestScores}{" "}
+                  </HeaderText>
+                </Body>
+                <Right>
+                  <HeaderText
+                    style={{
+                      marginRight: Dimensions.window.width * 0.05,
+                      marginTop:
+                        Platform.OS === "ios"
+                          ? 0
+                          : Dimensions.window.height * 0.05
+                    }}
+                  >
+                    ❤️ {context.life}{" "}
+                  </HeaderText>
+                </Right>
+              </Header>
+            )}
+          </SettingsConsumer>
           <Content
             contentContainerStyle={{
               flex: 1,
               alignItems: "center",
-              justifyContent: "center",
-              paddingTop: Dimensions.window.height * 0.05,
-              marginBotom: Dimensions.window.height / 1.5
+              justifyContent: "flex-start"
             }}
           >
             <View style={styles.baseBox}>
@@ -162,9 +275,7 @@ export default class LandingScreen extends Component {
                         Score: {context.scores}{" "}
                       </HeaderText>
 
-                      <HeaderText style={{}}>
-                        🏆 {context.bestScores}{" "}
-                      </HeaderText>
+                      <HeaderText style={{}}>💎 {context.crystal} </HeaderText>
                     </View>
                   )}
                 </SettingsConsumer>
@@ -178,21 +289,27 @@ export default class LandingScreen extends Component {
                   style={{
                     shadowColor: "red",
                     shadowOpacity: 0.5,
-                    shadowRadius: 10,
-                    elevation: 40
+                    shadowRadius: 7,
+                    elevation: 40,
+                    alignItems: "flex-end",
+                    marginRight: Dimensions.window.width * 0.03
                   }}
                 >
-                  <View>
-                    <StarRating
-                      starStyle={{ marginTop: Platform.OS === "ios" ? 0 : 16 }}
-                      disabled={true}
-                      maxStars={5}
-                      rating={rating}
-                      starSize={35}
-                      fullStarColor="#ff8f00"
-                    />
-                  </View>
+                  <StarRating
+                    containerStyle={{
+                      alignItems: "flex-start",
+                      justifyContent: "center",
+                      alignContent: "flex-start"
+                    }}
+                    starStyle={{ marginTop: Platform.OS === "ios" ? 0 : 16 }}
+                    disabled={true}
+                    maxStars={3}
+                    rating={rating}
+                    starSize={35}
+                    fullStarColor="#ff8f00"
+                  />
                 </View>
+
                 <View
                   style={{
                     flexDirection: "row",
@@ -209,7 +326,7 @@ export default class LandingScreen extends Component {
                       initialMilliseconds={time}
                       onExpire={() => this._timeExpired()}
                       formatMilliseconds={milliseconds =>
-                        this._timerSettings(milliseconds)
+                        _timerSettings(milliseconds)
                       }
                       allowFontScaling={true}
                       style={styles.timerStyle}
@@ -219,83 +336,149 @@ export default class LandingScreen extends Component {
               </View>
             </View>
             <View style={styles.questionBox}>
-              <Text style={{ fontSize: 30, fontWeight: "500", margin: 10 }}>
+              <Text style={{ fontSize: 25, fontWeight: "500", margin: 10 }}>
                 {question}
               </Text>
             </View>
+            {/* answers boxes start here */}
             <View
               style={{
-                width: Dimensions.window.width
+                width: Dimensions.window.width / 2,
+                flexDirection: "row",
+                justifyContent: "space-evenly"
               }}
             >
-              {/* answers boxes start here */}
-              {answers.map((answer, i) => (
-                <React.Fragment key={i}>
-                  <TouchableOpacity
-                    onPress={() => this._checkAnswer(answer, true)}
-                  >
-                    <View style={styles.animatedBox}>
-                      <SettingsConsumer>
-                        {context => (
-                          <LinearGradient
-                            ref={ref => {
-                              this.context = context;
-                            }}
-                            colors={[
-                              context.buttonColors.color1,
-                              context.buttonColors.color2
-                            ]}
-                            style={styles.answerBox}
-                          >
-                            <HeaderText>{answer} </HeaderText>
-                          </LinearGradient>
-                        )}
-                      </SettingsConsumer>
-                    </View>
-                  </TouchableOpacity>
-                  <View style={{ marginVertical: 10 }} />
-                </React.Fragment>
-              ))}
-              {/* answer boxes ends here */}
-              {/* Modal starts here */}
-              <SettingsConsumer>
-                {context => (
-                  <Modal
-                    isVisible={this.state.showModal}
-                    ref={ref => {
-                      this.context = context;
+              <View style={{}}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    padding: 10
+                  }}
+                >
+                  <AnswerBoxes
+                    answer={answers[0]}
+                    _checkAnswer={this._checkAnswer}
+                  />
+                  <AnswerBoxes
+                    answer={answers[1]}
+                    _checkAnswer={this._checkAnswer}
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    padding: 10
+                  }}
+                >
+                  <AnswerBoxes
+                    answer={answers[2]}
+                    _checkAnswer={this._checkAnswer}
+                  />
+                  <AnswerBoxes
+                    answer={answers[3]}
+                    _checkAnswer={this._checkAnswer}
+                  />
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                marginTop: Dimensions.window.height * 0.1,
+                flexDirection: "row"
+              }}
+            >
+              <Button
+                style={{ padding: 20 }}
+                transparent
+                onPress={() => this._showHint()}
+              >
+                <HeaderText
+                  style={{
+                    shadowColor: "white",
+                    shadowRadius: 20,
+                    shadowOpacity: 0.9,
+                    elevation: 30
+                  }}
+                >
+                  {" "}
+                  🗝{" "}
+                </HeaderText>
+              </Button>
+
+              <Button
+                style={{ padding: 20 }}
+                transparent
+                onPress={() => this._addTime()}
+              >
+                <HeaderText
+                  style={{
+                    shadowColor: "white",
+                    shadowRadius: 20,
+                    shadowOpacity: 0.9,
+                    elevation: 30
+                  }}
+                >
+                  {" "}
+                  +⏳{" "}
+                </HeaderText>
+              </Button>
+              <Button
+                style={{ padding: 20 }}
+                transparent
+                onPress={() => this._getLifeAdd()}
+              >
+                <HeaderText
+                  style={{
+                    shadowColor: "white",
+                    shadowRadius: 20,
+                    shadowOpacity: 0.9,
+                    elevation: 30
+                  }}
+                >
+                  {" "}
+                  💝{" "}
+                </HeaderText>
+              </Button>
+            </View>
+            {/* answer boxes ends here */}
+            {/* Modal starts here */}
+            <SettingsConsumer>
+              {context => (
+                <Modal
+                  isVisible={this.state.showModal}
+                  ref={ref => {
+                    this.context = context;
+                  }}
+                >
+                  <LinearGradient
+                    colors={[
+                      context.backgroundColor.color1,
+                      context.backgroundColor.color2,
+                      context.backgroundColor.color3
+                    ]}
+                    style={{
+                      padding: 15,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: 20
                     }}
                   >
-                    <LinearGradient
-                      colors={[
-                        context.backgroundColor.color1,
-                        context.backgroundColor.color2,
-                        context.backgroundColor.color3
-                      ]}
-                      style={{
-                        padding: 15,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 20
-                      }}
-                    >
-                      {_showModalText(correctAnswer, timeExpired)}
+                    {_showModalText(correctAnswer, timeExpired)}
 
-                      <Button
-                        dark
-                        full
-                        style={{ borderRadius: 20, marginTop: 20 }}
-                        onPress={() => this._closeModal()}
-                      >
-                        <HeaderText> c o n t i n u e </HeaderText>
-                      </Button>
-                      <View style={{ marginVertical: 10 }} />
-                    </LinearGradient>
-                  </Modal>
-                )}
-              </SettingsConsumer>
-              {/* modal ends here */}
-            </View>
+                    <Button
+                      dark
+                      full
+                      style={{ borderRadius: 20, marginTop: 20 }}
+                      onPress={() => this._closeModal()}
+                    >
+                      <HeaderText> c o n t i n u e </HeaderText>
+                    </Button>
+                    <View style={{ marginVertical: 10 }} />
+                  </LinearGradient>
+                </Modal>
+              )}
+            </SettingsConsumer>
+            {/* modal ends here */}
           </Content>
         </BaseLayout>
       );
@@ -304,21 +487,9 @@ export default class LandingScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  animatedBox: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 5,
-    elevation: 40,
-    width: Dimensions.window.width,
-    height: Dimensions.window.height * 0.06,
-    backgroundColor: "transparent",
-    justifyContent: "center",
-    alignItems: "center"
-  },
   questionBox: {
     width: Dimensions.window.width * 0.9,
-    height: Dimensions.window.height * 0.3,
+    height: Dimensions.window.height * 0.2,
     backgroundColor: "white",
     borderRadius: 30,
     shadowColor: "black",
@@ -328,22 +499,15 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: Dimensions.window.width * 0.05,
-    marginVertical: Dimensions.window.height * 0.06
+    margin: Dimensions.window.height * 0.03
   },
-  answerBox: {
-    width: Dimensions.window.width / 1.5,
-    height: Dimensions.window.height * 0.06,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 30,
-    borderRadius: 10
-  },
+
   baseBox: {
     width: Dimensions.window.width * 0.9,
     flexDirection: "row",
     alignContent: "space-between",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    paddingVertical: Dimensions.window.height * 0.01
   },
   timerStyle: {
     color: "white",
@@ -355,51 +519,3 @@ const styles = StyleSheet.create({
     marginRight: Dimensions.window.width * 0.1
   }
 });
-
-const _showModalText = (correctAnswer, timeExpired) => {
-  if (correctAnswer === true) {
-    return (
-      <HeaderText
-        style={{
-          color: "#00e676",
-          shadowColor: "green",
-          shadowOpacity: 0.8,
-          shadowRadius: 20,
-          elevation: 1
-        }}
-      >
-        🎉 C O R R E C T{" "}
-      </HeaderText>
-    );
-  }
-  if (correctAnswer === false) {
-    return (
-      <HeaderText
-        style={{
-          color: "#ef5350",
-          shadowColor: "red",
-          shadowOpacity: 0.8,
-          shadowRadius: 20,
-          elevation: 1
-        }}
-      >
-        ❌ I N C O R R E C T{" "}
-      </HeaderText>
-    );
-  }
-  if (timeExpired) {
-    return (
-      <HeaderText
-        style={{
-          color: "#fdd835",
-          shadowColor: "yellow",
-          shadowOpacity: 0.8,
-          shadowRadius: 20,
-          elevation: 1
-        }}
-      >
-        🛎 T I M E {"  "}E X P I R E D
-      </HeaderText>
-    );
-  }
-};

@@ -3,7 +3,8 @@ import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon } from "expo";
 import AppNavigator from "./navigation/AppNavigator";
 import { SettingsProvider } from "./context/SettingsContext";
-import { FacebookAds } from "expo";
+
+import { Root } from "native-base";
 
 export default class App extends React.Component {
   state = {
@@ -24,7 +25,9 @@ export default class App extends React.Component {
         <SettingsProvider>
           <View style={styles.container}>
             {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-            <AppNavigator />
+            <Root>
+              <AppNavigator />
+            </Root>
           </View>
         </SettingsProvider>
       );
@@ -43,7 +46,8 @@ export default class App extends React.Component {
         // We include SpaceMono because we use it in HomeScreen.js. Feel free
         // to remove this if you are not using it in your app
         "space-mono": require("./assets/fonts/SpaceMono-Regular.ttf"),
-        bangers: require("./assets/fonts/Bangers-Regular.ttf")
+        bangers: require("./assets/fonts/Bangers-Regular.ttf"),
+        Roboto_medium: require("./assets/fonts/Roboto_medium.ttf")
       })
     ]);
   };

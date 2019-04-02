@@ -1,4 +1,10 @@
 import React from "react";
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  PublisherBanner,
+  AdMobRewarded
+} from "expo";
 //
 // Initial State
 //
@@ -10,12 +16,95 @@ import React from "react";
 export const SettingsContext = React.createContext();
 export const SettingsConsumer = SettingsContext.Consumer;
 
+const showAdd = async () => {
+  AdMobRewarded.setAdUnitID("ca-app-pub-3940256099942544/5224354917"); // Test ID, Replace with your-admob-unit-id
+  AdMobRewarded.setTestDeviceID("EMULATOR");
+  await AdMobRewarded.requestAdAsync();
+  await AdMobRewarded.showAdAsync();
+};
+
 export class SettingsProvider extends React.Component {
   state = {
     scores: 0,
     bestScores: 0,
-    _addScore: async scores => {
-      await this.setState({ scores: this.state.scores + 1 });
+    crystal: 0,
+    life: 3,
+    //Adding time
+    _addTime: async () => {
+      await this.setState({
+        crystal: this.state.crystal - 15
+      });
+      await Expo.SecureStore.setItemAsync(
+        "WordsMeaningCrystal",
+        JSON.stringify(this.state.crystal)
+      );
+    },
+    //Getting Hint
+    _getHint: async () => {
+      await this.setState({
+        crystal: this.state.crystal - 15
+      });
+      await Expo.SecureStore.setItemAsync(
+        "WordsMeaningCrystal",
+        JSON.stringify(this.state.crystal)
+      );
+    },
+    //Get life thru add
+    _getLifeAdd: async () => {
+      showAdd()
+        .then(async () => {
+          this.setState({ life: this.state.life + 1 });
+        })
+        .catch(error => console.log(error));
+    },
+    //remove life
+    _removeLife: async () => {
+      if (this.state.life !== 0) {
+        await this.setState({ life: this.state.life - 1 });
+        //Set life to ss
+        await Expo.SecureStore.setItemAsync(
+          "WordsMeaningLife",
+          JSON.stringify(this.state.life)
+        );
+      } else if (this.state.life <= 0) {
+        // Display a rewarded ad
+
+        showAdd()
+          .then(async () => {
+            await this.setState({ life: this.state.life, scores: 0 });
+          })
+          .catch(error => console.log(error));
+      }
+    },
+    //add life
+    _addLife: async () => {
+      await this.setState({
+        life: this.state.life + 1,
+        crystal: this.state.crystal - 35
+      });
+      //Set life to ss
+      await Expo.SecureStore.setItemAsync(
+        "WordsMeaningLife",
+        JSON.stringify(this.state.life)
+      );
+      await Expo.SecureStore.setItemAsync(
+        "WordsMeaningCrystal",
+        JSON.stringify(this.state.crystal)
+      );
+    },
+    //add score
+    _addScore: async rating => {
+      //Update score + crystal
+      await this.setState({
+        scores: this.state.scores + 1,
+        crystal: this.state.crystal + rating
+      });
+      //Set crystals to ss
+      await Expo.SecureStore.setItemAsync(
+        "WordsMeaningCrystal",
+        JSON.stringify(this.state.crystal)
+      );
+      //Set bestScore
       if (this.state.scores > this.state.bestScores) {
         this.setState({ bestScores: this.state.scores });
         await Expo.SecureStore.setItemAsync(
@@ -24,6 +113,8 @@ export class SettingsProvider extends React.Component {
         );
       }
     },
+
+    //background colors set
     backgroundColor: {
       color1: "#9e9e9e",
       color2: "#616161",
@@ -95,6 +186,7 @@ export class SettingsProvider extends React.Component {
   };
 
   async componentWillMount() {
+    //Get Color theme from ss
     let savedStyles = await Expo.SecureStore.getItemAsync(
       "WordsMeaningSettings"
     );
@@ -113,10 +205,25 @@ export class SettingsProvider extends React.Component {
       });
     }
 
+    //Get bestScore from ss
     let bestScores = await Expo.SecureStore.getItemAsync("WordsMeaningBest");
     if (bestScores !== null) {
       bestScores = Number(JSON.parse(bestScores));
       this.setState({ bestScores });
+    }
+
+    //Get crystal from ss
+    let crystal = await Expo.SecureStore.getItemAsync("WordsMeaningCrystal");
+    if (crystal !== null) {
+      crystal = Number(JSON.parse(crystal));
+      this.setState({ crystal });
+    }
+
+    //Get life from ss
+    let life = await Expo.SecureStore.getItemAsync("WordsMeaningLife");
+    if (life !== null) {
+      life = Number(JSON.parse(life));
+      this.setState({ life });
     }
   }
 
