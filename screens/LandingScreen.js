@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Content } from "native-base";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet, Text } from "react-native";
 import HeaderText from "../constants/HeaderText";
 import Modal from "react-native-modal";
 import { LinearGradient } from "expo";
@@ -16,6 +16,7 @@ export default class LandingScreen extends Component {
   _modalOpen = () => {
     this.setState({ isModalVisible: true });
   };
+
   _updateBackground = (dark, light) => {
     this.context._backgroundColorChange(dark, light);
     this.setState({ isModalVisible: false });
@@ -45,6 +46,7 @@ export default class LandingScreen extends Component {
             modalOpen={this._modalOpen}
             option={"settings"}
           />
+
           <SettingsConsumer>
             {context => (
               <Modal

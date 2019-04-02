@@ -15,7 +15,7 @@ import {
 } from "native-base";
 import { StyleSheet } from "react-native";
 import Modal from "react-native-modal";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Platform } from "react-native";
 import StarRating from "react-native-star-rating";
 import HeaderText from "../constants/HeaderText";
 import BaseLayout from "../components/BaseLayout";
@@ -69,7 +69,7 @@ export default class LandingScreen extends Component {
       actualAnswer: question.rightAnswer,
       answers: question.answers,
       rating: question.rating,
-      time: 15000
+      time: 10000
     });
   };
 
@@ -117,54 +117,6 @@ export default class LandingScreen extends Component {
     return h + m + ":" + s;
   };
 
-  _showModalText = () => {
-    if (this.state.correctAnswer === true) {
-      return (
-        <HeaderText
-          style={{
-            color: "#00e676",
-            shadowColor: "green",
-            shadowOpacity: 0.8,
-            shadowRadius: 20,
-            elevation: 1
-          }}
-        >
-          🎉 C O R R E C T{" "}
-        </HeaderText>
-      );
-    }
-    if (this.state.correctAnswer === false) {
-      return (
-        <HeaderText
-          style={{
-            color: "#ef5350",
-            shadowColor: "red",
-            shadowOpacity: 0.8,
-            shadowRadius: 20,
-            elevation: 1
-          }}
-        >
-          ❌ I N C O R R E C T{" "}
-        </HeaderText>
-      );
-    }
-    if (this.state.timeExpired) {
-      return (
-        <HeaderText
-          style={{
-            color: "#fdd835",
-            shadowColor: "yellow",
-            shadowOpacity: 0.8,
-            shadowRadius: 20,
-            elevation: 1
-          }}
-        >
-          🛎 T I M E E X P I R E D{" "}
-        </HeaderText>
-      );
-    }
-  };
-
   render() {
     const {
       question,
@@ -193,11 +145,12 @@ export default class LandingScreen extends Component {
               flex: 1,
               alignItems: "center",
               justifyContent: "center",
-              marginTop: 10
+              paddingTop: Dimensions.window.height * 0.05,
+              marginBotom: Dimensions.window.height / 1.5
             }}
           >
             <View style={styles.baseBox}>
-              <View>
+              <View style={{}}>
                 <SettingsConsumer>
                   {context => (
                     <View
@@ -205,29 +158,33 @@ export default class LandingScreen extends Component {
                         this.context = context;
                       }}
                     >
-                      <HeaderText style={{ paddingTop: 10 }}>
+                      <HeaderText style={{}}>
                         Score: {context.scores}{" "}
                       </HeaderText>
 
-                      <HeaderText style={{ paddingTop: 6 }}>
+                      <HeaderText style={{}}>
                         🏆 {context.bestScores}{" "}
                       </HeaderText>
                     </View>
                   )}
                 </SettingsConsumer>
               </View>
-              <View style={{ width: Dimensions.window.width * 0.5 }}>
+              <View
+                style={{
+                  width: Dimensions.window.width * 0.5
+                }}
+              >
                 <View
                   style={{
                     shadowColor: "red",
                     shadowOpacity: 0.5,
                     shadowRadius: 10,
-                    elevation: 40,
-                    paddingTop: 10
+                    elevation: 40
                   }}
                 >
                   <View>
                     <StarRating
+                      starStyle={{ marginTop: Platform.OS === "ios" ? 0 : 16 }}
                       disabled={true}
                       maxStars={5}
                       rating={rating}
@@ -239,10 +196,14 @@ export default class LandingScreen extends Component {
                 <View
                   style={{
                     flexDirection: "row",
-                    marginLeft: 70
+                    marginLeft: Dimensions.window.width * 0.2
                   }}
                 >
-                  <HeaderText style={{ paddingRight: 3 }}>⏳</HeaderText>
+                  <HeaderText
+                    style={{ marginHorizontal: Dimensions.window.width * 0.01 }}
+                  >
+                    ⏳
+                  </HeaderText>
                   <View>
                     <TimerCountdown
                       initialMilliseconds={time}
@@ -318,7 +279,7 @@ export default class LandingScreen extends Component {
                         borderRadius: 20
                       }}
                     >
-                      {this._showModalText()}
+                      {_showModalText(correctAnswer, timeExpired)}
 
                       <Button
                         dark
@@ -367,14 +328,16 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    margin: 60
+    marginHorizontal: Dimensions.window.width * 0.05,
+    marginVertical: Dimensions.window.height * 0.06
   },
   answerBox: {
-    width: Dimensions.window.width,
+    width: Dimensions.window.width / 1.5,
     height: Dimensions.window.height * 0.06,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 30
+    elevation: 30,
+    borderRadius: 10
   },
   baseBox: {
     width: Dimensions.window.width * 0.9,
@@ -389,6 +352,54 @@ const styles = StyleSheet.create({
     textShadowColor: "#424242",
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 5,
-    paddingHorizontal: 5
+    marginRight: Dimensions.window.width * 0.1
   }
 });
+
+const _showModalText = (correctAnswer, timeExpired) => {
+  if (correctAnswer === true) {
+    return (
+      <HeaderText
+        style={{
+          color: "#00e676",
+          shadowColor: "green",
+          shadowOpacity: 0.8,
+          shadowRadius: 20,
+          elevation: 1
+        }}
+      >
+        🎉 C O R R E C T{" "}
+      </HeaderText>
+    );
+  }
+  if (correctAnswer === false) {
+    return (
+      <HeaderText
+        style={{
+          color: "#ef5350",
+          shadowColor: "red",
+          shadowOpacity: 0.8,
+          shadowRadius: 20,
+          elevation: 1
+        }}
+      >
+        ❌ I N C O R R E C T{" "}
+      </HeaderText>
+    );
+  }
+  if (timeExpired) {
+    return (
+      <HeaderText
+        style={{
+          color: "#fdd835",
+          shadowColor: "yellow",
+          shadowOpacity: 0.8,
+          shadowRadius: 20,
+          elevation: 1
+        }}
+      >
+        🛎 T I M E {"  "}E X P I R E D
+      </HeaderText>
+    );
+  }
+};
