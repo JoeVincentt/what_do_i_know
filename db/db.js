@@ -9,7 +9,7 @@ export const db = [
     question: "Which planet is known as the Red Planet??",
     answers: ["Earth", "Venus", "Mars", "Neptun"],
     rightAnswer: "Mars",
-    rating: 2.5
+    rating: 2
   },
   {
     question: "Which of the following is not a metal: gold, resin, glass?",
@@ -21,7 +21,7 @@ export const db = [
     question: "In which ocean did the famous Titanic sink in 1912?",
     answers: ["Pacific", "North Atlantic", "Mediterranean", "Indian"],
     rightAnswer: "North Atlantic",
-    rating: 3.5
+    rating: 3
   },
   {
     question:
@@ -33,6 +33,6 @@ export const db = [
       "nose and jaw"
     ],
     rightAnswer: "Ears and Nose",
-    rating: 4
+    rating: 3
   }
 ];

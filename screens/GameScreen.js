@@ -15,7 +15,6 @@ import {
   Spinner
 } from "native-base";
 import { StyleSheet } from "react-native";
-import Modal from "react-native-modal";
 import {
   View,
   Text,
@@ -23,33 +22,33 @@ import {
   Platform,
   TouchableNativeFeedback
 } from "react-native";
+import { Constants } from "expo";
 import StarRating from "react-native-star-rating";
 import HeaderText from "../constants/HeaderText";
 import BaseLayout from "../components/BaseLayout";
-import { _showModalText } from "../components/ShowModalText";
 import Dimensions from "../constants/Layout";
-import { LinearGradient } from "expo";
 import { SettingsConsumer } from "../context/SettingsContext";
-import { db } from "../db/db";
+// import { db } from "../db/db";
 import TimerCountdown from "react-native-timer-countdown";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import AnswerBoxes from "../components/AnswerBoxes";
 import { _timerSettings } from "../utils/TimerSettings";
+import { EmojiButton } from "../components/HintTimeAdd";
+import * as firebase from "firebase";
+firebase.initializeApp(Constants.manifest.extra.firebaseConfig);
+require("firebase/firestore");
+
+const db = firebase.firestore();
 
 export default class LandingScreen extends Component {
   state = {
-    successButtonColors: ["#69f0ae", "#00c853"],
-    wrongButtonColors: ["#e53935", "#b71c1c"],
     choiceMade: false,
-    actualAnswer: db[0].rightAnswer,
+    actualAnswer: "",
     question: null,
     answers: [],
     loading: true,
-    showModal: false,
-    correctAnswer: null,
     rating: null,
     time: 0,
-    timeExpired: false,
     notEnoughCrystals: null,
     showToast: false
   };
@@ -62,125 +61,95 @@ export default class LandingScreen extends Component {
     await this._loadQuestion();
   }
 
-  _openModal = () => {
-    this.setState({ showModal: true });
+  getRandomInt = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   };
-
-  _closeModal = async () => {
-    this.setState({ showModal: false, choiceMade: false });
-    await this._loadQuestion();
-  };
-
   _loadQuestion = async () => {
-    getRandomInt = max => {
-      return Math.floor(Math.random() * Math.floor(max));
-    };
-    const question = db[getRandomInt(4)];
+    const docRef = db.collection("questions").doc("0");
+    let question = await docRef.get();
+    question = question.data();
     await this.setState({
+      choiceMade: false,
       question: question.question,
       actualAnswer: question.rightAnswer,
       answers: question.answers,
       rating: question.rating,
-      time: 1000000
+      time: 60000
     });
   };
 
-  _checkAnswer = async answer => {
+  _checkAnswer = answer => {
     if (!this.state.choiceMade) {
       if (this.state.actualAnswer === answer) {
         this.context._addScore(this.state.rating);
-        await this.setState({
+        this.setState({
           choiceMade: true,
-          showModal: true,
-          correctAnswer: true,
           time: 0
         });
+        this._showToast(" 🎉 C O R R E C T ", 500, "success");
+        this._loadQuestion();
       }
       if (this.state.actualAnswer !== answer) {
-        await this.setState({
+        this.setState({
           choiceMade: true,
-          showModal: true,
-          correctAnswer: false,
           time: 0
         });
+        this._showToast(" ❌ I N C O R R E C T ", 500, "danger", "top");
         this.context._removeLife();
+        this._loadQuestion();
       }
     }
   };
 
-  _timeExpired = async () => {
-    await this.setState({
-      choiceMade: false,
-      showModal: true,
-      timeExpired: true,
-      correctAnswer: null,
+  _timeExpired = () => {
+    this.setState({
       time: 0
     });
+    this._showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
+    this._loadQuestion();
   };
-  _getLifeAdd = async () => {
+  _getLifeAdd = () => {
     this.context._getLifeAdd();
+    this._loadQuestion();
   };
-  _buyLife = async () => {
+  _showToast = (maintext, duration, type, position) => {
+    Toast.show({
+      text: <HeaderText> {maintext}</HeaderText>,
+      buttonText: " ❌ ",
+      duration: duration,
+      position: position ? position : "bottom",
+      type: type ? type : ""
+    });
+  };
+  _buyLife = () => {
     if (this.context.crystal < 35) {
-      await Toast.show({
-        text: <HeaderText> Need 35 💎</HeaderText>,
-        buttonText: " ❌ ",
-        duration: 3000,
-        position: "bottom",
-        type: ""
-      });
+      this._showToast(" Need 35 💎 ", 3000);
       return;
     }
     this.context._addLife();
-    await Toast.show({
-      text: <HeaderText> + 1 ❤️ </HeaderText>,
-      buttonText: " ❌ ",
-      duration: 4000,
-      position: "bottom",
-      type: "success"
-    });
+    this._showToast(" + 1 ❤️ ", 3000, "success");
   };
-  _addTime = async () => {
+  _addTime = () => {
     if (this.context.crystal < 15) {
-      await Toast.show({
-        text: <HeaderText> Need 15 💎</HeaderText>,
-        buttonText: " ❌ ",
-        duration: 3000,
-        position: "bottom",
-        type: ""
-      });
+      this._showToast(" Need 15 💎 ", 3000);
       return;
     }
-    this.setState({ time: this.state.time + 10000 });
+    this.setState({ time: this.state.time + this.getRandomInt(5, 15) });
     this.context._addTime();
-    await Toast.show({
-      text: <HeaderText> + 10 ⏳ </HeaderText>,
-      buttonText: " ❌ ",
-      duration: 3000,
-      position: "bottom",
-      type: "success"
-    });
+    this._showToast(" +⏳   t i m e   a d d e d ", 3000, "success");
   };
 
-  _showHint = async () => {
+  _showHint = () => {
     if (this.context.crystal < 15) {
-      await Toast.show({
-        text: <HeaderText> Need 15 💎</HeaderText>,
-        buttonText: " ❌ ",
-        duration: 3000,
-        position: "bottom",
-        type: ""
-      });
+      this._showToast(" Need 15 💎 ", 3000);
       return;
     }
     this.context._getHint();
-    await Toast.show({
-      text: <HeaderText> {this.state.actualAnswer} </HeaderText>,
-      buttonText: " ❌ ",
-      duration: 4000,
-      position: "bottom",
-      type: "success"
-    });
+    this._showToast(this.state.actualAnswer, 3000, "success");
+  };
+
+  _unlockGame = () => {
+    this.context._unlockGame();
   };
 
   render() {
@@ -208,278 +177,226 @@ export default class LandingScreen extends Component {
         <BaseLayout>
           <SettingsConsumer>
             {context => (
-              <Header
+              <View
                 ref={ref => {
                   this.context = context;
                 }}
-                transparent
-                style={{
-                  paddingTop: getStatusBarHeight(),
-                  height: 54 + getStatusBarHeight()
-                }}
+                style={{ flex: 1 }}
               >
-                <Left style={{ marginLeft: Dimensions.window.width * 0.02 }}>
-                  <Button onPress={() => this._buyLife()} transparent>
-                    <HeaderText style={{}}> +❤️ </HeaderText>
-                  </Button>
-                </Left>
-                <Body>
-                  <HeaderText
+                {context.endGame ? (
+                  <View
                     style={{
-                      paddingBottom:
-                        Platform.OS === "ios"
-                          ? Dimensions.window.height * 0.12
-                          : 0,
-                      paddingLeft:
-                        Platform.OS === "ios"
-                          ? 0
-                          : Dimensions.window.width * 0.2
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center"
                     }}
                   >
-                    🏆 {context.bestScores}{" "}
-                  </HeaderText>
-                </Body>
-                <Right>
-                  <HeaderText
-                    style={{
-                      marginRight: Dimensions.window.width * 0.05,
-                      marginTop:
-                        Platform.OS === "ios"
-                          ? 0
-                          : Dimensions.window.height * 0.05
-                    }}
-                  >
-                    ❤️ {context.life}{" "}
-                  </HeaderText>
-                </Right>
-              </Header>
-            )}
-          </SettingsConsumer>
-          <Content
-            contentContainerStyle={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "flex-start"
-            }}
-          >
-            <View style={styles.baseBox}>
-              <View style={{}}>
-                <SettingsConsumer>
-                  {context => (
                     <View
-                      ref={ref => {
-                        this.context = context;
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center"
                       }}
                     >
-                      <HeaderText style={{}}>
-                        Score: {context.scores}{" "}
-                      </HeaderText>
-
-                      <HeaderText style={{}}>💎 {context.crystal} </HeaderText>
+                      <EmojiButton action={this._unlockGame} text={" 🎞 "} />
                     </View>
-                  )}
-                </SettingsConsumer>
-              </View>
-              <View
-                style={{
-                  width: Dimensions.window.width * 0.5
-                }}
-              >
-                <View
-                  style={{
-                    shadowColor: "red",
-                    shadowOpacity: 0.5,
-                    shadowRadius: 7,
-                    elevation: 40,
-                    alignItems: "flex-end",
-                    marginRight: Dimensions.window.width * 0.03
-                  }}
-                >
-                  <StarRating
-                    containerStyle={{
-                      alignItems: "flex-start",
-                      justifyContent: "center",
-                      alignContent: "flex-start"
-                    }}
-                    starStyle={{ marginTop: Platform.OS === "ios" ? 0 : 16 }}
-                    disabled={true}
-                    maxStars={3}
-                    rating={rating}
-                    starSize={35}
-                    fullStarColor="#ff8f00"
-                  />
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    marginLeft: Dimensions.window.width * 0.2
-                  }}
-                >
-                  <HeaderText
-                    style={{ marginHorizontal: Dimensions.window.width * 0.01 }}
-                  >
-                    ⏳
-                  </HeaderText>
-                  <View>
-                    <TimerCountdown
-                      initialMilliseconds={time}
-                      onExpire={() => this._timeExpired()}
-                      formatMilliseconds={milliseconds =>
-                        _timerSettings(milliseconds)
-                      }
-                      allowFontScaling={true}
-                      style={styles.timerStyle}
-                    />
                   </View>
-                </View>
-              </View>
-            </View>
-            <View style={styles.questionBox}>
-              <Text style={{ fontSize: 25, fontWeight: "500", margin: 10 }}>
-                {question}
-              </Text>
-            </View>
-            {/* answers boxes start here */}
-            <View
-              style={{
-                width: Dimensions.window.width / 2,
-                flexDirection: "row",
-                justifyContent: "space-evenly"
-              }}
-            >
-              <View style={{}}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    padding: 10
-                  }}
-                >
-                  <AnswerBoxes
-                    answer={answers[0]}
-                    _checkAnswer={this._checkAnswer}
-                  />
-                  <AnswerBoxes
-                    answer={answers[1]}
-                    _checkAnswer={this._checkAnswer}
-                  />
-                </View>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    padding: 10
-                  }}
-                >
-                  <AnswerBoxes
-                    answer={answers[2]}
-                    _checkAnswer={this._checkAnswer}
-                  />
-                  <AnswerBoxes
-                    answer={answers[3]}
-                    _checkAnswer={this._checkAnswer}
-                  />
-                </View>
-              </View>
-            </View>
-            <View
-              style={{
-                marginTop: Dimensions.window.height * 0.1,
-                flexDirection: "row"
-              }}
-            >
-              <Button
-                style={{ padding: 20 }}
-                transparent
-                onPress={() => this._showHint()}
-              >
-                <HeaderText
-                  style={{
-                    shadowColor: "white",
-                    shadowRadius: 20,
-                    shadowOpacity: 0.9,
-                    elevation: 30
-                  }}
-                >
-                  {" "}
-                  🗝{" "}
-                </HeaderText>
-              </Button>
-
-              <Button
-                style={{ padding: 20 }}
-                transparent
-                onPress={() => this._addTime()}
-              >
-                <HeaderText
-                  style={{
-                    shadowColor: "white",
-                    shadowRadius: 20,
-                    shadowOpacity: 0.9,
-                    elevation: 30
-                  }}
-                >
-                  {" "}
-                  +⏳{" "}
-                </HeaderText>
-              </Button>
-              <Button
-                style={{ padding: 20 }}
-                transparent
-                onPress={() => this._getLifeAdd()}
-              >
-                <HeaderText
-                  style={{
-                    shadowColor: "white",
-                    shadowRadius: 20,
-                    shadowOpacity: 0.9,
-                    elevation: 30
-                  }}
-                >
-                  {" "}
-                  💝{" "}
-                </HeaderText>
-              </Button>
-            </View>
-            {/* answer boxes ends here */}
-            {/* Modal starts here */}
-            <SettingsConsumer>
-              {context => (
-                <Modal
-                  isVisible={this.state.showModal}
-                  ref={ref => {
-                    this.context = context;
-                  }}
-                >
-                  <LinearGradient
-                    colors={[
-                      context.backgroundColor.color1,
-                      context.backgroundColor.color2,
-                      context.backgroundColor.color3
-                    ]}
-                    style={{
-                      padding: 15,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: 20
-                    }}
-                  >
-                    {_showModalText(correctAnswer, timeExpired)}
-
-                    <Button
-                      dark
-                      full
-                      style={{ borderRadius: 20, marginTop: 20 }}
-                      onPress={() => this._closeModal()}
+                ) : (
+                  <View style={{ flex: 1 }}>
+                    <Header
+                      transparent
+                      style={{
+                        paddingTop: getStatusBarHeight(),
+                        height: 54 + getStatusBarHeight()
+                      }}
                     >
-                      <HeaderText> c o n t i n u e </HeaderText>
-                    </Button>
-                    <View style={{ marginVertical: 10 }} />
-                  </LinearGradient>
-                </Modal>
-              )}
-            </SettingsConsumer>
-            {/* modal ends here */}
-          </Content>
+                      <Left
+                        style={{ marginLeft: Dimensions.window.width * 0.02 }}
+                      >
+                        <Button onPress={() => this._buyLife()} transparent>
+                          <HeaderText style={{}}> +❤️ </HeaderText>
+                        </Button>
+                      </Left>
+                      <Body>
+                        <HeaderText
+                          style={{
+                            paddingBottom:
+                              Platform.OS === "ios"
+                                ? Dimensions.window.height * 0.12
+                                : 0,
+                            paddingLeft:
+                              Platform.OS === "ios"
+                                ? 0
+                                : Dimensions.window.width * 0.2
+                          }}
+                        >
+                          🏆 {context.bestScores}{" "}
+                        </HeaderText>
+                      </Body>
+                      <Right>
+                        <HeaderText
+                          style={{
+                            marginRight: Dimensions.window.width * 0.05,
+                            marginTop:
+                              Platform.OS === "ios"
+                                ? 0
+                                : Dimensions.window.height * 0.05
+                          }}
+                        >
+                          ❤️ {context.life}{" "}
+                        </HeaderText>
+                      </Right>
+                    </Header>
+
+                    <Content
+                      contentContainerStyle={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "flex-start"
+                      }}
+                    >
+                      <View style={styles.baseBox}>
+                        <View style={{}}>
+                          <View>
+                            <HeaderText style={{}}>
+                              Score: {context.scores}{" "}
+                            </HeaderText>
+
+                            <HeaderText style={{}}>
+                              💎 {context.crystal}{" "}
+                            </HeaderText>
+                          </View>
+                        </View>
+                        <View
+                          style={{
+                            width: Dimensions.window.width * 0.5
+                          }}
+                        >
+                          <View
+                            style={{
+                              shadowColor: "red",
+                              shadowOpacity: 0.5,
+                              shadowRadius: 7,
+                              elevation: 40,
+                              alignItems: "flex-end",
+                              marginRight: Dimensions.window.width * 0.03
+                            }}
+                          >
+                            <StarRating
+                              containerStyle={{
+                                alignItems: "flex-start",
+                                justifyContent: "center",
+                                alignContent: "flex-start"
+                              }}
+                              starStyle={{
+                                marginTop: Platform.OS === "ios" ? 0 : 16
+                              }}
+                              disabled={true}
+                              maxStars={3}
+                              rating={rating}
+                              starSize={35}
+                              fullStarColor="#ff8f00"
+                            />
+                          </View>
+
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              marginLeft: Dimensions.window.width * 0.2
+                            }}
+                          >
+                            <HeaderText
+                              style={{
+                                marginHorizontal: Dimensions.window.width * 0.01
+                              }}
+                            >
+                              ⏳
+                            </HeaderText>
+                            <View>
+                              <TimerCountdown
+                                initialMilliseconds={time}
+                                onExpire={() => this._timeExpired()}
+                                formatMilliseconds={milliseconds =>
+                                  _timerSettings(milliseconds)
+                                }
+                                allowFontScaling={true}
+                                style={styles.timerStyle}
+                              />
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.questionBox}>
+                        <Text
+                          style={{
+                            fontSize: 25,
+                            fontWeight: "500",
+                            margin: 10
+                          }}
+                        >
+                          {question}
+                        </Text>
+                      </View>
+                      {/* answers boxes start here */}
+                      <View
+                        style={{
+                          width: Dimensions.window.width / 2,
+                          flexDirection: "row",
+                          justifyContent: "space-evenly"
+                        }}
+                      >
+                        <View style={{}}>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              padding: 10
+                            }}
+                          >
+                            <AnswerBoxes
+                              answer={answers[0]}
+                              _checkAnswer={this._checkAnswer}
+                            />
+                            <AnswerBoxes
+                              answer={answers[1]}
+                              _checkAnswer={this._checkAnswer}
+                            />
+                          </View>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              padding: 10
+                            }}
+                          >
+                            <AnswerBoxes
+                              answer={answers[2]}
+                              _checkAnswer={this._checkAnswer}
+                            />
+                            <AnswerBoxes
+                              answer={answers[3]}
+                              _checkAnswer={this._checkAnswer}
+                            />
+                          </View>
+                        </View>
+                      </View>
+                      {/* answer boxes ends here */}
+                      <View
+                        style={{
+                          marginTop: Dimensions.window.height * 0.1,
+                          flexDirection: "row"
+                        }}
+                      >
+                        <EmojiButton action={this._showHint} text={" 🗝 "} />
+                        <EmojiButton action={this._addTime} text={" +⏳ "} />
+                        <EmojiButton action={this._getLifeAdd} text={" 💝 "} />
+                      </View>
+                    </Content>
+                  </View>
+                )}
+              </View>
+            )}
+          </SettingsConsumer>
         </BaseLayout>
       );
     }

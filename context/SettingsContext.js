@@ -5,6 +5,7 @@ import {
   PublisherBanner,
   AdMobRewarded
 } from "expo";
+
 //
 // Initial State
 //
@@ -29,6 +30,11 @@ export class SettingsProvider extends React.Component {
     bestScores: 0,
     crystal: 0,
     life: 3,
+    endGame: false,
+    //End game
+    _unlockGame: async () => {
+      this.setState({ endGame: false });
+    },
     //Adding time
     _addTime: async () => {
       await this.setState({
@@ -51,11 +57,12 @@ export class SettingsProvider extends React.Component {
     },
     //Get life thru add
     _getLifeAdd: async () => {
-      showAdd()
-        .then(async () => {
-          this.setState({ life: this.state.life + 1 });
-        })
-        .catch(error => console.log(error));
+      await this.setState({ life: this.state.life + 1 });
+      await Expo.SecureStore.setItemAsync(
+        "WordsMeaningLife",
+        JSON.stringify(this.state.life)
+      );
+      showAdd();
     },
     //remove life
     _removeLife: async () => {
@@ -68,12 +75,7 @@ export class SettingsProvider extends React.Component {
         );
       } else if (this.state.life <= 0) {
         // Display a rewarded ad
-
-        showAdd()
-          .then(async () => {
-            await this.setState({ life: this.state.life, scores: 0 });
-          })
-          .catch(error => console.log(error));
+        this.setState({ endGame: true });
       }
     },
     //add life
