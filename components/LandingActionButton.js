@@ -54,7 +54,7 @@ class LandingActionButton extends Component {
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.8,
             shadowRadius: 7,
-            elevation: 40,
+            elevation: 100,
             width: Dimensions.window.width / 1.5,
             height: Dimensions.window.height * 0.06,
             borderRadius: 30,

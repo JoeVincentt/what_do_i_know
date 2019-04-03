@@ -1,41 +1,28 @@
 import React, { Component } from "react";
 import {
-  Container,
   Header,
-  Title,
   Content,
-  Footer,
-  FooterTab,
   Button,
   Left,
   Right,
   Body,
-  Icon,
   Toast,
   Spinner
 } from "native-base";
 import { StyleSheet } from "react-native";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Platform,
-  TouchableNativeFeedback
-} from "react-native";
-import { Constants } from "expo";
+import { View, Text, Platform } from "react-native";
+import { _showToast } from "../utils/ShowToast";
 import StarRating from "react-native-star-rating";
 import HeaderText from "../constants/HeaderText";
 import BaseLayout from "../components/BaseLayout";
 import Dimensions from "../constants/Layout";
 import { SettingsConsumer } from "../context/SettingsContext";
-// import { db } from "../db/db";
 import TimerCountdown from "react-native-timer-countdown";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import AnswerBoxes from "../components/AnswerBoxes";
 import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
 import * as firebase from "firebase";
-firebase.initializeApp(Constants.manifest.extra.firebaseConfig);
 require("firebase/firestore");
 
 const db = firebase.firestore();
@@ -50,7 +37,8 @@ export default class LandingScreen extends Component {
     rating: null,
     time: 0,
     notEnoughCrystals: null,
-    showToast: false
+    showToast: false,
+    loadingQuestion: false
   };
 
   componentDidMount() {
@@ -66,10 +54,9 @@ export default class LandingScreen extends Component {
   };
   _loadQuestion = async () => {
     let questionId = await this.getRandomInt(0, 5);
-
+    this.setState({ loadingQuestion: true, choiceMade: true });
     try {
       const docRef = db.collection("questions").doc(`${questionId}`);
-
       docRef
         .get()
         .then(doc => {
@@ -81,11 +68,14 @@ export default class LandingScreen extends Component {
               actualAnswer: question.rightAnswer,
               answers: question.answers,
               rating: Number(question.rating),
-              time: 60000
+              time: 60000,
+              loadingQuestion: false
             });
           } else {
             // doc.data() will be undefined in this case
-            console.log("No such document!");
+            this._loadQuestion();
+
+            // console.log("No such document!");
           }
         })
         .catch(function(error) {
@@ -99,12 +89,12 @@ export default class LandingScreen extends Component {
   _checkAnswer = answer => {
     if (!this.state.choiceMade) {
       if (this.state.actualAnswer === answer) {
-        this.context._addScore(this.state.rating);
+        this.context.reducers._addScore(this.state.rating);
         this.setState({
           choiceMade: true,
           time: 0
         });
-        this._showToast(" 🎉 C O R R E C T ", 500, "success");
+        _showToast(" 🎉 C O R R E C T ", 500, "success");
         this._loadQuestion();
       }
       if (this.state.actualAnswer !== answer) {
@@ -112,8 +102,8 @@ export default class LandingScreen extends Component {
           choiceMade: true,
           time: 0
         });
-        this._showToast(" ❌ I N C O R R E C T ", 500, "danger", "top");
-        this.context._removeLife();
+        _showToast(" ❌ I N C O R R E C T ", 500, "danger", "top");
+        this.context.reducers._removeLife();
         this._loadQuestion();
       }
     }
@@ -123,11 +113,11 @@ export default class LandingScreen extends Component {
     this.setState({
       time: 0
     });
-    this._showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
+    _showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
     this._loadQuestion();
   };
   _getLifeAdd = () => {
-    this.context._getLifeAdd();
+    this.context.reducers._getLifeAdd();
     this._loadQuestion();
   };
   _showToast = (maintext, duration, type, position) => {
@@ -141,33 +131,33 @@ export default class LandingScreen extends Component {
   };
   _buyLife = () => {
     if (this.context.crystal < 35) {
-      this._showToast(" Need 35 💎 ", 3000);
+      _showToast(" Need 35 💎 ", 3000);
       return;
     }
-    this.context._addLife();
-    this._showToast(" + 1 ❤️ ", 3000, "success");
+    this.context.reducers._addLife();
+    _showToast(" + 1 ❤️ ", 3000, "success");
   };
   _addTime = () => {
     if (this.context.crystal < 15) {
-      this._showToast(" Need 15 💎 ", 3000);
+      _showToast(" Need 15 💎 ", 3000);
       return;
     }
-    this.setState({ time: this.state.time + this.getRandomInt(5, 15) });
-    this.context._addTime();
-    this._showToast(" +⏳   t i m e   a d d e d ", 3000, "success");
+    this.setState({ time: this.state.time + this.getRandomInt(5000, 15000) });
+    this.context.reducers._addTime();
+    _showToast(" +⏳   t i m e   a d d e d ", 3000, "success");
   };
 
   _showHint = () => {
     if (this.context.crystal < 15) {
-      this._showToast(" Need 15 💎 ", 3000);
+      _showToast(" Need 15 💎 ", 3000);
       return;
     }
-    this.context._getHint();
-    this._showToast(this.state.actualAnswer, 3000, "success");
+    this.context.reducers._getHint();
+    _showToast(this.state.actualAnswer, 3000, "success");
   };
 
   _unlockGame = () => {
-    this.context._unlockGame();
+    this.context.reducers._unlockGame();
   };
 
   render() {
@@ -178,7 +168,8 @@ export default class LandingScreen extends Component {
       correctAnswer,
       rating,
       time,
-      timeExpired
+      timeExpired,
+      loadingQuestion
     } = this.state;
     if (loading) {
       return (
@@ -347,15 +338,19 @@ export default class LandingScreen extends Component {
                         </View>
                       </View>
                       <View style={styles.questionBox}>
-                        <Text
-                          style={{
-                            fontSize: 25,
-                            fontWeight: "500",
-                            margin: 10
-                          }}
-                        >
-                          {question}
-                        </Text>
+                        {loadingQuestion ? (
+                          <Spinner />
+                        ) : (
+                          <Text
+                            style={{
+                              fontSize: 25,
+                              fontWeight: "500",
+                              margin: 10
+                            }}
+                          >
+                            {question}
+                          </Text>
+                        )}
                       </View>
                       {/* answers boxes start here */}
                       <View
