@@ -65,17 +65,35 @@ export default class LandingScreen extends Component {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
   _loadQuestion = async () => {
-    const docRef = db.collection("questions").doc("0");
-    let question = await docRef.get();
-    question = question.data();
-    await this.setState({
-      choiceMade: false,
-      question: question.question,
-      actualAnswer: question.rightAnswer,
-      answers: question.answers,
-      rating: question.rating,
-      time: 60000
-    });
+    let questionId = await this.getRandomInt(0, 5);
+
+    try {
+      const docRef = db.collection("questions").doc(`${questionId}`);
+
+      docRef
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            let question = doc.data();
+            this.setState({
+              choiceMade: false,
+              question: question.question,
+              actualAnswer: question.rightAnswer,
+              answers: question.answers,
+              rating: Number(question.rating),
+              time: 60000
+            });
+          } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   _checkAnswer = answer => {
