@@ -127,15 +127,18 @@ export default class LandingScreen extends Component {
       time: 0
     });
     _showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
+    this.context.reducers._removeLife();
     this._loadQuestion();
   };
 
   _getLifeAdd = () => {
-    this.setState({ loadingQuestion: true });
-    showAdd().then(() => {
-      this.context.reducers._getLifeAdd();
-      setTimeout(() => this._loadQuestion(), 7000);
-    });
+    this.setState({ loadingQuestion: true, choiceMade: true });
+    showAdd()
+      .then(() => {
+        this.context.reducers._getLifeAdd();
+        setTimeout(() => this._loadQuestion(), 8000);
+      })
+      .catch(error => console.log(error));
   };
 
   _buyLife = () => {
@@ -154,6 +157,7 @@ export default class LandingScreen extends Component {
     this.context.reducers._addLife();
     _showToast(" + 1 ❤️ ", 3000, "success");
   };
+
   _addTime = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 15) {
@@ -226,28 +230,80 @@ export default class LandingScreen extends Component {
                 }}
                 style={{ flex: 1 }}
               >
+                {/* If no lifes left */}
                 {context.endGame ? (
                   <View
                     style={{
-                      flex: 1,
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center"
+                      flex: 1
                     }}
                   >
+                    <Header
+                      transparent
+                      style={{
+                        paddingTop: getStatusBarHeight(),
+                        height: 54 + getStatusBarHeight()
+                      }}
+                    >
+                      <Left
+                        style={{
+                          flex: 1,
+                          marginLeft: Dimensions.window.width * 0.02
+                        }}
+                      >
+                        <HeaderText style={{}}>
+                          {" "}
+                          s c o r e :{" "}
+                          {context.loggedIn
+                            ? context.user.scores
+                            : context.scores}{" "}
+                        </HeaderText>
+                      </Left>
+
+                      <Right>
+                        <HeaderText
+                          style={{
+                            marginRight: Dimensions.window.width * 0.05,
+                            marginTop:
+                              Platform.OS === "ios"
+                                ? 0
+                                : Dimensions.window.height * 0.05
+                          }}
+                        >
+                          💎{" "}
+                          {context.loggedIn
+                            ? context.user.crystal
+                            : context.crystal}{" "}
+                        </HeaderText>
+                      </Right>
+                    </Header>
                     <View
                       style={{
                         flex: 1,
-                        flexDirection: "row",
+
                         justifyContent: "center",
                         alignItems: "center"
                       }}
                     >
-                      <EmojiButton action={this._unlockGame} text={" 🎞 "} />
-                      <EmojiButton action={this._getLifeAdd} text={" ⛳️ "} />
+                      <EmojiButton
+                        action={this._unlockGame}
+                        text={"   🔥    s t a r t   a    n e w  g a m e "}
+                        style={{ fontSize: 25 }}
+                      />
+
+                      <EmojiButton
+                        action={this._getLifeAdd}
+                        text={"   ❤️+   w a t c h  a d "}
+                        style={{ fontSize: 25 }}
+                      />
+                      <EmojiButton
+                        action={this._buyLife}
+                        text={"   💎   t r a d e "}
+                        style={{ fontSize: 25 }}
+                      />
                     </View>
                   </View>
                 ) : (
+                  // game screen below
                   <View style={{ flex: 1 }}>
                     <Header
                       transparent

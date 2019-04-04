@@ -81,9 +81,9 @@ export class SettingsProvider extends React.Component {
         this.setState({ loggedIn: true, user });
       },
       //End game
-      _unlockGame: () => {
+      _unlockGame: async () => {
         if (this.state.loggedIn) {
-          this.setState({
+          await this.setState({
             endGame: false,
             user: { ...this.state.user, scores: 0, life: 3, crystal: 0 }
           });
@@ -99,15 +99,20 @@ export class SettingsProvider extends React.Component {
             this.state.user.scores
           );
         } else {
-          this.setState({ endGame: false, scores: 0, life: 3, crystal: 0 });
+          await this.setState({
+            endGame: false,
+            scores: 0,
+            life: 3,
+            crystal: 0
+          });
           saveDataToSecureStorage("WordsMeaningLife", this.state.life);
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
       },
       //Adding time
-      _addTime: () => {
+      _addTime: async () => {
         if (this.state.loggedIn) {
-          this.setState({
+          await this.setState({
             user: { ...this.state.user, crystal: this.state.user.crystal - 15 }
           });
           saveDataToDatabase(
@@ -116,7 +121,7 @@ export class SettingsProvider extends React.Component {
             this.state.user.crystal
           );
         } else {
-          this.setState({
+          await this.setState({
             crystal: this.state.crystal - 15
           });
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
@@ -125,7 +130,7 @@ export class SettingsProvider extends React.Component {
       //Getting Hint
       _getHint: async () => {
         if (this.state.loggedIn) {
-          this.setState({
+          await this.setState({
             user: { ...this.state.user, crystal: this.state.user.crystal - 15 }
           });
           saveDataToDatabase(
@@ -134,31 +139,31 @@ export class SettingsProvider extends React.Component {
             this.state.user.crystal
           );
         } else {
-          this.setState({
+          await this.setState({
             crystal: this.state.crystal - 15
           });
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
       },
       //Get life thru add
-      _getLifeAdd: () => {
+      _getLifeAdd: async () => {
         if (this.state.loggedIn) {
-          this.setState({
+          await this.setState({
             user: { ...this.state.user, life: this.state.user.life + 1 },
             endGame: false
           });
           saveDataToDatabase(this.state.user.id, "life", this.state.user.life);
         } else {
-          this.setState({ life: this.state.life + 1, endGame: false });
+          await this.setState({ life: this.state.life + 1, endGame: false });
           saveDataToSecureStorage("WordsMeaningLife", this.state.life);
         }
         // showAdd();
       },
       //remove life
-      _removeLife: () => {
+      _removeLife: async () => {
         if (this.state.loggedIn) {
-          if (this.state.user.life >= 1) {
-            this.setState({
+          if (this.state.user.life >= 1 || this.state.user.life === 1) {
+            await this.setState({
               user: { ...this.state.user, life: this.state.user.life - 1 }
             });
             saveDataToDatabase(
@@ -171,7 +176,7 @@ export class SettingsProvider extends React.Component {
           }
         } else {
           if (this.state.life >= 1) {
-            this.setState({ life: this.state.life - 1 });
+            await this.setState({ life: this.state.life - 1 });
             //Set life to ss
             saveDataToSecureStorage("WordsMeaningLife", this.state.life);
           } else {
@@ -180,9 +185,9 @@ export class SettingsProvider extends React.Component {
         }
       },
       //add life
-      _addLife: () => {
+      _addLife: async () => {
         if (this.state.loggedIn) {
-          this.setState({
+          await this.setState({
             user: {
               ...this.state.user,
               life: this.state.user.life + 1,
@@ -196,7 +201,7 @@ export class SettingsProvider extends React.Component {
             this.state.user.crystal
           );
         } else {
-          this.setState({
+          await this.setState({
             life: this.state.life + 1,
             crystal: this.state.crystal - 35
           });
@@ -206,9 +211,9 @@ export class SettingsProvider extends React.Component {
         }
       },
       //add score and update score in DB or LocalStorage
-      _addScore: rating => {
+      _addScore: async rating => {
         if (this.state.loggedIn) {
-          this.setState({
+          await this.setState({
             user: {
               ...this.state.user,
               scores: this.state.user.scores + 1,
@@ -302,7 +307,7 @@ export class SettingsProvider extends React.Component {
           }
         } else {
           //Update score + crystal
-          this.setState({
+          await this.setState({
             scores: this.state.scores + 1,
             crystal: this.state.crystal + rating
           });
@@ -311,7 +316,7 @@ export class SettingsProvider extends React.Component {
 
           //Set bestScore
           if (this.state.scores > this.state.bestScores) {
-            this.setState({ bestScores: this.state.scores });
+            await this.setState({ bestScores: this.state.scores });
             saveDataToSecureStorage("WordsMeaningBest", this.state.scores);
           }
         }

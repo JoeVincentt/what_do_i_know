@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import HeaderText from "../constants/HeaderText";
-import { TouchableWithoutFeedback, StyleSheet } from "react-native";
+import { TouchableWithoutFeedback, StyleSheet, Platform } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo";
 import Dimensions from "../constants/Layout";
@@ -69,7 +69,11 @@ class LandingActionButton extends Component {
                   alignItems: "center"
                 }}
               >
-                <HeaderText>{buttonText}</HeaderText>
+                <HeaderText
+                  style={{ paddingBottom: Platform.OS === "ios" ? 0 : 10 }}
+                >
+                  {buttonText}
+                </HeaderText>
               </LinearGradient>
             )}
           </SettingsConsumer>
