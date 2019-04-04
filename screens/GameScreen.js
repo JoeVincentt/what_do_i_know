@@ -24,8 +24,22 @@ import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
 import * as firebase from "firebase";
 require("firebase/firestore");
-
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  PublisherBanner,
+  AdMobRewarded,
+  Constants
+} from "expo";
 const db = firebase.firestore();
+
+//adds func here
+const showAdd = async () => {
+  AdMobRewarded.setAdUnitID("ca-app-pub-3940256099942544/5224354917"); // Test ID, Replace with your-admob-unit-id
+  AdMobRewarded.setTestDeviceID("EMULATOR");
+  await AdMobRewarded.requestAdAsync();
+  await AdMobRewarded.showAdAsync();
+};
 
 export default class LandingScreen extends Component {
   state = {
@@ -74,7 +88,6 @@ export default class LandingScreen extends Component {
           } else {
             // doc.data() will be undefined in this case
             this._loadQuestion();
-
             // console.log("No such document!");
           }
         })
@@ -116,31 +129,43 @@ export default class LandingScreen extends Component {
     _showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
     this._loadQuestion();
   };
+
   _getLifeAdd = () => {
-    this.context.reducers._getLifeAdd();
-    this._loadQuestion();
-  };
-  _showToast = (maintext, duration, type, position) => {
-    Toast.show({
-      text: <HeaderText> {maintext}</HeaderText>,
-      buttonText: " ❌ ",
-      duration: duration,
-      position: position ? position : "bottom",
-      type: type ? type : ""
+    this.setState({ loadingQuestion: true });
+    showAdd().then(() => {
+      this.context.reducers._getLifeAdd();
+      setTimeout(() => this._loadQuestion(), 7000);
     });
   };
+
   _buyLife = () => {
-    if (this.context.crystal < 35) {
-      _showToast(" Need 35 💎 ", 3000);
-      return;
+    if (this.context.loggedIn) {
+      if (this.context.user.crystal < 35) {
+        _showToast(" Need 35 💎 ", 3000);
+        return;
+      }
+    }
+    if (!this.context.loggedIn) {
+      if (this.context.crystal < 35) {
+        _showToast(" Need 35 💎 ", 3000);
+        return;
+      }
     }
     this.context.reducers._addLife();
     _showToast(" + 1 ❤️ ", 3000, "success");
   };
   _addTime = () => {
-    if (this.context.crystal < 15) {
-      _showToast(" Need 15 💎 ", 3000);
-      return;
+    if (this.context.loggedIn) {
+      if (this.context.user.crystal < 15) {
+        _showToast(" Need 15 💎 ", 3000);
+        return;
+      }
+    }
+    if (!this.context.loggedIn) {
+      if (this.context.crystal < 15) {
+        _showToast(" Need 15 💎 ", 3000);
+        return;
+      }
     }
     this.setState({ time: this.state.time + this.getRandomInt(5000, 15000) });
     this.context.reducers._addTime();
@@ -148,10 +173,19 @@ export default class LandingScreen extends Component {
   };
 
   _showHint = () => {
-    if (this.context.crystal < 15) {
-      _showToast(" Need 15 💎 ", 3000);
-      return;
+    if (this.context.loggedIn) {
+      if (this.context.user.crystal < 15) {
+        _showToast(" Need 15 💎 ", 3000);
+        return;
+      }
     }
+    if (!this.context.loggedIn) {
+      if (this.context.crystal < 15) {
+        _showToast(" Need 15 💎 ", 3000);
+        return;
+      }
+    }
+
     this.context.reducers._getHint();
     _showToast(this.state.actualAnswer, 3000, "success");
   };
@@ -210,6 +244,7 @@ export default class LandingScreen extends Component {
                       }}
                     >
                       <EmojiButton action={this._unlockGame} text={" 🎞 "} />
+                      <EmojiButton action={this._getLifeAdd} text={" ⛳️ "} />
                     </View>
                   </View>
                 ) : (
@@ -241,7 +276,10 @@ export default class LandingScreen extends Component {
                                 : Dimensions.window.width * 0.2
                           }}
                         >
-                          🏆 {context.bestScores}{" "}
+                          🏆{" "}
+                          {context.loggedIn
+                            ? context.overallBestScores.gold.bestScores
+                            : context.bestScores}{" "}
                         </HeaderText>
                       </Body>
                       <Right>
@@ -254,7 +292,8 @@ export default class LandingScreen extends Component {
                                 : Dimensions.window.height * 0.05
                           }}
                         >
-                          ❤️ {context.life}{" "}
+                          ❤️{" "}
+                          {context.loggedIn ? context.user.life : context.life}{" "}
                         </HeaderText>
                       </Right>
                     </Header>
@@ -270,11 +309,17 @@ export default class LandingScreen extends Component {
                         <View style={{}}>
                           <View>
                             <HeaderText style={{}}>
-                              Score: {context.scores}{" "}
+                              Score:{" "}
+                              {context.loggedIn
+                                ? context.user.scores
+                                : context.scores}{" "}
                             </HeaderText>
 
                             <HeaderText style={{}}>
-                              💎 {context.crystal}{" "}
+                              💎{" "}
+                              {context.loggedIn
+                                ? context.user.crystal
+                                : context.crystal}{" "}
                             </HeaderText>
                           </View>
                         </View>
@@ -402,7 +447,7 @@ export default class LandingScreen extends Component {
                       >
                         <EmojiButton action={this._showHint} text={" 🗝 "} />
                         <EmojiButton action={this._addTime} text={" +⏳ "} />
-                        <EmojiButton action={this._getLifeAdd} text={" 💝 "} />
+                        {/* <EmojiButton action={this._getLifeAdd} text={" 💝 "} /> */}
                       </View>
                     </Content>
                   </View>

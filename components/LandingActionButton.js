@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import HeaderText from "../constants/HeaderText";
-import { TouchableWithoutFeedback } from "react-native";
+import { TouchableWithoutFeedback, StyleSheet } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo";
 import Dimensions from "../constants/Layout";
@@ -49,20 +49,7 @@ class LandingActionButton extends Component {
       >
         <Animatable.View
           ref={this.state.animatedButton === option ? this.handleViewRef : null}
-          style={{
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.8,
-            shadowRadius: 7,
-            elevation: 100,
-            width: Dimensions.window.width / 1.5,
-            height: Dimensions.window.height * 0.06,
-            borderRadius: 30,
-            borderColor: "transparent",
-            backgroundColor: "transparent",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
+          style={styles.defaultStyle}
         >
           <SettingsConsumer>
             {context => (
@@ -77,7 +64,7 @@ class LandingActionButton extends Component {
                 style={{
                   width: Dimensions.window.width / 1.5,
                   height: Dimensions.window.height * 0.06,
-                  borderRadius: 30,
+                  borderRadius: 10,
                   justifyContent: "center",
                   alignItems: "center"
                 }}
@@ -94,3 +81,21 @@ class LandingActionButton extends Component {
 
 LandingActionButton.contextType = SettingsConsumer;
 export default LandingActionButton;
+
+const styles = StyleSheet.create({
+  // ... add your default style here
+  defaultStyle: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 7,
+    elevation: 100,
+    width: Dimensions.window.width / 1.5,
+    height: Dimensions.window.height * 0.06,
+    borderRadius: 10,
+    borderColor: "transparent",
+    backgroundColor: "transparent",
+    justifyContent: "center",
+    alignItems: "center"
+  }
+});

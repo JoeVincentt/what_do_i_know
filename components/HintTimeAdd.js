@@ -8,13 +8,14 @@ import { _showModalText } from "../components/ShowModalText";
 import { _timerSettings } from "../utils/TimerSettings";
 
 export const EmojiButton = ({ action, text }) => (
-  <Button style={{ padding: 20 }} transparent onPress={() => action()}>
+  <Button transparent large style={{ padding: 30 }} onPress={() => action()}>
     <HeaderText
       style={{
         shadowColor: "white",
-        shadowRadius: 20,
-        shadowOpacity: 0.9,
-        elevation: 30
+        shadowRadius: 30,
+        shadowOpacity: 3,
+        elevation: 150,
+        fontSize: 40
       }}
     >
       {text}
