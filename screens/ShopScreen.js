@@ -26,9 +26,7 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 const db = firebase.firestore();
 
 export default class LandingScreen extends Component {
-  state = {
-    isRulesModalVisible: false
-  };
+  state = {};
 
   componentWillMount() {
     //Ignore Warning on Android
@@ -134,7 +132,6 @@ export default class LandingScreen extends Component {
                 userDoc.set(userData);
               }
               this.context.reducers._logInUser(userData);
-              this.props.navigation.navigate("Game");
             } catch (error) {
               console.log(error);
             }
@@ -183,20 +180,11 @@ export default class LandingScreen extends Component {
                   >
                     <HeaderText style={{ fontSize: 40 }}>
                       {" "}
-                      {`${Platform.OS === "ios" ? "📜" : "💡"}`}{" "}
+                      back to 🎮{" "}
                     </HeaderText>
                   </Button>
                 </Left>
-                <Right style={styles.headerRight}>
-                  <Button
-                    large
-                    transparent
-                    onPress={() => console.log("shop")}
-                    style={styles.headerRightButton}
-                  >
-                    <HeaderText style={{ fontSize: 40 }}> 🛒 </HeaderText>
-                  </Button>
-                </Right>
+                <Right />
               </Header>
               {/* action buttons area */}
               <Content
@@ -206,149 +194,7 @@ export default class LandingScreen extends Component {
                   justifyContent: "center"
                 }}
               >
-                <LandingActionButton
-                  buttonText={" P L A Y   g a m e "}
-                  navigation={this.props.navigation}
-                  option={"newgame"}
-                />
-
-                <View style={styles.mainBox}>
-                  <Button
-                    onPress={() => this._alreadyLoggedCheck()}
-                    style={{ borderRadius: 10 }}
-                  >
-                    <Icon name="logo-facebook" style={{ fontSize: 30 }} />
-                    <HeaderText>
-                      {" "}
-                      l o g{"  "}i n{"   "}
-                    </HeaderText>
-                  </Button>
-                </View>
-
-                {/* best results chart */}
-                <View>
-                  {context.overallBestScores.gold.username !== "" ? (
-                    <View style={styles.topChartBox}>
-                      <View style={{ paddingBottom: 10 }}>
-                        <HeaderText>b e s t{"   "}r e s u l t s : </HeaderText>
-                      </View>
-                      <View style={{}}>
-                        <HeaderText style={{ fontSize: 30 }}>
-                          🥇{"   "}
-                          {context.overallBestScores.gold.bestScores}
-                          {"   "}
-                          {context.overallBestScores.gold.username}{" "}
-                        </HeaderText>
-                        <HeaderText style={{ fontSize: 30 }}>
-                          🥈{"   "}
-                          {context.overallBestScores.silver.bestScores}
-                          {"   "}
-                          {context.overallBestScores.silver.username}{" "}
-                        </HeaderText>
-                        <HeaderText style={{ fontSize: 30 }}>
-                          🥉{"   "}
-                          {context.overallBestScores.bronze.bestScores}
-                          {"   "}
-                          {context.overallBestScores.bronze.username}{" "}
-                        </HeaderText>
-                      </View>
-                    </View>
-                  ) : (
-                    <View
-                      style={{
-                        height: Dimensions.window.height * 0.3,
-                        justifyContent: "center",
-                        alignItems: "center"
-                      }}
-                    >
-                      <Spinner color="#000" />
-                    </View>
-                  )}
-                </View>
-
-                {/* rules modal */}
-                <SettingsConsumer>
-                  {context => (
-                    <Modal
-                      isVisible={this.state.isRulesModalVisible}
-                      ref={ref => {
-                        this.context = context;
-                      }}
-                      backdropColor={context.backgroundColor.color2}
-                      backdropOpacity={0.95}
-                      animationIn="zoomInDown"
-                      animationOut="zoomOutUp"
-                      animationInTiming={600}
-                      animationOutTiming={600}
-                      backdropTransitionInTiming={600}
-                      backdropTransitionOutTiming={600}
-                    >
-                      <View style={styles.modalBox}>
-                        <View>
-                          <View style={{ paddingBottom: 10 }}>
-                            <HeaderText> g a m e{"  "}r u l e s : </HeaderText>
-                          </View>
-
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ❔ answer questions{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            🏆 get the best score{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            🎯 get in top chart{"  "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            🗝 get hint for 20 💎{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            +⏳ 5 to 15 seconds for 10 💎{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            + 1 ❤️ for 35 💎
-                          </HeaderText>
-                          <View
-                            style={{
-                              paddingTop: 20,
-                              paddingBottom: 10
-                            }}
-                          >
-                            <HeaderText> Question difficulty : </HeaderText>
-                          </View>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ⭐️ +1 score{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ⭐️⭐️ +2 score{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ⭐️⭐️⭐️ +3 score{" "}
-                          </HeaderText>
-                        </View>
-                        <View>
-                          <Button
-                            large
-                            transparent
-                            onPress={() =>
-                              this.setState({ isRulesModalVisible: false })
-                            }
-                          >
-                            <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
-                          </Button>
-                        </View>
-                      </View>
-                    </Modal>
-                  )}
-                </SettingsConsumer>
+                <HeaderText>Shop</HeaderText>
               </Content>
             </View>
           )}

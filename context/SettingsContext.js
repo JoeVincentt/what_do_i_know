@@ -192,7 +192,8 @@ export class SettingsProvider extends React.Component {
               ...this.state.user,
               life: this.state.user.life + 1,
               crystal: this.state.user.crystal - 35
-            }
+            },
+            endGame: false
           });
           saveDataToDatabase(this.state.user.id, "life", this.state.user.life);
           saveDataToDatabase(
@@ -203,7 +204,8 @@ export class SettingsProvider extends React.Component {
         } else {
           await this.setState({
             life: this.state.life + 1,
-            crystal: this.state.crystal - 35
+            crystal: this.state.crystal - 35,
+            endGame: false
           });
           //Set life to ss
           saveDataToSecureStorage("WordsMeaningLife", this.state.life);
@@ -320,65 +322,39 @@ export class SettingsProvider extends React.Component {
             saveDataToSecureStorage("WordsMeaningBest", this.state.scores);
           }
         }
-      },
-      _backgroundColorChange: async (dark, light) => {
-        if (dark !== null) {
-          const WordsMeaningSettings = {
-            backgroundColor: {
-              color1: "#9e9e9e",
-              color2: "#616161",
-              color3: "#424242"
-            },
-            buttonColors: {
-              color1: "#ff7043",
-              color2: "#ff3d00"
-            }
-          };
-
-          this.setState({
-            backgroundColor: {
-              color1: "#9e9e9e",
-              color2: "#616161",
-              color3: "#424242"
-            },
-            buttonColors: {
-              color1: "#ff7043",
-              color2: "#ff3d00"
-            }
-          });
-          saveDataToSecureStorage("WordsMeaningSettings", WordsMeaningSettings);
-        }
-        if (light !== null) {
-          const WordsMeaningSettings = {
-            backgroundColor: {
-              color1: "#ffff00",
-              color2: "#ffcc00",
-              color3: "#fbc02d"
-            },
-            buttonColors: {
-              color1: "#ff9900",
-              color2: "#cc6600"
-            }
-          };
-          this.setState({
-            backgroundColor: {
-              color1: "#ffff00",
-              color2: "#ffcc00",
-              color3: "#ff9933"
-            },
-            buttonColors: {
-              color1: "#ff9900",
-              color2: "#cc6600"
-            }
-          });
-          saveDataToSecureStorage("WordsMeaningSettings", WordsMeaningSettings);
-        }
       }
     }
     //background colors set
   };
 
   async componentWillMount() {
+    //get appTheme
+    const resRefColors = db.collection("appTheme").doc("appTheme");
+    resRefColors
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          const appTheme = doc.data();
+          this.setState({
+            backgroundColor: {
+              color1: appTheme.backgroundColor.color1,
+              color2: appTheme.backgroundColor.color2,
+              color3: appTheme.backgroundColor.color3
+            },
+            buttonColors: {
+              color1: appTheme.buttonColors.color1,
+              color2: appTheme.buttonColors.color2
+            }
+          });
+          // console.log("Document data:", doc.data());
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error);
+      });
     this.setState({
       backgroundColor: {
         color1: "#9e9e9e",
@@ -390,24 +366,24 @@ export class SettingsProvider extends React.Component {
         color2: "#ff3d00"
       }
     });
-    //Get Color theme from ss
-    let savedStyles = await retrieveDataFromSecureStorage(
-      "WordsMeaningSettings"
-    );
-    if (savedStyles !== null) {
-      savedStyles = JSON.parse(savedStyles);
-      this.setState({
-        backgroundColor: {
-          color1: savedStyles.backgroundColor.color1.toString(),
-          color2: savedStyles.backgroundColor.color2.toString(),
-          color3: savedStyles.backgroundColor.color3.toString()
-        },
-        buttonColors: {
-          color1: savedStyles.buttonColors.color1.toString(),
-          color2: savedStyles.buttonColors.color2.toString()
-        }
-      });
-    }
+    // //Get Color theme from ss
+    // let savedStyles = await retrieveDataFromSecureStorage(
+    //   "WordsMeaningSettings"
+    // );
+    // if (savedStyles !== null) {
+    //   savedStyles = JSON.parse(savedStyles);
+    //   this.setState({
+    //     backgroundColor: {
+    //       color1: savedStyles.backgroundColor.color1.toString(),
+    //       color2: savedStyles.backgroundColor.color2.toString(),
+    //       color3: savedStyles.backgroundColor.color3.toString()
+    //     },
+    //     buttonColors: {
+    //       color1: savedStyles.buttonColors.color1.toString(),
+    //       color2: savedStyles.buttonColors.color2.toString()
+    //     }
+    //   });
+    // }
 
     //Set best overallresult
     const resRefGold = db.collection("bestScores").doc("gold");

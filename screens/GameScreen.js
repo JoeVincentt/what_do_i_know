@@ -9,8 +9,9 @@ import {
   Toast,
   Spinner
 } from "native-base";
-import { StyleSheet } from "react-native";
-import { View, Text, Platform } from "react-native";
+
+import Modal from "react-native-modal";
+import { View, Text, Platform, Vibration, StyleSheet } from "react-native";
 import { _showToast } from "../utils/ShowToast";
 import StarRating from "react-native-star-rating";
 import HeaderText from "../constants/HeaderText";
@@ -115,6 +116,7 @@ export default class LandingScreen extends Component {
           choiceMade: true,
           time: 0
         });
+        Vibration.vibrate(300);
         _showToast(" ❌ I N C O R R E C T ", 500, "danger", "top");
         this.context.reducers._removeLife();
         this._loadQuestion();
@@ -126,6 +128,7 @@ export default class LandingScreen extends Component {
     this.setState({
       time: 0
     });
+    Vibration.vibrate(300);
     _showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
     this.context.reducers._removeLife();
     this._loadQuestion();
@@ -133,12 +136,13 @@ export default class LandingScreen extends Component {
 
   _getLifeAdd = () => {
     this.setState({ loadingQuestion: true, choiceMade: true });
+    this.context.reducers._getLifeAdd();
+    setTimeout(() => this._loadQuestion(), 7000);
     showAdd()
-      .then(() => {
-        this.context.reducers._getLifeAdd();
-        setTimeout(() => this._loadQuestion(), 8000);
-      })
-      .catch(error => console.log(error));
+      .then(() => {})
+      .catch(error => {
+        console.log(error);
+      });
   };
 
   _buyLife = () => {
@@ -209,315 +213,309 @@ export default class LandingScreen extends Component {
       timeExpired,
       loadingQuestion
     } = this.state;
-    if (loading) {
-      return (
-        <BaseLayout>
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
-            <Spinner color="#6a1b9a" />
-          </View>
-        </BaseLayout>
-      );
-    } else {
-      return (
-        <BaseLayout>
-          <SettingsConsumer>
-            {context => (
-              <View
-                ref={ref => {
-                  this.context = context;
-                }}
-                style={{ flex: 1 }}
-              >
-                {/* If no lifes left */}
-                {context.endGame ? (
-                  <View
+
+    return (
+      <BaseLayout>
+        <SettingsConsumer>
+          {context => (
+            <View
+              ref={ref => {
+                this.context = context;
+              }}
+              style={{ flex: 1 }}
+            >
+              {/* If no lifes left */}
+              {context.endGame ? (
+                <View
+                  style={{
+                    flex: 1
+                  }}
+                >
+                  <Header
+                    transparent
                     style={{
-                      flex: 1
+                      paddingTop: getStatusBarHeight(),
+                      height: 54 + getStatusBarHeight()
                     }}
                   >
-                    <Header
-                      transparent
-                      style={{
-                        paddingTop: getStatusBarHeight(),
-                        height: 54 + getStatusBarHeight()
-                      }}
+                    <Left style={styles.endGameHeaderLeft}>
+                      <HeaderText>
+                        {" "}
+                        s c o r e :{" "}
+                        {context.loggedIn
+                          ? context.user.scores
+                          : context.scores}{" "}
+                      </HeaderText>
+                    </Left>
+
+                    <Right>
+                      <HeaderText style={styles.endGameHeaderRight}>
+                        💎{" "}
+                        {context.loggedIn
+                          ? context.user.crystal
+                          : context.crystal}{" "}
+                      </HeaderText>
+                    </Right>
+                  </Header>
+                  <View style={styles.endGameBox}>
+                    <EmojiButton
+                      action={this._unlockGame}
+                      text={"   🔥    s t a r t   a    n e w  g a m e "}
+                      style={styles.endGameText}
+                    />
+
+                    <EmojiButton
+                      action={this._getLifeAdd}
+                      text={"   ❤️+   w a t c h  a d "}
+                      style={styles.endGameText}
+                    />
+                    <EmojiButton
+                      action={this._buyLife}
+                      text={"   💎   t r a d e "}
+                      style={styles.endGameText}
+                    />
+                  </View>
+                </View>
+              ) : (
+                // game screen below
+                <View style={{ flex: 1 }}>
+                  <Header
+                    transparent
+                    style={{
+                      paddingTop: getStatusBarHeight(),
+                      height: 54 + getStatusBarHeight()
+                    }}
+                  >
+                    <Left
+                      style={{ marginLeft: Dimensions.window.width * 0.02 }}
                     >
-                      <Left
+                      <Button onPress={() => this._buyLife()} transparent>
+                        <HeaderText style={{}}> +❤️ </HeaderText>
+                      </Button>
+                    </Left>
+                    <Body>
+                      <HeaderText style={styles.gameHeaderBody}>
+                        🏆{" "}
+                        {context.loggedIn
+                          ? context.overallBestScores.gold.bestScores
+                          : context.bestScores}{" "}
+                      </HeaderText>
+                    </Body>
+                    <Right>
+                      <HeaderText style={styles.gameHeaderRight}>
+                        ❤️ {context.loggedIn ? context.user.life : context.life}{" "}
+                      </HeaderText>
+                    </Right>
+                  </Header>
+
+                  <Content
+                    contentContainerStyle={{
+                      flex: 1,
+                      alignItems: "center",
+                      justifyContent: "flex-start"
+                    }}
+                  >
+                    <View style={styles.baseBox}>
+                      <View>
+                        <View>
+                          <HeaderText>
+                            Score:{" "}
+                            {context.loggedIn
+                              ? context.user.scores
+                              : context.scores}{" "}
+                          </HeaderText>
+
+                          <HeaderText>
+                            💎{" "}
+                            {context.loggedIn
+                              ? context.user.crystal
+                              : context.crystal}{" "}
+                          </HeaderText>
+                        </View>
+                      </View>
+                      <View
                         style={{
-                          flex: 1,
-                          marginLeft: Dimensions.window.width * 0.02
+                          width: Dimensions.window.width * 0.5
                         }}
                       >
-                        <HeaderText style={{}}>
-                          {" "}
-                          s c o r e :{" "}
-                          {context.loggedIn
-                            ? context.user.scores
-                            : context.scores}{" "}
-                        </HeaderText>
-                      </Left>
-
-                      <Right>
-                        <HeaderText
-                          style={{
-                            marginRight: Dimensions.window.width * 0.05,
-                            marginTop:
-                              Platform.OS === "ios"
-                                ? 0
-                                : Dimensions.window.height * 0.05
-                          }}
-                        >
-                          💎{" "}
-                          {context.loggedIn
-                            ? context.user.crystal
-                            : context.crystal}{" "}
-                        </HeaderText>
-                      </Right>
-                    </Header>
-                    <View
-                      style={{
-                        flex: 1,
-
-                        justifyContent: "center",
-                        alignItems: "center"
-                      }}
-                    >
-                      <EmojiButton
-                        action={this._unlockGame}
-                        text={"   🔥    s t a r t   a    n e w  g a m e "}
-                        style={{ fontSize: 25 }}
-                      />
-
-                      <EmojiButton
-                        action={this._getLifeAdd}
-                        text={"   ❤️+   w a t c h  a d "}
-                        style={{ fontSize: 25 }}
-                      />
-                      <EmojiButton
-                        action={this._buyLife}
-                        text={"   💎   t r a d e "}
-                        style={{ fontSize: 25 }}
-                      />
-                    </View>
-                  </View>
-                ) : (
-                  // game screen below
-                  <View style={{ flex: 1 }}>
-                    <Header
-                      transparent
-                      style={{
-                        paddingTop: getStatusBarHeight(),
-                        height: 54 + getStatusBarHeight()
-                      }}
-                    >
-                      <Left
-                        style={{ marginLeft: Dimensions.window.width * 0.02 }}
-                      >
-                        <Button onPress={() => this._buyLife()} transparent>
-                          <HeaderText style={{}}> +❤️ </HeaderText>
-                        </Button>
-                      </Left>
-                      <Body>
-                        <HeaderText
-                          style={{
-                            paddingBottom:
-                              Platform.OS === "ios"
-                                ? Dimensions.window.height * 0.12
-                                : 0,
-                            paddingLeft:
-                              Platform.OS === "ios"
-                                ? 0
-                                : Dimensions.window.width * 0.2
-                          }}
-                        >
-                          🏆{" "}
-                          {context.loggedIn
-                            ? context.overallBestScores.gold.bestScores
-                            : context.bestScores}{" "}
-                        </HeaderText>
-                      </Body>
-                      <Right>
-                        <HeaderText
-                          style={{
-                            marginRight: Dimensions.window.width * 0.05,
-                            marginTop:
-                              Platform.OS === "ios"
-                                ? 0
-                                : Dimensions.window.height * 0.05
-                          }}
-                        >
-                          ❤️{" "}
-                          {context.loggedIn ? context.user.life : context.life}{" "}
-                        </HeaderText>
-                      </Right>
-                    </Header>
-
-                    <Content
-                      contentContainerStyle={{
-                        flex: 1,
-                        alignItems: "center",
-                        justifyContent: "flex-start"
-                      }}
-                    >
-                      <View style={styles.baseBox}>
-                        <View style={{}}>
-                          <View>
-                            <HeaderText style={{}}>
-                              Score:{" "}
-                              {context.loggedIn
-                                ? context.user.scores
-                                : context.scores}{" "}
-                            </HeaderText>
-
-                            <HeaderText style={{}}>
-                              💎{" "}
-                              {context.loggedIn
-                                ? context.user.crystal
-                                : context.crystal}{" "}
-                            </HeaderText>
-                          </View>
+                        <View style={styles.starRatingBox}>
+                          <StarRating
+                            containerStyle={styles.starRating}
+                            starStyle={{
+                              marginTop: Platform.OS === "ios" ? 0 : 16
+                            }}
+                            disabled={true}
+                            maxStars={3}
+                            rating={rating}
+                            starSize={35}
+                            fullStarColor="#ff8f00"
+                          />
                         </View>
+
                         <View
                           style={{
-                            width: Dimensions.window.width * 0.5
+                            flexDirection: "row",
+                            marginLeft: Dimensions.window.width * 0.2
                           }}
                         >
-                          <View
+                          <HeaderText
                             style={{
-                              shadowColor: "red",
-                              shadowOpacity: 0.5,
-                              shadowRadius: 7,
-                              elevation: 40,
-                              alignItems: "flex-end",
-                              marginRight: Dimensions.window.width * 0.03
+                              marginHorizontal: Dimensions.window.width * 0.01
                             }}
                           >
-                            <StarRating
-                              containerStyle={{
-                                alignItems: "flex-start",
-                                justifyContent: "center",
-                                alignContent: "flex-start"
-                              }}
-                              starStyle={{
-                                marginTop: Platform.OS === "ios" ? 0 : 16
-                              }}
-                              disabled={true}
-                              maxStars={3}
-                              rating={rating}
-                              starSize={35}
-                              fullStarColor="#ff8f00"
-                            />
-                          </View>
-
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              marginLeft: Dimensions.window.width * 0.2
-                            }}
-                          >
-                            <HeaderText
-                              style={{
-                                marginHorizontal: Dimensions.window.width * 0.01
-                              }}
-                            >
-                              ⏳
-                            </HeaderText>
-                            <View>
-                              <TimerCountdown
-                                initialMilliseconds={time}
-                                onExpire={() => this._timeExpired()}
-                                formatMilliseconds={milliseconds =>
-                                  _timerSettings(milliseconds)
-                                }
-                                allowFontScaling={true}
-                                style={styles.timerStyle}
-                              />
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                      <View style={styles.questionBox}>
-                        {loadingQuestion ? (
-                          <Spinner />
-                        ) : (
-                          <Text
-                            style={{
-                              fontSize: 25,
-                              fontWeight: "500",
-                              margin: 10
-                            }}
-                          >
-                            {question}
-                          </Text>
-                        )}
-                      </View>
-                      {/* answers boxes start here */}
-                      <View
-                        style={{
-                          width: Dimensions.window.width / 2,
-                          flexDirection: "row",
-                          justifyContent: "space-evenly"
-                        }}
-                      >
-                        <View style={{}}>
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              padding: 10
-                            }}
-                          >
-                            <AnswerBoxes
-                              answer={answers[0]}
-                              _checkAnswer={this._checkAnswer}
-                            />
-                            <AnswerBoxes
-                              answer={answers[1]}
-                              _checkAnswer={this._checkAnswer}
-                            />
-                          </View>
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              padding: 10
-                            }}
-                          >
-                            <AnswerBoxes
-                              answer={answers[2]}
-                              _checkAnswer={this._checkAnswer}
-                            />
-                            <AnswerBoxes
-                              answer={answers[3]}
-                              _checkAnswer={this._checkAnswer}
+                            ⏳
+                          </HeaderText>
+                          <View>
+                            <TimerCountdown
+                              initialMilliseconds={time}
+                              onExpire={() => this._timeExpired()}
+                              formatMilliseconds={milliseconds =>
+                                _timerSettings(milliseconds)
+                              }
+                              allowFontScaling={true}
+                              style={styles.timerStyle}
                             />
                           </View>
                         </View>
                       </View>
-                      {/* answer boxes ends here */}
-                      <View
-                        style={{
-                          marginTop: Dimensions.window.height * 0.1,
-                          flexDirection: "row"
-                        }}
-                      >
-                        <EmojiButton action={this._showHint} text={" 🗝 "} />
-                        <EmojiButton action={this._addTime} text={" +⏳ "} />
-                        {/* <EmojiButton action={this._getLifeAdd} text={" 💝 "} /> */}
+                    </View>
+                    <View style={styles.questionBox}>
+                      {loadingQuestion ? (
+                        <Spinner />
+                      ) : (
+                        <Text
+                          style={{
+                            fontSize: 20,
+                            fontWeight: "500",
+                            margin: 10
+                          }}
+                        >
+                          {question}
+                        </Text>
+                      )}
+                    </View>
+                    {/* answers boxes start here */}
+                    <View style={styles.answerBox}>
+                      <View>
+                        <View style={styles.answerGroup}>
+                          <AnswerBoxes
+                            answer={answers[0]}
+                            _checkAnswer={this._checkAnswer}
+                          />
+                          <AnswerBoxes
+                            answer={answers[1]}
+                            _checkAnswer={this._checkAnswer}
+                          />
+                        </View>
+                        <View style={styles.answerGroup}>
+                          <AnswerBoxes
+                            answer={answers[2]}
+                            _checkAnswer={this._checkAnswer}
+                          />
+                          <AnswerBoxes
+                            answer={answers[3]}
+                            _checkAnswer={this._checkAnswer}
+                          />
+                        </View>
                       </View>
-                    </Content>
-                  </View>
-                )}
-              </View>
-            )}
-          </SettingsConsumer>
-        </BaseLayout>
-      );
-    }
+                    </View>
+                    {/* answer boxes ends here */}
+                    <View
+                      style={{
+                        marginTop: Dimensions.window.height * 0.1,
+                        flexDirection: "row"
+                      }}
+                    >
+                      <EmojiButton action={this._showHint} text={" 🗝 "} />
+                      <EmojiButton action={this._addTime} text={" +⏳ "} />
+                    </View>
+                  </Content>
+                </View>
+              )}
+              <Modal
+                isVisible={this.state.loading}
+                animationIn="zoomInDown"
+                animationOut="zoomOutUp"
+                useNativeDriver={true}
+                animationInTiming={500}
+                animationOutTiming={500}
+                backdropTransitionInTiming={500}
+                backdropTransitionOutTiming={500}
+              >
+                <View style={styles.modalSpinnerBox}>
+                  <Spinner />
+                </View>
+              </Modal>
+            </View>
+          )}
+        </SettingsConsumer>
+      </BaseLayout>
+    );
   }
 }
 
 const styles = StyleSheet.create({
+  endGameHeaderLeft: {
+    flex: 1,
+    marginLeft: Dimensions.window.width * 0.02,
+    marginTop: Platform.OS === "ios" ? 0 : Dimensions.window.height * 0.05
+  },
+  endGameHeaderRight: {
+    marginRight: Dimensions.window.width * 0.05,
+    marginTop: Platform.OS === "ios" ? 0 : Dimensions.window.height * 0.05
+  },
+  endGameBox: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  endGameText: { fontSize: 25 },
+  gameHeaderBody: {
+    paddingBottom: Platform.OS === "ios" ? Dimensions.window.height * 0.12 : 0,
+    paddingLeft: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.23,
+    paddingTop: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.05
+  },
+  gameHeaderRight: {
+    marginRight: Dimensions.window.width * 0.05,
+    marginTop: Platform.OS === "ios" ? 0 : Dimensions.window.height * 0.05
+  },
+  starRatingBox: {
+    shadowColor: "red",
+    shadowOpacity: 0.5,
+    shadowRadius: 7,
+    elevation: 40,
+    alignItems: "flex-end",
+    marginRight: Dimensions.window.width * 0.03
+  },
+  starRating: {
+    alignItems: "flex-start",
+    justifyContent: "center",
+    alignContent: "flex-start"
+  },
+  answerBox: {
+    width: Dimensions.window.width / 2,
+    flexDirection: "row",
+    justifyContent: "space-evenly"
+  },
+  answerGroup: {
+    flexDirection: "row",
+    padding: 10
+  },
+  modalSpinnerBox: {
+    flex: 1,
+    backgroundColor: "transparent",
+    height: 300,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  baseBox: {
+    width: Dimensions.window.width * 0.9,
+    flexDirection: "row",
+    alignContent: "space-between",
+    justifyContent: "space-between",
+    paddingVertical: Dimensions.window.height * 0.01
+  },
   questionBox: {
     width: Dimensions.window.width * 0.9,
     height: Dimensions.window.height * 0.2,
@@ -533,13 +531,6 @@ const styles = StyleSheet.create({
     margin: Dimensions.window.height * 0.03
   },
 
-  baseBox: {
-    width: Dimensions.window.width * 0.9,
-    flexDirection: "row",
-    alignContent: "space-between",
-    justifyContent: "space-between",
-    paddingVertical: Dimensions.window.height * 0.01
-  },
   timerStyle: {
     color: "white",
     fontFamily: "bangers",
