@@ -15,14 +15,6 @@ const db = firebase.firestore();
 export const SettingsContext = React.createContext();
 export const SettingsConsumer = SettingsContext.Consumer;
 
-// //adds func here
-// const showAdd = async () => {
-//   AdMobRewarded.setAdUnitID("ca-app-pub-3940256099942544/5224354917"); // Test ID, Replace with your-admob-unit-id
-//   AdMobRewarded.setTestDeviceID("EMULATOR");
-//   await AdMobRewarded.requestAdAsync();
-//   await AdMobRewarded.showAdAsync();
-// };
-
 //save data to server
 const saveDataToDatabase = async (userId, key, value) => {
   var usersUpdate = {};
@@ -45,6 +37,7 @@ const retrieveDataFromSecureStorage = async key =>
 export class SettingsProvider extends React.Component {
   state = {
     loggedIn: false,
+    maxNumOfQuestions: 12,
     overallBestScores: {
       gold: {
         username: "",
@@ -113,7 +106,7 @@ export class SettingsProvider extends React.Component {
       _addTime: async () => {
         if (this.state.loggedIn) {
           await this.setState({
-            user: { ...this.state.user, crystal: this.state.user.crystal - 15 }
+            user: { ...this.state.user, crystal: this.state.user.crystal - 10 }
           });
           saveDataToDatabase(
             this.state.user.id,
@@ -122,7 +115,7 @@ export class SettingsProvider extends React.Component {
           );
         } else {
           await this.setState({
-            crystal: this.state.crystal - 15
+            crystal: this.state.crystal - 10
           });
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
@@ -131,7 +124,7 @@ export class SettingsProvider extends React.Component {
       _getHint: async () => {
         if (this.state.loggedIn) {
           await this.setState({
-            user: { ...this.state.user, crystal: this.state.user.crystal - 15 }
+            user: { ...this.state.user, crystal: this.state.user.crystal - 20 }
           });
           saveDataToDatabase(
             this.state.user.id,
@@ -140,7 +133,7 @@ export class SettingsProvider extends React.Component {
           );
         } else {
           await this.setState({
-            crystal: this.state.crystal - 15
+            crystal: this.state.crystal - 20
           });
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
@@ -149,20 +142,23 @@ export class SettingsProvider extends React.Component {
       _getLifeAdd: async () => {
         if (this.state.loggedIn) {
           await this.setState({
-            user: { ...this.state.user, life: this.state.user.life + 1 },
-            endGame: false
+            user: { ...this.state.user, crystal: this.state.user.crystal + 10 }
           });
-          saveDataToDatabase(this.state.user.id, "life", this.state.user.life);
+          saveDataToDatabase(
+            this.state.user.id,
+            "crystal",
+            this.state.user.crystal
+          );
         } else {
-          await this.setState({ life: this.state.life + 1, endGame: false });
-          saveDataToSecureStorage("WordsMeaningLife", this.state.life);
+          await this.setState({ crystal: this.state.crystal + 10 });
+          saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
         // showAdd();
       },
       //remove life
       _removeLife: async () => {
         if (this.state.loggedIn) {
-          if (this.state.user.life >= 1 || this.state.user.life === 1) {
+          if (this.state.user.life >= 1) {
             await this.setState({
               user: { ...this.state.user, life: this.state.user.life - 1 }
             });
@@ -366,24 +362,27 @@ export class SettingsProvider extends React.Component {
         color2: "#ff3d00"
       }
     });
-    // //Get Color theme from ss
-    // let savedStyles = await retrieveDataFromSecureStorage(
-    //   "WordsMeaningSettings"
-    // );
-    // if (savedStyles !== null) {
-    //   savedStyles = JSON.parse(savedStyles);
-    //   this.setState({
-    //     backgroundColor: {
-    //       color1: savedStyles.backgroundColor.color1.toString(),
-    //       color2: savedStyles.backgroundColor.color2.toString(),
-    //       color3: savedStyles.backgroundColor.color3.toString()
-    //     },
-    //     buttonColors: {
-    //       color1: savedStyles.buttonColors.color1.toString(),
-    //       color2: savedStyles.buttonColors.color2.toString()
-    //     }
-    //   });
-    // }
+
+    //Set best overallresult
+    const resRefQuestions = db
+      .collection("amountOfQuestions")
+      .doc("amountOfQuestions");
+    resRefQuestions
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          this.setState({
+            maxNumOfQuestions: doc.data().amountOfQuestions
+          });
+          // console.log("Document data:", doc.data());
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error);
+      });
 
     //Set best overallresult
     const resRefGold = db.collection("bestScores").doc("gold");

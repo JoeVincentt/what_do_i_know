@@ -1,34 +1,32 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Content,
-  Icon,
-  Spinner,
-  Header,
-  Body,
-  Left,
-  Right,
-  Container
-} from "native-base";
+import { Button, Content, Header, Left } from "native-base";
 import { View, YellowBox, Platform, Text, StyleSheet } from "react-native";
 import * as firebase from "firebase";
 require("firebase/firestore");
 import HeaderText from "../constants/HeaderText";
-import Modal from "react-native-modal";
 import { LinearGradient, Constants } from "expo";
 import { SettingsConsumer } from "../context/SettingsContext";
-import LandingActionButton from "../components/LandingActionButton";
 import BaseLayout from "../components/BaseLayout";
 import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-
 const db = firebase.firestore();
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  PublisherBanner,
+  AdMobRewarded
+} from "expo";
 
 export default class LandingScreen extends Component {
   state = {};
 
-  componentWillMount() {
+  async componentWillMount() {
+    AdMobInterstitial.setAdUnitID("ca-app-pub-3940256099942544/1033173712"); // Test ID, Replace with your-admob-unit-id
+    AdMobInterstitial.setTestDeviceID("EMULATOR");
+    await AdMobInterstitial.requestAdAsync();
+    await AdMobInterstitial.showAdAsync();
+
     //Ignore Warning on Android
     YellowBox.ignoreWarnings(["Setting a timer"]);
     const _console = _.clone(console);
@@ -171,11 +169,7 @@ export default class LandingScreen extends Component {
                   <Button
                     large
                     transparent
-                    onPress={() =>
-                      this.setState({
-                        isRulesModalVisible: true
-                      })
-                    }
+                    onPress={() => this.props.navigation.navigate("Landing")}
                     style={styles.headerLeftButton}
                   >
                     <HeaderText style={{ fontSize: 40 }}>
@@ -184,7 +178,6 @@ export default class LandingScreen extends Component {
                     </HeaderText>
                   </Button>
                 </Left>
-                <Right />
               </Header>
               {/* action buttons area */}
               <Content
@@ -194,7 +187,25 @@ export default class LandingScreen extends Component {
                   justifyContent: "center"
                 }}
               >
-                <HeaderText>Shop</HeaderText>
+                {/* // Display a banner */}
+                <AdMobBanner
+                  bannerSize="fullBanner"
+                  adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                  testDeviceID="EMULATOR"
+                  onDidFailToReceiveAdWithError={this.bannerError}
+                />
+
+                {/* // Display a DFP Publisher banner */}
+                <PublisherBanner
+                  bannerSize="fullBanner"
+                  adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                  testDeviceID="EMULATOR"
+                  onDidFailToReceiveAdWithError={this.bannerError}
+                  onAdMobDispatchAppEvent={this.adMobEvent}
+                />
+                {/* <Button onPress={() => showAd()}>
+                  <HeaderText>Shop</HeaderText>
+                </Button> */}
               </Content>
             </View>
           )}

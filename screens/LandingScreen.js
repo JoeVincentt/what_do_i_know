@@ -191,7 +191,7 @@ export default class LandingScreen extends Component {
                   <Button
                     large
                     transparent
-                    onPress={() => console.log("shop")}
+                    onPress={() => this.props.navigation.navigate("Shop")}
                     style={styles.headerRightButton}
                   >
                     <HeaderText style={{ fontSize: 40 }}> 🛒 </HeaderText>
@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 7,
     shadowOffset: { width: 0, height: 1 },
-    elevation: 200
+    elevation: 100
   },
   modalBox: {
     flex: 1,

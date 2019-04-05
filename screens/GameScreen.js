@@ -24,23 +24,10 @@ import AnswerBoxes from "../components/AnswerBoxes";
 import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
 import * as firebase from "firebase";
+import { showRewardedAd } from "../utils/showAd";
 require("firebase/firestore");
-import {
-  AdMobBanner,
-  AdMobInterstitial,
-  PublisherBanner,
-  AdMobRewarded,
-  Constants
-} from "expo";
-const db = firebase.firestore();
 
-//adds func here
-const showAdd = async () => {
-  AdMobRewarded.setAdUnitID("ca-app-pub-3940256099942544/5224354917"); // Test ID, Replace with your-admob-unit-id
-  AdMobRewarded.setTestDeviceID("EMULATOR");
-  await AdMobRewarded.requestAdAsync();
-  await AdMobRewarded.showAdAsync();
-};
+const db = firebase.firestore();
 
 export default class LandingScreen extends Component {
   state = {
@@ -53,11 +40,13 @@ export default class LandingScreen extends Component {
     time: 0,
     notEnoughCrystals: null,
     showToast: false,
-    loadingQuestion: false
+    loadingQuestion: false,
+    maxNumOfQuestions: 4
   };
 
   componentDidMount() {
     this.setState({ loading: false });
+    this.setState({ maxNumOfQuestions: this.context.maxNumOfQuestions });
   }
 
   async componentWillMount() {
@@ -68,7 +57,8 @@ export default class LandingScreen extends Component {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
   _loadQuestion = async () => {
-    let questionId = await this.getRandomInt(0, 5);
+    let maxNumOfQuestions = this.state.maxNumOfQuestions;
+    let questionId = await this.getRandomInt(0, maxNumOfQuestions);
     this.setState({ loadingQuestion: true, choiceMade: true });
     try {
       const docRef = db.collection("questions").doc(`${questionId}`);
@@ -128,7 +118,7 @@ export default class LandingScreen extends Component {
     this.setState({
       time: 0
     });
-    Vibration.vibrate(300);
+    Vibration.vibrate(600);
     _showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
     this.context.reducers._removeLife();
     this._loadQuestion();
@@ -138,7 +128,7 @@ export default class LandingScreen extends Component {
     this.setState({ loadingQuestion: true, choiceMade: true });
     this.context.reducers._getLifeAdd();
     setTimeout(() => this._loadQuestion(), 7000);
-    showAdd()
+    showRewardedAd()
       .then(() => {})
       .catch(error => {
         console.log(error);
@@ -164,14 +154,14 @@ export default class LandingScreen extends Component {
 
   _addTime = () => {
     if (this.context.loggedIn) {
-      if (this.context.user.crystal < 15) {
-        _showToast(" Need 15 💎 ", 3000);
+      if (this.context.user.crystal < 10) {
+        _showToast(" Need 10 💎 ", 3000);
         return;
       }
     }
     if (!this.context.loggedIn) {
-      if (this.context.crystal < 15) {
-        _showToast(" Need 15 💎 ", 3000);
+      if (this.context.crystal < 10) {
+        _showToast(" Need 10 💎 ", 3000);
         return;
       }
     }
@@ -182,14 +172,14 @@ export default class LandingScreen extends Component {
 
   _showHint = () => {
     if (this.context.loggedIn) {
-      if (this.context.user.crystal < 15) {
-        _showToast(" Need 15 💎 ", 3000);
+      if (this.context.user.crystal < 20) {
+        _showToast(" Need 20 💎 ", 3000);
         return;
       }
     }
     if (!this.context.loggedIn) {
-      if (this.context.crystal < 15) {
-        _showToast(" Need 15 💎 ", 3000);
+      if (this.context.crystal < 20) {
+        _showToast(" Need 20 💎 ", 3000);
         return;
       }
     }
@@ -266,12 +256,12 @@ export default class LandingScreen extends Component {
 
                     <EmojiButton
                       action={this._getLifeAdd}
-                      text={"   ❤️+   w a t c h  a d "}
+                      text={"   + 1 0 💎   w a t c h   a d "}
                       style={styles.endGameText}
                     />
                     <EmojiButton
                       action={this._buyLife}
-                      text={"   💎   t r a d e "}
+                      text={"   + 1 ❤️   t r a d e  35 💎"}
                       style={styles.endGameText}
                     />
                   </View>
