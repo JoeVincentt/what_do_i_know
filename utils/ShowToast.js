@@ -5,7 +5,7 @@ import HeaderText from "../constants/HeaderText";
 export const _showToast = (maintext, duration, type, position) => {
   Toast.show({
     text: <HeaderText> {maintext}</HeaderText>,
-    buttonText: " ❌ ",
+    // buttonText: " ❌ ",
     duration: duration,
     position: position ? position : "bottom",
     type: type ? type : ""

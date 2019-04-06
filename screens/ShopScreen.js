@@ -1,32 +1,38 @@
 import React, { Component } from "react";
-import { Button, Content, Header, Left } from "native-base";
+import {
+  Button,
+  Content,
+  Header,
+  Left,
+  Right,
+  FooterTab,
+  Footer,
+  Spinner,
+  Icon
+} from "native-base";
 import { View, YellowBox, Platform, Text, StyleSheet } from "react-native";
 import * as firebase from "firebase";
 require("firebase/firestore");
 import HeaderText from "../constants/HeaderText";
 import { LinearGradient, Constants } from "expo";
-import { SettingsConsumer } from "../context/SettingsContext";
+import Modal from "react-native-modal";
+import { EmojiButton } from "../components/HintTimeAdd";
 import BaseLayout from "../components/BaseLayout";
+import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 const db = firebase.firestore();
-import {
-  AdMobBanner,
-  AdMobInterstitial,
-  PublisherBanner,
-  AdMobRewarded
-} from "expo";
+import { AdMobBanner, PublisherBanner } from "expo";
+import { showInterstitialAd, showRewardedAd } from "../utils/showAd";
 
-export default class LandingScreen extends Component {
-  state = {};
+export default class ShopScreen extends Component {
+  state = {
+    showInfoModal: false,
+    loading: false
+  };
 
   async componentWillMount() {
-    AdMobInterstitial.setAdUnitID("ca-app-pub-3940256099942544/1033173712"); // Test ID, Replace with your-admob-unit-id
-    AdMobInterstitial.setTestDeviceID("EMULATOR");
-    await AdMobInterstitial.requestAdAsync();
-    await AdMobInterstitial.showAdAsync();
-
     //Ignore Warning on Android
     YellowBox.ignoreWarnings(["Setting a timer"]);
     const _console = _.clone(console);
@@ -37,114 +43,62 @@ export default class LandingScreen extends Component {
     };
   }
 
-  _alreadyLoggedCheck = async () => {
-    firebase.auth().onAuthStateChanged(async user => {
-      if (user != null) {
-        try {
-          const userRef = db
-            .collection("users")
-            .doc(firebase.auth().currentUser.uid);
-          let userData;
-          const user = await userRef.get();
-          if (user.exists) {
-            existingUserData = await user.data();
-            userData = {
-              id: existingUserData.id,
-              email: existingUserData.email,
-              username: existingUserData.username,
-              avatar: existingUserData.avatar,
-              life: existingUserData.life,
-              scores: existingUserData.scores,
-              bestScores: existingUserData.bestScores,
-              crystal: existingUserData.crystal
-            };
-          } else {
-            //if user doesnt exist
-            console.log("error fetching user");
-          }
-          this.context.reducers._logInUser(userData);
-          this.props.navigation.navigate("Game");
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        this._facebookLogIn();
-      }
+  _get50crystalAd = () => {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      this.context.reducers._getLifeAdd(50);
+    }, 30000);
+    setTimeout(() => {
+      this.setState({ loading: false });
+    }, 30000);
+    showInterstitialAd().catch(error => console.log(error));
+    showRewardedAd().catch(error => {
+      console.log(error);
     });
+    setTimeout(() => {
+      showInterstitialAd().catch(error => console.log(error));
+    }, 10000);
+    setTimeout(() => {
+      showRewardedAd().catch(error => {
+        console.log(error);
+      });
+    }, 20000);
+    setTimeout(() => {
+      this.setState({ loading: false });
+    }, 30000);
   };
 
-  _facebookLogIn = async () => {
-    // const key = Constants.manifest.extra.fbkey;
-    //Check if user logged in already(has token)
-
-    try {
-      const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
-        Constants.manifest.facebookAppId,
-        {
-          permissions: ["email", "public_profile"]
-        }
-      );
-      if (type === "success") {
-        // Build Firebase credential with the Facebook access token.
-        const credential = await firebase.auth.FacebookAuthProvider.credential(
-          token
-        );
-        // Sign in with credential from the Facebook user.
-        try {
-          const data = await firebase
-            .auth()
-            .signInAndRetrieveDataWithCredential(credential);
-          if (data) {
-            const usersRef = db.collection("users");
-            const userDoc = usersRef.doc(firebase.auth().currentUser.uid);
-            try {
-              const userRef = db
-                .collection("users")
-                .doc(firebase.auth().currentUser.uid);
-              let userData;
-              const user = await userRef.get();
-              if (user.exists) {
-                existingUserData = await user.data();
-                userData = {
-                  id: existingUserData.id,
-                  email: existingUserData.email,
-                  username: existingUserData.username,
-                  avatar: existingUserData.avatar,
-                  life: existingUserData.life - 1,
-                  scores: existingUserData.scores,
-                  bestScores: existingUserData.bestScores,
-                  crystal: existingUserData.crystal
-                };
-              } else {
-                //if user doesnt exist
-                userData = {
-                  id: firebase.auth().currentUser.uid,
-                  email: data.additionalUserInfo.profile.email,
-                  username: data.additionalUserInfo.profile.name,
-                  avatar: data.additionalUserInfo.profile.picture.data.url,
-                  life: 3,
-                  scores: 0,
-                  bestScores: 0,
-                  crystal: 0
-                };
-                userDoc.set(userData);
-              }
-              this.context.reducers._logInUser(userData);
-            } catch (error) {
-              console.log(error);
-            }
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      } else {
-        // type === 'cancel'
-        console.log("cancel");
-      }
-    } catch ({ message }) {
-      console.log(message);
-      alert(`Facebook Login Error: ${message}`);
-    }
+  _get150crystalAd = () => {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      this.context.reducers._getLifeAdd(150);
+    }, 50000);
+    setTimeout(() => {
+      this.setState({ loading: false });
+    }, 60000);
+    showInterstitialAd().catch(error => console.log(error));
+    showRewardedAd().catch(error => {
+      console.log(error);
+    });
+    setTimeout(() => {
+      showInterstitialAd().catch(error => console.log(error));
+    }, 10000);
+    setTimeout(() => {
+      showInterstitialAd().catch(error => console.log(error));
+    }, 30000);
+    setTimeout(() => {
+      showInterstitialAd().catch(error => console.log(error));
+    }, 55000);
+    setTimeout(() => {
+      showRewardedAd().catch(error => {
+        console.log(error);
+      });
+    }, 20000);
+    setTimeout(() => {
+      showRewardedAd().catch(error => {
+        console.log(error);
+      });
+    }, 40000);
   };
 
   render() {
@@ -169,15 +123,25 @@ export default class LandingScreen extends Component {
                   <Button
                     large
                     transparent
-                    onPress={() => this.props.navigation.navigate("Landing")}
+                    onPress={() => this.props.navigation.pop()}
                     style={styles.headerLeftButton}
                   >
-                    <HeaderText style={{ fontSize: 40 }}>
+                    <HeaderText style={{ fontSize: 30 }}>
                       {" "}
                       back to 🎮{" "}
                     </HeaderText>
                   </Button>
                 </Left>
+                <Right style={styles.headerRight}>
+                  <Button
+                    large
+                    transparent
+                    onPress={() => this.setState({ showInfoModal: true })}
+                    style={styles.headerLeftButton}
+                  >
+                    <HeaderText style={{ fontSize: 30 }}> click me </HeaderText>
+                  </Button>
+                </Right>
               </Header>
               {/* action buttons area */}
               <Content
@@ -187,14 +151,22 @@ export default class LandingScreen extends Component {
                   justifyContent: "center"
                 }}
               >
-                {/* // Display a banner */}
-                <AdMobBanner
-                  bannerSize="fullBanner"
-                  adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-                  testDeviceID="EMULATOR"
-                  onDidFailToReceiveAdWithError={this.bannerError}
-                />
-
+                <View style={styles.adBox}>
+                  <View>
+                    <EmojiButton
+                      action={this._get50crystalAd}
+                      text={"   + 5 0 💎   watch 30 seconds  ad"}
+                      style={styles.adText}
+                    />
+                    <EmojiButton
+                      action={this._get150crystalAd}
+                      text={"   + 1 5 0 💎   watch  1 minute  ad"}
+                      style={styles.adText}
+                    />
+                  </View>
+                </View>
+              </Content>
+              <Footer>
                 {/* // Display a DFP Publisher banner */}
                 <PublisherBanner
                   bannerSize="fullBanner"
@@ -203,13 +175,77 @@ export default class LandingScreen extends Component {
                   onDidFailToReceiveAdWithError={this.bannerError}
                   onAdMobDispatchAppEvent={this.adMobEvent}
                 />
-                {/* <Button onPress={() => showAd()}>
-                  <HeaderText>Shop</HeaderText>
-                </Button> */}
-              </Content>
+              </Footer>
+              <Footer transparent style={{ backgroundColor: "transparent" }}>
+                {/* // Display a banner */}
+                <AdMobBanner
+                  bannerSize="fullBanner"
+                  adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                  testDeviceID="EMULATOR"
+                  onDidFailToReceiveAdWithError={this.bannerError}
+                />
+              </Footer>
             </View>
           )}
         </SettingsConsumer>
+        {/* rules modal */}
+        <SettingsConsumer>
+          {context => (
+            <Modal
+              isVisible={this.state.showInfoModal}
+              ref={ref => {
+                this.context = context;
+              }}
+              backdropColor={context.backgroundColor.color2}
+              backdropOpacity={0.95}
+              animationIn="zoomInDown"
+              animationOut="zoomOutUp"
+              animationInTiming={600}
+              animationOutTiming={600}
+              backdropTransitionInTiming={600}
+              backdropTransitionOutTiming={600}
+            >
+              <View style={styles.modalBox}>
+                <View
+                  style={{ alignItems: "center", justifyContent: "center" }}
+                >
+                  <View style={{ paddingBottom: 10 }}>
+                    <HeaderText> Thank you! </HeaderText>
+                  </View>
+                  <HeaderText>
+                    {" "}
+                    For playing "what do i know", we hope you are enjoying it!
+                    please support creator watch and click ads. And use your
+                    reward wisely 😉{" "}
+                  </HeaderText>
+                  <View>
+                    <Button
+                      large
+                      transparent
+                      onPress={() => this.setState({ showInfoModal: false })}
+                    >
+                      <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
+                    </Button>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+          )}
+        </SettingsConsumer>
+        <Modal
+          isVisible={this.state.loading}
+          animationIn="zoomInDown"
+          animationOut="zoomOutUp"
+          useNativeDriver={true}
+          animationInTiming={500}
+          animationOutTiming={500}
+          backdropTransitionInTiming={500}
+          backdropTransitionOutTiming={500}
+        >
+          <View style={styles.modalSpinnerBox}>
+            <Spinner />
+          </View>
+        </Modal>
       </BaseLayout>
     );
   }
@@ -235,6 +271,7 @@ const styles = StyleSheet.create({
     shadowColor: "black",
     shadowOpacity: 0.4,
     shadowRadius: 5,
+    height: 100,
     elevation: 100
   },
   mainBox: {
@@ -250,19 +287,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  topChartBox: {
+  adBox: {
+    flex: 1,
+    alignContent: "center",
     justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-    marginVertical: 20,
-    borderWidth: 2,
-    borderColor: "white",
-    shadowColor: "blue",
-    shadowOpacity: 0.3,
-    shadowRadius: 7,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 200
+    alignItems: "center"
   },
+  adText: { fontSize: 25 },
   modalBox: {
     flex: 1,
     backgroundColor: "transparent",

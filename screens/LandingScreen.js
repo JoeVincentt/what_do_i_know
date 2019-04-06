@@ -170,7 +170,7 @@ export default class LandingScreen extends Component {
                   height: 54 + getStatusBarHeight()
                 }}
               >
-                <Left style={styles.headerLeft}>
+                <Right style={styles.headerRight}>
                   <Button
                     large
                     transparent
@@ -179,24 +179,39 @@ export default class LandingScreen extends Component {
                         isRulesModalVisible: true
                       })
                     }
-                    style={styles.headerLeftButton}
+                    style={styles.headerRightButton}
                   >
                     <HeaderText style={{ fontSize: 40 }}>
                       {" "}
                       {`${Platform.OS === "ios" ? "📜" : "💡"}`}{" "}
                     </HeaderText>
                   </Button>
-                </Left>
-                <Right style={styles.headerRight}>
+                </Right>
+                {/* <Right style={styles.headerRight}>
                   <Button
                     large
                     transparent
                     onPress={() => this.props.navigation.navigate("Shop")}
                     style={styles.headerRightButton}
                   >
-                    <HeaderText style={{ fontSize: 40 }}> 🛒 </HeaderText>
+                    <View style={{ flexDirection: "row" }}>
+                      <HeaderText
+                        style={{
+                          fontSize: 30,
+                          paddingTop: 10,
+                          marginRight: -15
+                        }}
+                      >
+                        {" "}
+                        💎{" "}
+                      </HeaderText>
+                      <HeaderText style={{ fontSize: 40, marginTop: -10 }}>
+                        {" "}
+                        ⛏{" "}
+                      </HeaderText>
+                    </View>
                   </Button>
-                </Right>
+                </Right> */}
               </Header>
               {/* action buttons area */}
               <Content
@@ -307,12 +322,17 @@ export default class LandingScreen extends Component {
                           </HeaderText>
                           <HeaderText style={styles.modalText}>
                             {" "}
-                            +⏳ 5 to 15 seconds for 10 💎{" "}
+                            +⏳ reset countdown for 10 💎{" "}
                           </HeaderText>
                           <HeaderText style={styles.modalText}>
                             {" "}
                             + 1 ❤️ for 35 💎
                           </HeaderText>
+                          <HeaderText style={styles.modalText}>
+                            {" "}
+                            ⏩ skip question for 15 💎
+                          </HeaderText>
+
                           <View
                             style={{
                               paddingTop: 20,

@@ -11,7 +11,14 @@ import {
 } from "native-base";
 
 import Modal from "react-native-modal";
-import { View, Text, Platform, Vibration, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Platform,
+  Vibration,
+  StyleSheet,
+  TouchableOpacity
+} from "react-native";
 import { _showToast } from "../utils/ShowToast";
 import StarRating from "react-native-star-rating";
 import HeaderText from "../constants/HeaderText";
@@ -73,7 +80,7 @@ export default class LandingScreen extends Component {
               actualAnswer: question.rightAnswer,
               answers: question.answers,
               rating: Number(question.rating),
-              time: 60000,
+              time: 25000,
               loadingQuestion: false
             });
           } else {
@@ -125,14 +132,16 @@ export default class LandingScreen extends Component {
   };
 
   _getLifeAdd = () => {
-    this.setState({ loadingQuestion: true, choiceMade: true });
-    this.context.reducers._getLifeAdd();
-    setTimeout(() => this._loadQuestion(), 7000);
-    showRewardedAd()
-      .then(() => {})
-      .catch(error => {
-        console.log(error);
-      });
+    this.setState({ loadingQuestion: true, choiceMade: true, loading: true });
+    setTimeout(() => {
+      this.context.reducers._getLifeAdd(10);
+    }, 7000);
+    setTimeout(() => {
+      this.setState({ loading: false });
+    }, 7000);
+    showRewardedAd().catch(error => {
+      console.log(error);
+    });
   };
 
   _buyLife = () => {
@@ -152,6 +161,24 @@ export default class LandingScreen extends Component {
     _showToast(" + 1 ❤️ ", 3000, "success");
   };
 
+  _buyLifeEndGame = () => {
+    if (this.context.loggedIn) {
+      if (this.context.user.crystal < 35) {
+        _showToast(" Need 35 💎 ", 3000);
+        return;
+      }
+    }
+    if (!this.context.loggedIn) {
+      if (this.context.crystal < 35) {
+        _showToast(" Need 35 💎 ", 3000);
+        return;
+      }
+    }
+    this._loadQuestion();
+    this.context.reducers._addLife();
+    _showToast(" + 1 ❤️ ", 3000, "success");
+  };
+
   _addTime = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 10) {
@@ -165,7 +192,7 @@ export default class LandingScreen extends Component {
         return;
       }
     }
-    this.setState({ time: this.state.time + this.getRandomInt(5000, 15000) });
+
     this.context.reducers._addTime();
     _showToast(" +⏳   t i m e   a d d e d ", 3000, "success");
   };
@@ -186,6 +213,24 @@ export default class LandingScreen extends Component {
 
     this.context.reducers._getHint();
     _showToast(this.state.actualAnswer, 3000, "success");
+  };
+
+  _skipQuestion = () => {
+    if (this.context.loggedIn) {
+      if (this.context.user.crystal < 15) {
+        _showToast(" Need 15 💎 ", 3000);
+        return;
+      }
+    }
+    if (!this.context.loggedIn) {
+      if (this.context.crystal < 15) {
+        _showToast(" Need 15 💎 ", 3000);
+        return;
+      }
+    }
+    this._loadQuestion();
+    this.context.reducers._skipQuestion();
+    _showToast("Question skipped", 3000, "success");
   };
 
   _unlockGame = () => {
@@ -248,22 +293,46 @@ export default class LandingScreen extends Component {
                     </Right>
                   </Header>
                   <View style={styles.endGameBox}>
-                    <EmojiButton
-                      action={this._unlockGame}
-                      text={"   🔥    s t a r t   a    n e w  g a m e "}
-                      style={styles.endGameText}
-                    />
+                    <View>
+                      <EmojiButton
+                        action={this._unlockGame}
+                        text={"   🔥    s t a r t   a    n e w  g a m e "}
+                        style={styles.endGameText}
+                      />
 
-                    <EmojiButton
-                      action={this._getLifeAdd}
-                      text={"   + 1 0 💎   w a t c h   a d "}
-                      style={styles.endGameText}
-                    />
-                    <EmojiButton
-                      action={this._buyLife}
-                      text={"   + 1 ❤️   t r a d e  35 💎"}
-                      style={styles.endGameText}
-                    />
+                      <EmojiButton
+                        action={this._getLifeAdd}
+                        text={"   + 1 0 💎   w a t c h   a n   a d "}
+                        style={styles.endGameText}
+                      />
+                      <EmojiButton
+                        action={this._buyLifeEndGame}
+                        text={"   + 1 ❤️   t r a d e  35 💎"}
+                        style={styles.endGameText}
+                      />
+                      <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate("Shop")}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            paddingTop: 10
+                          }}
+                        >
+                          <HeaderText style={styles.mineIconCrystal}>
+                            {"      "}
+                            💎{" "}
+                          </HeaderText>
+                          <HeaderText style={styles.mineIconMine}>
+                            {" "}
+                            ⛏{" "}
+                          </HeaderText>
+                          <HeaderText style={styles.mineText}>
+                            go to the mine
+                          </HeaderText>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               ) : (
@@ -277,11 +346,24 @@ export default class LandingScreen extends Component {
                     }}
                   >
                     <Left
-                      style={{ marginLeft: Dimensions.window.width * 0.02 }}
+                      style={{
+                        marginLeft: Dimensions.window.width * 0.05,
+                        marginTop:
+                          Platform.OS === "ios"
+                            ? 0
+                            : Dimensions.window.height * 0.05
+                      }}
                     >
-                      <Button onPress={() => this._buyLife()} transparent>
+                      {/* <Button onPress={() => this._buyLife()} transparent>
                         <HeaderText style={{}}> +❤️ </HeaderText>
-                      </Button>
+                      </Button> */}
+                      <HeaderText>
+                        💎
+                        {context.loggedIn
+                          ? context.user.crystal + " "
+                          : context.crystal + " "}
+                        {"  "}
+                      </HeaderText>
                     </Left>
                     <Body>
                       <HeaderText style={styles.gameHeaderBody}>
@@ -315,12 +397,12 @@ export default class LandingScreen extends Component {
                               : context.scores}{" "}
                           </HeaderText>
 
-                          <HeaderText>
+                          {/* <HeaderText>
                             💎{" "}
                             {context.loggedIn
                               ? context.user.crystal
                               : context.crystal}{" "}
-                          </HeaderText>
+                          </HeaderText> */}
                         </View>
                       </View>
                       <View
@@ -418,6 +500,8 @@ export default class LandingScreen extends Component {
                     >
                       <EmojiButton action={this._showHint} text={" 🗝 "} />
                       <EmojiButton action={this._addTime} text={" +⏳ "} />
+                      <EmojiButton action={this._buyLife} text={" +❤️ "} />
+                      <EmojiButton action={this._skipQuestion} text={" ⏩ "} />
                     </View>
                   </Content>
                 </View>
@@ -456,14 +540,42 @@ const styles = StyleSheet.create({
   },
   endGameBox: {
     flex: 1,
+    alignContent: "center",
     justifyContent: "center",
     alignItems: "center"
   },
   endGameText: { fontSize: 25 },
+  mineIconCrystal: {
+    fontSize: 30,
+    paddingTop: 10,
+    marginRight: -15,
+    shadowColor: "white",
+    shadowRadius: 30,
+    shadowOpacity: 3,
+    elevation: 150
+  },
+  mineIconMine: {
+    fontSize: 40,
+    marginTop: -10,
+    shadowColor: "white",
+    shadowRadius: 30,
+    shadowOpacity: 3,
+    elevation: 150
+  },
+  mineText: {
+    fontSize: 25,
+    shadowColor: "white",
+    shadowRadius: 30,
+    shadowOpacity: 3,
+    elevation: 150
+  },
   gameHeaderBody: {
     paddingBottom: Platform.OS === "ios" ? Dimensions.window.height * 0.12 : 0,
     paddingLeft: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.23,
-    paddingTop: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.05
+    paddingTop:
+      Platform.OS === "ios"
+        ? Dimensions.window.height * 0.03
+        : Dimensions.window.height * 0.03
   },
   gameHeaderRight: {
     marginRight: Dimensions.window.width * 0.05,

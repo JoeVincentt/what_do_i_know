@@ -138,11 +138,11 @@ export class SettingsProvider extends React.Component {
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
       },
-      //Get life thru add
-      _getLifeAdd: async () => {
+      //Getting Hint
+      _skipQuestion: async () => {
         if (this.state.loggedIn) {
           await this.setState({
-            user: { ...this.state.user, crystal: this.state.user.crystal + 10 }
+            user: { ...this.state.user, crystal: this.state.user.crystal - 15 }
           });
           saveDataToDatabase(
             this.state.user.id,
@@ -150,11 +150,32 @@ export class SettingsProvider extends React.Component {
             this.state.user.crystal
           );
         } else {
-          await this.setState({ crystal: this.state.crystal + 10 });
+          await this.setState({
+            crystal: this.state.crystal - 15
+          });
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
-        // showAdd();
       },
+      //Get life thru add
+      _getLifeAdd: async amount => {
+        if (this.state.loggedIn) {
+          await this.setState({
+            user: {
+              ...this.state.user,
+              crystal: this.state.user.crystal + amount
+            }
+          });
+          saveDataToDatabase(
+            this.state.user.id,
+            "crystal",
+            this.state.user.crystal
+          );
+        } else {
+          await this.setState({ crystal: this.state.crystal + amount });
+          saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
+        }
+      },
+
       //remove life
       _removeLife: async () => {
         if (this.state.loggedIn) {

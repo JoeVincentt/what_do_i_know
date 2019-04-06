@@ -11,7 +11,7 @@ export const EmojiButton = ({ action, text, style }) => (
   <Button
     transparent
     large
-    style={{ padding: 30, justifyContent: "center", alignItems: "center" }}
+    style={{ padding: 15, justifyContent: "center", alignItems: "center" }}
     onPress={() => action()}
   >
     <HeaderText
