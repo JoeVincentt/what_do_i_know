@@ -11,7 +11,7 @@ import {
   Container
 } from "native-base";
 import { View, YellowBox, Platform, Text, StyleSheet } from "react-native";
-import * as firebase from "firebase";
+import { firestore, auth } from "firebase";
 require("firebase/firestore");
 import HeaderText from "../constants/HeaderText";
 import Modal from "react-native-modal";
@@ -23,7 +23,7 @@ import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 
-const db = firebase.firestore();
+const db = firestore();
 
 export default class LandingScreen extends Component {
   state = {
@@ -42,12 +42,10 @@ export default class LandingScreen extends Component {
   }
 
   _alreadyLoggedCheck = async () => {
-    firebase.auth().onAuthStateChanged(async user => {
+    auth().onAuthStateChanged(async user => {
       if (user != null) {
         try {
-          const userRef = db
-            .collection("users")
-            .doc(firebase.auth().currentUser.uid);
+          const userRef = db.collection("users").doc(auth().currentUser.uid);
           let userData;
           const user = await userRef.get();
           if (user.exists) {
@@ -90,21 +88,19 @@ export default class LandingScreen extends Component {
       );
       if (type === "success") {
         // Build Firebase credential with the Facebook access token.
-        const credential = await firebase.auth.FacebookAuthProvider.credential(
-          token
-        );
+        const credential = await auth.FacebookAuthProvider.credential(token);
         // Sign in with credential from the Facebook user.
         try {
-          const data = await firebase
-            .auth()
-            .signInAndRetrieveDataWithCredential(credential);
+          const data = await auth().signInAndRetrieveDataWithCredential(
+            credential
+          );
           if (data) {
             const usersRef = db.collection("users");
-            const userDoc = usersRef.doc(firebase.auth().currentUser.uid);
+            const userDoc = usersRef.doc(auth().currentUser.uid);
             try {
               const userRef = db
                 .collection("users")
-                .doc(firebase.auth().currentUser.uid);
+                .doc(auth().currentUser.uid);
               let userData;
               const user = await userRef.get();
               if (user.exists) {
@@ -122,7 +118,7 @@ export default class LandingScreen extends Component {
               } else {
                 //if user doesnt exist
                 userData = {
-                  id: firebase.auth().currentUser.uid,
+                  id: auth().currentUser.uid,
                   email: data.additionalUserInfo.profile.email,
                   username: data.additionalUserInfo.profile.name,
                   avatar: data.additionalUserInfo.profile.picture.data.url,

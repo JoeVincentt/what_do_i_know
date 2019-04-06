@@ -30,11 +30,11 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 import AnswerBoxes from "../components/AnswerBoxes";
 import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
-import * as firebase from "firebase";
+import { firestore } from "firebase";
 import { showRewardedAd } from "../utils/showAd";
 require("firebase/firestore");
 
-const db = firebase.firestore();
+const db = firestore();
 
 export default class LandingScreen extends Component {
   state = {

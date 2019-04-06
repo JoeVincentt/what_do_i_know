@@ -1,8 +1,5 @@
 import React, { Component } from "react";
 import { Container, Content } from "native-base";
-
-import Modal from "react-native-modal";
-import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo";
 import { SettingsConsumer } from "../context/SettingsContext";
 

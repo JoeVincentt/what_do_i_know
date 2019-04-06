@@ -11,10 +11,7 @@ import {
   Icon
 } from "native-base";
 import { View, YellowBox, Platform, Text, StyleSheet } from "react-native";
-import * as firebase from "firebase";
-require("firebase/firestore");
 import HeaderText from "../constants/HeaderText";
-import { LinearGradient, Constants } from "expo";
 import Modal from "react-native-modal";
 import { EmojiButton } from "../components/HintTimeAdd";
 import BaseLayout from "../components/BaseLayout";
@@ -22,7 +19,6 @@ import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-const db = firebase.firestore();
 import { AdMobBanner, PublisherBanner } from "expo";
 import { showInterstitialAd, showRewardedAd } from "../utils/showAd";
 

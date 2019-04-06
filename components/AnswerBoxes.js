@@ -1,12 +1,7 @@
 import React, { Component } from "react";
-
 import { StyleSheet } from "react-native";
-
-import { View, Text, TouchableOpacity, Platform } from "react-native";
-
+import { View, TouchableOpacity } from "react-native";
 import HeaderText from "../constants/HeaderText";
-
-import { _showModalText } from "../components/ShowModalText";
 import Dimensions from "../constants/Layout";
 import { LinearGradient } from "expo";
 import { SettingsConsumer } from "../context/SettingsContext";

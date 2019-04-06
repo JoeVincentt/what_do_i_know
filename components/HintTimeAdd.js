@@ -1,10 +1,6 @@
 import React, { Component } from "react";
 import { Button } from "native-base";
-
 import HeaderText from "../constants/HeaderText";
-
-import { _showModalText } from "../components/ShowModalText";
-
 import { _timerSettings } from "../utils/TimerSettings";
 
 export const EmojiButton = ({ action, text, style }) => (

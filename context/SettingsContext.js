@@ -6,10 +6,12 @@ import {
   AdMobRewarded,
   Constants
 } from "expo";
-import * as firebase from "firebase";
-firebase.initializeApp(Constants.manifest.extra.firebaseConfig);
+import { NetInfo } from "react-native";
+import { _showToast } from "../utils/ShowToast";
+import { initializeApp, firestore } from "firebase";
+initializeApp(Constants.manifest.extra.firebaseConfig);
 require("firebase/firestore");
-const db = firebase.firestore();
+const db = firestore();
 
 //Create context
 export const SettingsContext = React.createContext();
@@ -36,6 +38,7 @@ const retrieveDataFromSecureStorage = async key =>
 
 export class SettingsProvider extends React.Component {
   state = {
+    isInternetConnected: false,
     loggedIn: false,
     maxNumOfQuestions: 12,
     overallBestScores: {
@@ -345,33 +348,6 @@ export class SettingsProvider extends React.Component {
   };
 
   async componentWillMount() {
-    //get appTheme
-    const resRefColors = db.collection("appTheme").doc("appTheme");
-    resRefColors
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const appTheme = doc.data();
-          this.setState({
-            backgroundColor: {
-              color1: appTheme.backgroundColor.color1,
-              color2: appTheme.backgroundColor.color2,
-              color3: appTheme.backgroundColor.color3
-            },
-            buttonColors: {
-              color1: appTheme.buttonColors.color1,
-              color2: appTheme.buttonColors.color2
-            }
-          });
-          // console.log("Document data:", doc.data());
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      });
     this.setState({
       backgroundColor: {
         color1: "#9e9e9e",
@@ -384,120 +360,187 @@ export class SettingsProvider extends React.Component {
       }
     });
 
-    //Set best overallresult
-    const resRefQuestions = db
-      .collection("amountOfQuestions")
-      .doc("amountOfQuestions");
-    resRefQuestions
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          this.setState({
-            maxNumOfQuestions: doc.data().amountOfQuestions
-          });
-          // console.log("Document data:", doc.data());
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      });
-
-    //Set best overallresult
-    const resRefGold = db.collection("bestScores").doc("gold");
-    resRefGold
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          this.setState({
-            overallBestScores: {
-              ...this.state.overallBestScores,
-              gold: {
-                bestScores: doc.data().bestScores,
-                username: doc.data().username
-              }
+    //check if internet available
+    try {
+      const connectionInfo = await NetInfo.getConnectionInfo();
+      if (connectionInfo.type.toLowerCase() !== "none") {
+        //if connection to internet, set game
+        this.setState({ isInternetConnected: true });
+        _showToast(`you are online`, 3000, "success");
+        //get appTheme
+        const resRefColors = db.collection("appTheme").doc("appTheme");
+        resRefColors
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              const appTheme = doc.data();
+              this.setState({
+                backgroundColor: {
+                  color1: appTheme.backgroundColor.color1,
+                  color2: appTheme.backgroundColor.color2,
+                  color3: appTheme.backgroundColor.color3
+                },
+                buttonColors: {
+                  color1: appTheme.buttonColors.color1,
+                  color2: appTheme.buttonColors.color2
+                }
+              });
+              // console.log("Document data:", doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
             }
+          })
+          .catch(function(error) {
+            console.log("Error getting document:", error);
           });
-          // console.log("Document data:", doc.data());
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      });
 
-    const resRefBronze = db.collection("bestScores").doc("bronze");
-    resRefBronze
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          this.setState({
-            overallBestScores: {
-              ...this.state.overallBestScores,
-              bronze: {
-                bestScores: doc.data().bestScores,
-                username: doc.data().username
-              }
+        //Set best overallresult
+        const resRefQuestions = db
+          .collection("amountOfQuestions")
+          .doc("amountOfQuestions");
+        resRefQuestions
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              this.setState({
+                maxNumOfQuestions: doc.data().amountOfQuestions
+              });
+              // console.log("Document data:", doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
             }
+          })
+          .catch(function(error) {
+            console.log("Error getting document:", error);
           });
-          // console.log("Document data:", doc.data());
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("No such document!");
-        }
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      });
 
-    const resRefSilver = db.collection("bestScores").doc("silver");
-    resRefSilver
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          this.setState({
-            overallBestScores: {
-              ...this.state.overallBestScores,
-              silver: {
-                bestScores: doc.data().bestScores,
-                username: doc.data().username
-              }
+        //Set best overallresult
+        const resRefGold = db.collection("bestScores").doc("gold");
+        resRefGold
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              this.setState({
+                overallBestScores: {
+                  ...this.state.overallBestScores,
+                  gold: {
+                    bestScores: doc.data().bestScores,
+                    username: doc.data().username
+                  }
+                }
+              });
+              // console.log("Document data:", doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
             }
+          })
+          .catch(function(error) {
+            console.log("Error getting document:", error);
           });
-          // console.log("Document data:", doc.data());
-        } else {
-          // doc.data() will be undefined in this case
-          return;
-          // console.log("No such document!");
+
+        const resRefBronze = db.collection("bestScores").doc("bronze");
+        resRefBronze
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              this.setState({
+                overallBestScores: {
+                  ...this.state.overallBestScores,
+                  bronze: {
+                    bestScores: doc.data().bestScores,
+                    username: doc.data().username
+                  }
+                }
+              });
+              // console.log("Document data:", doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No such document!");
+            }
+          })
+          .catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+
+        const resRefSilver = db.collection("bestScores").doc("silver");
+        resRefSilver
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              this.setState({
+                overallBestScores: {
+                  ...this.state.overallBestScores,
+                  silver: {
+                    bestScores: doc.data().bestScores,
+                    username: doc.data().username
+                  }
+                }
+              });
+              // console.log("Document data:", doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              return;
+              // console.log("No such document!");
+            }
+          })
+          .catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+
+        //Get bestScore from ss
+        let bestScores = await retrieveDataFromSecureStorage(
+          "WordsMeaningBest"
+        );
+        if (bestScores !== null) {
+          bestScores = Number(JSON.parse(bestScores));
+          this.setState({ bestScores });
         }
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      });
 
-    //Get bestScore from ss
-    let bestScores = await retrieveDataFromSecureStorage("WordsMeaningBest");
-    if (bestScores !== null) {
-      bestScores = Number(JSON.parse(bestScores));
-      this.setState({ bestScores });
-    }
+        //Get crystal from ss
+        let crystal = await retrieveDataFromSecureStorage(
+          "WordsMeaningCrystal"
+        );
+        if (crystal !== null) {
+          crystal = Number(JSON.parse(crystal));
+          this.setState({ crystal });
+        }
 
-    //Get crystal from ss
-    let crystal = await retrieveDataFromSecureStorage("WordsMeaningCrystal");
-    if (crystal !== null) {
-      crystal = Number(JSON.parse(crystal));
-      this.setState({ crystal });
-    }
+        //Get life from ss
+        let life = await retrieveDataFromSecureStorage("WordsMeaningLife");
+        if (life !== null) {
+          life = Number(JSON.parse(life));
+          this.setState({ life });
+        }
+      } else {
+        //if there is no internet connection
+        this.setState({ isInternetConnected: false });
+        _showToast(`offline please enable network`, 3000, "danger");
+      }
+      const handleFirstConnectivityChange = connectionInfo => {
+        if (connectionInfo.type.toLowerCase() !== "none") {
+          //if connection to internet, set game
+          this.setState({ ...this.state, isInternetConnected: true });
+          _showToast(`you are online`, 3000, "success");
+        } else {
+          //if there is no internet connection
+          this.setState({ ...this.state, isInternetConnected: false });
+          _showToast(`offline please enable network`, 3000, "danger");
+        }
 
-    //Get life from ss
-    let life = await retrieveDataFromSecureStorage("WordsMeaningLife");
-    if (life !== null) {
-      life = Number(JSON.parse(life));
-      this.setState({ life });
+        // NetInfo.removeEventListener(
+        //   "connectionChange",
+        //   handleFirstConnectivityChange
+        // );
+      };
+      NetInfo.addEventListener(
+        "connectionChange",
+        handleFirstConnectivityChange
+      );
+    } catch (error) {
+      console.log(error);
     }
   }
 
