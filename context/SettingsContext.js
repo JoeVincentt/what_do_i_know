@@ -519,7 +519,7 @@ export class SettingsProvider extends React.Component {
         this.setState({ isInternetConnected: false });
         _showToast(`offline please enable network`, 3000, "danger");
       }
-      const handleFirstConnectivityChange = connectionInfo => {
+      const handleConnectivityChange = connectionInfo => {
         if (connectionInfo.type.toLowerCase() !== "none") {
           //if connection to internet, set game
           this.setState({ ...this.state, isInternetConnected: true });
@@ -529,16 +529,12 @@ export class SettingsProvider extends React.Component {
           this.setState({ ...this.state, isInternetConnected: false });
           _showToast(`offline please enable network`, 3000, "danger");
         }
-
         // NetInfo.removeEventListener(
         //   "connectionChange",
         //   handleFirstConnectivityChange
         // );
       };
-      NetInfo.addEventListener(
-        "connectionChange",
-        handleFirstConnectivityChange
-      );
+      NetInfo.addEventListener("connectionChange", handleConnectivityChange);
     } catch (error) {
       console.log(error);
     }

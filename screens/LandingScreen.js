@@ -31,6 +31,7 @@ export default class LandingScreen extends Component {
   };
 
   componentWillMount() {
+    this._alreadyLoggedCheck();
     //Ignore Warning on Android
     YellowBox.ignoreWarnings(["Setting a timer"]);
     const _console = _.clone(console);
@@ -65,7 +66,7 @@ export default class LandingScreen extends Component {
             console.log("error fetching user");
           }
           this.context.reducers._logInUser(userData);
-          this.props.navigation.navigate("Game");
+          // this.props.navigation.navigate("Game");
         } catch (error) {
           console.log(error);
         }
@@ -130,7 +131,6 @@ export default class LandingScreen extends Component {
                 userDoc.set(userData);
               }
               this.context.reducers._logInUser(userData);
-              this.props.navigation.navigate("Game");
             } catch (error) {
               console.log(error);
             }
@@ -236,7 +236,7 @@ export default class LandingScreen extends Component {
                   </Button>
                 </View>
 
-                {/* best results chart */}
+                {/* //* best results chart */}
                 <View>
                   {context.overallBestScores.gold.username !== "" ? (
                     <View style={styles.topChartBox}>
@@ -276,96 +276,95 @@ export default class LandingScreen extends Component {
                     </View>
                   )}
                 </View>
-
-                {/* rules modal */}
-                <SettingsConsumer>
-                  {context => (
-                    <Modal
-                      isVisible={this.state.isRulesModalVisible}
-                      ref={ref => {
-                        this.context = context;
-                      }}
-                      backdropColor={context.backgroundColor.color2}
-                      backdropOpacity={0.95}
-                      animationIn="zoomInDown"
-                      animationOut="zoomOutUp"
-                      animationInTiming={600}
-                      animationOutTiming={600}
-                      backdropTransitionInTiming={600}
-                      backdropTransitionOutTiming={600}
-                    >
-                      <View style={styles.modalBox}>
-                        <View>
-                          <View style={{ paddingBottom: 10 }}>
-                            <HeaderText> g a m e{"  "}r u l e s : </HeaderText>
-                          </View>
-
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ❔ answer questions{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            🏆 get the best score{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            🎯 get in top chart{"  "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            🗝 get hint for 20 💎{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            +⏳ reset countdown for 10 💎{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            + 1 ❤️ for 35 💎
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ⏩ skip question for 15 💎
-                          </HeaderText>
-
-                          <View
-                            style={{
-                              paddingTop: 20,
-                              paddingBottom: 10
-                            }}
-                          >
-                            <HeaderText> Question difficulty : </HeaderText>
-                          </View>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ⭐️ +1 score{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ⭐️⭐️ +2 score{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.modalText}>
-                            {" "}
-                            ⭐️⭐️⭐️ +3 score{" "}
-                          </HeaderText>
-                        </View>
-                        <View>
-                          <Button
-                            large
-                            transparent
-                            onPress={() =>
-                              this.setState({ isRulesModalVisible: false })
-                            }
-                          >
-                            <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
-                          </Button>
-                        </View>
-                      </View>
-                    </Modal>
-                  )}
-                </SettingsConsumer>
               </Content>
+              {/* rules modal */}
+              <SettingsConsumer>
+                {context => (
+                  <Modal
+                    isVisible={this.state.isRulesModalVisible}
+                    ref={ref => {
+                      this.context = context;
+                    }}
+                    backdropColor={context.backgroundColor.color2}
+                    backdropOpacity={0.95}
+                    animationIn="zoomInDown"
+                    animationOut="zoomOutUp"
+                    animationInTiming={600}
+                    animationOutTiming={600}
+                    backdropTransitionInTiming={600}
+                    backdropTransitionOutTiming={600}
+                  >
+                    <View style={styles.modalBox}>
+                      <View>
+                        <View style={{ paddingBottom: 10 }}>
+                          <HeaderText> g a m e{"  "}r u l e s : </HeaderText>
+                        </View>
+
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          ❔ answer questions{" "}
+                        </HeaderText>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          🏆 get the best score{" "}
+                        </HeaderText>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          🎯 get in top chart{"  "}
+                        </HeaderText>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          🗝 get hint for 20 💎{" "}
+                        </HeaderText>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          +⏳ reset countdown for 10 💎{" "}
+                        </HeaderText>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          + 1 ❤️ for 35 💎
+                        </HeaderText>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          ⏩ skip question for 15 💎
+                        </HeaderText>
+
+                        <View
+                          style={{
+                            paddingTop: 20,
+                            paddingBottom: 10
+                          }}
+                        >
+                          <HeaderText> Question difficulty : </HeaderText>
+                        </View>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          ⭐️ +1 score{" "}
+                        </HeaderText>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          ⭐️⭐️ +2 score{" "}
+                        </HeaderText>
+                        <HeaderText style={styles.modalText}>
+                          {" "}
+                          ⭐️⭐️⭐️ +3 score{" "}
+                        </HeaderText>
+                      </View>
+                      <View>
+                        <Button
+                          large
+                          transparent
+                          onPress={() =>
+                            this.setState({ isRulesModalVisible: false })
+                          }
+                        >
+                          <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
+                        </Button>
+                      </View>
+                    </View>
+                  </Modal>
+                )}
+              </SettingsConsumer>
             </View>
           )}
         </SettingsConsumer>
