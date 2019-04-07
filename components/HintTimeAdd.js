@@ -6,7 +6,7 @@ import { _timerSettings } from "../utils/TimerSettings";
 export const EmojiButton = ({ action, text, style }) => (
   <TouchableOpacity onPress={() => action()}>
     <View
-      style={{ padding: 15, justifyContent: "center", alignItems: "center" }}
+      style={{ padding: 10, justifyContent: "center", alignItems: "center" }}
     >
       <HeaderText
         style={[
@@ -15,7 +15,7 @@ export const EmojiButton = ({ action, text, style }) => (
             shadowRadius: 30,
             shadowOpacity: 3,
             elevation: 150,
-            fontSize: 30
+            fontSize: 35
           },
           style
         ]}
@@ -24,25 +24,4 @@ export const EmojiButton = ({ action, text, style }) => (
       </HeaderText>
     </View>
   </TouchableOpacity>
-  // <Button
-  //   transparent
-  //   large
-  //   style={{ padding: 15, justifyContent: "center", alignItems: "center" }}
-  //   onPress={() => action()}
-  // >
-  //   <HeaderText
-  //     style={[
-  //       {
-  //         shadowColor: "white",
-  //         shadowRadius: 30,
-  //         shadowOpacity: 3,
-  //         elevation: 150,
-  //         fontSize: 30
-  //       },
-  //       style
-  //     ]}
-  //   >
-  //     {text}
-  //   </HeaderText>
-  // </Button>
 );

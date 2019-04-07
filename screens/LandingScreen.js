@@ -28,6 +28,7 @@ import BaseLayout from "../components/BaseLayout";
 import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
+import AnimTextView from "../components/AnimViewText";
 
 const db = firestore();
 
@@ -162,6 +163,7 @@ export default class LandingScreen extends Component {
 
   _logOut = () => {
     auth().signOut();
+    this.setState({ username: "" });
     this.context.reducers._logOutUser();
   };
 
@@ -185,8 +187,8 @@ export default class LandingScreen extends Component {
               >
                 <Left style={styles.headerLeft}>
                   <TouchableOpacity onPress={() => this._logOut()}>
-                    <View style={styles.headerLeftButton}>
-                      <Icon name="log-out" style={{ fontSize: 40 }} />
+                    <View>
+                      <Icon name="log-out" style={styles.headerLeftButton} />
                     </View>
                   </TouchableOpacity>
                 </Left>
@@ -217,7 +219,7 @@ export default class LandingScreen extends Component {
                 }}
               >
                 {this.state.username !== "" ? (
-                  <View
+                  <AnimTextView
                     style={{
                       alignItems: "center",
                       justifyContent: "center",
@@ -226,9 +228,9 @@ export default class LandingScreen extends Component {
                   >
                     <HeaderText> Welcome </HeaderText>
                     <HeaderText> {this.state.username} </HeaderText>
-                  </View>
+                  </AnimTextView>
                 ) : (
-                  <View style={{ height: Dimensions.window.height * 0.15 }} />
+                  <View style={{ height: Dimensions.window.height * 0.17 }} />
                 )}
 
                 <LandingActionButton
@@ -397,9 +399,10 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === "ios" ? 0 : Dimensions.window.height * 0.05
   },
   headerLeftButton: {
-    shadowColor: "black",
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
+    fontSize: 40,
+    shadowColor: "#424242",
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
     elevation: 100
   },
   headerRight: {

@@ -67,7 +67,6 @@ export class SettingsProvider extends React.Component {
     },
     scores: 0,
     bestScores: 0,
-
     crystal: 0,
     life: 3,
     endGame: false,
