@@ -131,19 +131,6 @@ export default class LandingScreen extends Component {
     this._loadQuestion();
   };
 
-  _getLifeAdd = () => {
-    this.setState({ loadingQuestion: true, choiceMade: true, loading: true });
-    setTimeout(() => {
-      this.context.reducers._getLifeAdd(35);
-    }, 15000);
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 20000);
-    showRewardedAd().catch(error => {
-      console.log(error);
-    });
-  };
-
   _buyLife = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 35) {
@@ -299,12 +286,6 @@ export default class LandingScreen extends Component {
                         text={"   🔥    s t a r t   a    n e w  g a m e "}
                         style={styles.endGameText}
                       />
-
-                      <EmojiButton
-                        action={this._getLifeAdd}
-                        text={"   + 35 💎   w a t c h   a n   a d "}
-                        style={styles.endGameText}
-                      />
                       <EmojiButton
                         action={this._buyLifeEndGame}
                         text={"   + 1 ❤️   t r a d e  35 💎"}
@@ -347,6 +328,7 @@ export default class LandingScreen extends Component {
                   >
                     <Left
                       style={{
+                        flex: 1,
                         marginLeft: Dimensions.window.width * 0.05,
                         marginTop:
                           Platform.OS === "ios"
@@ -354,9 +336,6 @@ export default class LandingScreen extends Component {
                             : Dimensions.window.height * 0.05
                       }}
                     >
-                      {/* <Button onPress={() => this._buyLife()} transparent>
-                        <HeaderText style={{}}> +❤️ </HeaderText>
-                      </Button> */}
                       <HeaderText>
                         💎
                         {context.loggedIn
@@ -396,18 +375,11 @@ export default class LandingScreen extends Component {
                               ? context.user.scores
                               : context.scores}{" "}
                           </HeaderText>
-
-                          {/* <HeaderText>
-                            💎{" "}
-                            {context.loggedIn
-                              ? context.user.crystal
-                              : context.crystal}{" "}
-                          </HeaderText> */}
                         </View>
                       </View>
                       <View
                         style={{
-                          width: Dimensions.window.width * 0.5
+                          width: Dimensions.window.width * 0.3
                         }}
                       >
                         <View style={styles.starRatingBox}>
@@ -426,17 +398,19 @@ export default class LandingScreen extends Component {
 
                         <View
                           style={{
-                            flexDirection: "row",
-                            marginLeft: Dimensions.window.width * 0.2
+                            flexDirection: "row"
                           }}
                         >
-                          <HeaderText
-                            style={{
-                              marginHorizontal: Dimensions.window.width * 0.01
-                            }}
-                          >
-                            ⏳
-                          </HeaderText>
+                          <View>
+                            <HeaderText
+                              style={{
+                                marginHorizontal: Dimensions.window.width * 0.01
+                              }}
+                            >
+                              ⏳
+                            </HeaderText>
+                          </View>
+
                           <View>
                             <TimerCountdown
                               initialMilliseconds={time}
@@ -507,7 +481,11 @@ export default class LandingScreen extends Component {
                 </View>
               )}
               <Modal
-                isVisible={this.state.loading}
+                isVisible={
+                  loading || context.isInternetConnected === false
+                    ? true
+                    : false
+                }
                 animationIn="zoomInDown"
                 animationOut="zoomOutUp"
                 useNativeDriver={true}
@@ -540,7 +518,6 @@ const styles = StyleSheet.create({
   },
   endGameBox: {
     flex: 1,
-
     justifyContent: "center",
     alignItems: "center"
   },
@@ -571,14 +548,14 @@ const styles = StyleSheet.create({
   },
   gameHeaderBody: {
     paddingBottom: Platform.OS === "ios" ? Dimensions.window.height * 0.12 : 0,
-    paddingLeft: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.23,
+    paddingLeft: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.1,
     paddingTop:
       Platform.OS === "ios"
         ? Dimensions.window.height * 0.03
         : Dimensions.window.height * 0.03
   },
   gameHeaderRight: {
-    marginRight: Dimensions.window.width * 0.05,
+    marginRight: Dimensions.window.width * 0.01,
     marginTop: Platform.OS === "ios" ? 0 : Dimensions.window.height * 0.05
   },
   starRatingBox: {
@@ -639,7 +616,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     textShadowColor: "#424242",
     textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 5,
-    marginRight: Dimensions.window.width * 0.1
+    textShadowRadius: 5
   }
 });

@@ -517,7 +517,7 @@ export class SettingsProvider extends React.Component {
       } else {
         //if there is no internet connection
         this.setState({ isInternetConnected: false });
-        _showToast(`offline please enable network`, 3000, "danger");
+        _showToast(`offline please enable network`, 5000, "danger");
       }
       const handleConnectivityChange = connectionInfo => {
         if (connectionInfo.type.toLowerCase() !== "none") {
@@ -527,11 +527,11 @@ export class SettingsProvider extends React.Component {
         } else {
           //if there is no internet connection
           this.setState({ ...this.state, isInternetConnected: false });
-          _showToast(`offline please enable network`, 3000, "danger");
+          _showToast(`offline please enable network`, 5000, "danger");
         }
         // NetInfo.removeEventListener(
         //   "connectionChange",
-        //   handleFirstConnectivityChange
+        //   handleConnectivityChange
         // );
       };
       NetInfo.addEventListener("connectionChange", handleConnectivityChange);

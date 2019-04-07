@@ -26,7 +26,12 @@ import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { AdMobBanner, PublisherBanner } from "expo";
+import {
+  AdMobBanner,
+  PublisherBanner,
+  AdMobInterstitial,
+  AdMobRewarded
+} from "expo";
 import { showInterstitialAd, showRewardedAd } from "../utils/showAd";
 
 export default class ShopScreen extends Component {
@@ -34,6 +39,63 @@ export default class ShopScreen extends Component {
     showInfoModal: false,
     loading: false
   };
+
+  componentDidMount() {
+    // Interstitial ad
+    AdMobInterstitial.addEventListener("interstitialDidLoad", () =>
+      console.log("interstitialDidLoad")
+    );
+    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () =>
+      console.log("interstitialDidFailToLoad")
+    );
+    AdMobInterstitial.addEventListener("interstitialDidOpen", () =>
+      console.log("interstitialDidOpen")
+    );
+    AdMobInterstitial.addEventListener("interstitialDidClose", () => {
+      console.log("interstitialDidClose");
+      this.props.navigation.navigate("Shop");
+      this.context.reducers._getLifeAdd(40);
+    });
+    AdMobInterstitial.addEventListener(
+      "interstitialWillLeaveApplication",
+      () => {
+        console.log("interstitialWillLeaveApplication");
+      }
+    );
+
+    //Rewarded Add
+
+    AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
+      console.log("rewardedVideoDidRewardUser");
+      this.context.reducers._getLifeAdd(110);
+    });
+    AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {
+      console.log("rewardedVideoDidLoad");
+    });
+    AdMobRewarded.addEventListener("rewardedVideoDidStart", () =>
+      console.log("rewardedVideoDidStart")
+    );
+    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () =>
+      console.log("rewardedVideoDidFailToLoad")
+    );
+    AdMobRewarded.addEventListener("rewardedVideoDidOpen", () =>
+      console.log("rewardedVideoDidOpen")
+    );
+    AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {
+      console.log("rewardedVideoDidClose");
+      this.props.navigation.navigate("Shop");
+      this.setState({ loading: false });
+    });
+    AdMobRewarded.addEventListener("rewardedVideoWillLeaveApplication", () =>
+      console.log("rewardedVideoWillLeaveApplication")
+    );
+  }
+
+  componentWillUnmount() {
+    console.log("compomnent Unmounted");
+    AdMobInterstitial.removeAllListeners();
+    AdMobRewarded.removeAllListeners();
+  }
 
   async componentWillMount() {
     //Ignore Warning on Android
@@ -46,52 +108,11 @@ export default class ShopScreen extends Component {
     };
   }
 
-  _get50crystalAd = () => {
-    this.setState({ loading: true });
-    setTimeout(() => {
-      this.context.reducers._getLifeAdd(50);
-    }, 20000);
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 30000);
-    showInterstitialAd().catch(error => console.log(error));
-    showRewardedAd().catch(error => {
-      console.log(error);
-    });
-    setTimeout(() => {
-      showInterstitialAd().catch(error => console.log(error));
-    }, 10000);
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 30000);
-  };
-
   _get150crystalAd = () => {
-    this.setState({ loading: true });
-    setTimeout(() => {
-      this.context.reducers._getLifeAdd(150);
-    }, 50000);
-    setTimeout(() => {
-      this.setState({ loading: false });
-    }, 60000);
     showInterstitialAd().catch(error => console.log(error));
     showRewardedAd().catch(error => {
       console.log(error);
     });
-    setTimeout(() => {
-      showInterstitialAd().catch(error => console.log(error));
-    }, 10000);
-    setTimeout(() => {
-      showInterstitialAd().catch(error => console.log(error));
-    }, 30000);
-    setTimeout(() => {
-      showInterstitialAd().catch(error => console.log(error));
-    }, 55000);
-    setTimeout(() => {
-      showRewardedAd().catch(error => {
-        console.log(error);
-      });
-    }, 60000);
   };
 
   _bannerAd = () => {
@@ -117,27 +138,26 @@ export default class ShopScreen extends Component {
                 }}
               >
                 <Left style={styles.headerLeft}>
-                  <Button
-                    large
-                    transparent
-                    onPress={() => this.props.navigation.pop()}
-                    style={styles.headerLeftButton}
-                  >
-                    <HeaderText style={{ fontSize: 30 }}>
-                      {" "}
-                      back to 🎮{" "}
-                    </HeaderText>
-                  </Button>
+                  <TouchableOpacity onPress={() => this.props.navigation.pop()}>
+                    <View style={styles.headerLeftButton}>
+                      <HeaderText style={{ fontSize: 30 }}>
+                        {" "}
+                        back to 🎮{" "}
+                      </HeaderText>
+                    </View>
+                  </TouchableOpacity>
                 </Left>
                 <Right style={styles.headerRight}>
-                  <Button
-                    large
-                    transparent
+                  <TouchableOpacity
                     onPress={() => this.setState({ showInfoModal: true })}
-                    style={styles.headerLeftButton}
                   >
-                    <HeaderText style={{ fontSize: 30 }}> click me </HeaderText>
-                  </Button>
+                    <View style={styles.headerLeftButton}>
+                      <HeaderText style={{ fontSize: 30 }}>
+                        {" "}
+                        click me{" "}
+                      </HeaderText>
+                    </View>
+                  </TouchableOpacity>
                 </Right>
               </Header>
               {/* action buttons area */}
@@ -151,13 +171,8 @@ export default class ShopScreen extends Component {
                 <View style={styles.adBox}>
                   <View>
                     <EmojiButton
-                      action={this._get50crystalAd}
-                      text={"   + 5 0  💎 get "}
-                      style={styles.adText}
-                    />
-                    <EmojiButton
                       action={this._get150crystalAd}
-                      text={"   + 1 5 0  💎  get "}
+                      text={"  get  1 5 0  💎  "}
                       style={styles.adText}
                     />
                   </View>
@@ -170,7 +185,7 @@ export default class ShopScreen extends Component {
                 style={{ backgroundColor: "transparent" }}
               >
                 {/* // Display a DFP Publisher banner */}
-                <HeaderText> + 20 💎 banner click</HeaderText>
+                <HeaderText> + 20 💎 banner click </HeaderText>
               </Footer>
               <TouchableOpacity onPress={() => this._bannerAd()}>
                 <Footer

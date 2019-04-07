@@ -243,19 +243,19 @@ export default class LandingScreen extends Component {
                         <HeaderText>b e s t{"   "}r e s u l t s : </HeaderText>
                       </View>
                       <View style={{}}>
-                        <HeaderText style={{ fontSize: 30 }}>
+                        <HeaderText style={{ fontSize: 26 }}>
                           🥇{"   "}
                           {context.overallBestScores.gold.bestScores}
                           {"   "}
                           {context.overallBestScores.gold.username}{" "}
                         </HeaderText>
-                        <HeaderText style={{ fontSize: 30 }}>
+                        <HeaderText style={{ fontSize: 25 }}>
                           🥈{"   "}
                           {context.overallBestScores.silver.bestScores}
                           {"   "}
                           {context.overallBestScores.silver.username}{" "}
                         </HeaderText>
-                        <HeaderText style={{ fontSize: 30 }}>
+                        <HeaderText style={{ fontSize: 24 }}>
                           🥉{"   "}
                           {context.overallBestScores.bronze.bestScores}
                           {"   "}
@@ -350,15 +350,15 @@ export default class LandingScreen extends Component {
                         </HeaderText>
                       </View>
                       <View>
-                        <Button
-                          large
-                          transparent
+                        <TouchableOpacity
                           onPress={() =>
                             this.setState({ isRulesModalVisible: false })
                           }
                         >
-                          <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
-                        </Button>
+                          <View>
+                            <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
+                          </View>
+                        </TouchableOpacity>
                       </View>
                     </View>
                   </Modal>
