@@ -10,7 +10,14 @@ import {
   Spinner,
   Icon
 } from "native-base";
-import { View, YellowBox, Platform, Text, StyleSheet } from "react-native";
+import {
+  View,
+  YellowBox,
+  Platform,
+  Text,
+  StyleSheet,
+  TouchableOpacity
+} from "react-native";
 import HeaderText from "../constants/HeaderText";
 import Modal from "react-native-modal";
 import { EmojiButton } from "../components/HintTimeAdd";
@@ -43,7 +50,7 @@ export default class ShopScreen extends Component {
     this.setState({ loading: true });
     setTimeout(() => {
       this.context.reducers._getLifeAdd(50);
-    }, 30000);
+    }, 20000);
     setTimeout(() => {
       this.setState({ loading: false });
     }, 30000);
@@ -54,11 +61,6 @@ export default class ShopScreen extends Component {
     setTimeout(() => {
       showInterstitialAd().catch(error => console.log(error));
     }, 10000);
-    setTimeout(() => {
-      showRewardedAd().catch(error => {
-        console.log(error);
-      });
-    }, 20000);
     setTimeout(() => {
       this.setState({ loading: false });
     }, 30000);
@@ -89,12 +91,11 @@ export default class ShopScreen extends Component {
       showRewardedAd().catch(error => {
         console.log(error);
       });
-    }, 20000);
-    setTimeout(() => {
-      showRewardedAd().catch(error => {
-        console.log(error);
-      });
-    }, 40000);
+    }, 60000);
+  };
+
+  _bannerAd = () => {
+    this.context.reducers._getLifeAdd(20);
   };
 
   render() {
@@ -151,36 +152,54 @@ export default class ShopScreen extends Component {
                   <View>
                     <EmojiButton
                       action={this._get50crystalAd}
-                      text={"   + 5 0 💎   watch 30 seconds  ad"}
+                      text={"   + 5 0  💎 get "}
                       style={styles.adText}
                     />
                     <EmojiButton
                       action={this._get150crystalAd}
-                      text={"   + 1 5 0 💎   watch  1 minute  ad"}
+                      text={"   + 1 5 0  💎  get "}
                       style={styles.adText}
                     />
                   </View>
                 </View>
               </Content>
-              <Footer>
+
+              <Footer
+                Footer
+                transparent
+                style={{ backgroundColor: "transparent" }}
+              >
                 {/* // Display a DFP Publisher banner */}
-                <PublisherBanner
-                  bannerSize="fullBanner"
-                  adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-                  testDeviceID="EMULATOR"
-                  onDidFailToReceiveAdWithError={this.bannerError}
-                  onAdMobDispatchAppEvent={this.adMobEvent}
-                />
+                <HeaderText> + 20 💎 banner click</HeaderText>
               </Footer>
-              <Footer transparent style={{ backgroundColor: "transparent" }}>
-                {/* // Display a banner */}
-                <AdMobBanner
-                  bannerSize="fullBanner"
-                  adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-                  testDeviceID="EMULATOR"
-                  onDidFailToReceiveAdWithError={this.bannerError}
-                />
-              </Footer>
+              <TouchableOpacity onPress={() => this._bannerAd()}>
+                <Footer
+                  Footer
+                  transparent
+                  style={{ backgroundColor: "transparent" }}
+                >
+                  {/* // Display a DFP Publisher banner */}
+                  <PublisherBanner
+                    bannerSize="fullBanner"
+                    adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                    testDeviceID="EMULATOR"
+                    onDidFailToReceiveAdWithError={this.bannerError}
+                    onAdMobDispatchAppEvent={this.adMobEvent}
+                  />
+                </Footer>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => this._bannerAd()}>
+                <Footer transparent style={{ backgroundColor: "transparent" }}>
+                  {/* // Display a banner */}
+
+                  <AdMobBanner
+                    bannerSize="fullBanner"
+                    adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                    testDeviceID="EMULATOR"
+                    onDidFailToReceiveAdWithError={this.bannerError}
+                  />
+                </Footer>
+              </TouchableOpacity>
             </View>
           )}
         </SettingsConsumer>
@@ -210,18 +229,18 @@ export default class ShopScreen extends Component {
                   </View>
                   <HeaderText>
                     {" "}
-                    For playing "what do i know", we hope you are enjoying it!
+                    For playing "what do i know ?", we hope you are enjoying it!
                     please support creator watch and click ads. And use your
                     reward wisely 😉{" "}
                   </HeaderText>
                   <View>
-                    <Button
-                      large
-                      transparent
+                    <TouchableOpacity
                       onPress={() => this.setState({ showInfoModal: false })}
                     >
-                      <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
-                    </Button>
+                      <View>
+                        <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
+                      </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>

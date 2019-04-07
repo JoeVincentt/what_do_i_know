@@ -12,4 +12,7 @@ export const showInterstitialAd = async () => {
   AdMobInterstitial.setTestDeviceID("EMULATOR");
   await AdMobInterstitial.requestAdAsync();
   await AdMobInterstitial.showAdAsync();
+  AdMobInterstitial.addEventListener("interstitialDidClose", () =>
+    console.log("interstitialDidClose")
+  );
 };

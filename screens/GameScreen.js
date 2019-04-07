@@ -134,11 +134,11 @@ export default class LandingScreen extends Component {
   _getLifeAdd = () => {
     this.setState({ loadingQuestion: true, choiceMade: true, loading: true });
     setTimeout(() => {
-      this.context.reducers._getLifeAdd(10);
-    }, 7000);
+      this.context.reducers._getLifeAdd(35);
+    }, 15000);
     setTimeout(() => {
       this.setState({ loading: false });
-    }, 7000);
+    }, 20000);
     showRewardedAd().catch(error => {
       console.log(error);
     });
@@ -302,7 +302,7 @@ export default class LandingScreen extends Component {
 
                       <EmojiButton
                         action={this._getLifeAdd}
-                        text={"   + 1 0 💎   w a t c h   a n   a d "}
+                        text={"   + 35 💎   w a t c h   a n   a d "}
                         style={styles.endGameText}
                       />
                       <EmojiButton
@@ -320,7 +320,7 @@ export default class LandingScreen extends Component {
                           }}
                         >
                           <HeaderText style={styles.mineIconCrystal}>
-                            {"      "}
+                            {"          "}
                             💎{" "}
                           </HeaderText>
                           <HeaderText style={styles.mineIconMine}>
@@ -328,7 +328,7 @@ export default class LandingScreen extends Component {
                             ⛏{" "}
                           </HeaderText>
                           <HeaderText style={styles.mineText}>
-                            go to the mine
+                            go to the mine{" "}
                           </HeaderText>
                         </View>
                       </TouchableOpacity>
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   },
   endGameBox: {
     flex: 1,
-    alignContent: "center",
+
     justifyContent: "center",
     alignItems: "center"
   },

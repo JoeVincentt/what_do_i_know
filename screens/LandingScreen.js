@@ -10,7 +10,14 @@ import {
   Right,
   Container
 } from "native-base";
-import { View, YellowBox, Platform, Text, StyleSheet } from "react-native";
+import {
+  View,
+  YellowBox,
+  Platform,
+  Text,
+  StyleSheet,
+  TouchableOpacity
+} from "react-native";
 import { firestore, auth } from "firebase";
 require("firebase/firestore");
 import HeaderText from "../constants/HeaderText";
@@ -27,7 +34,8 @@ const db = firestore();
 
 export default class LandingScreen extends Component {
   state = {
-    isRulesModalVisible: false
+    isRulesModalVisible: false,
+    username: ""
   };
 
   componentWillMount() {
@@ -61,6 +69,7 @@ export default class LandingScreen extends Component {
               bestScores: existingUserData.bestScores,
               crystal: existingUserData.crystal
             };
+            this.setState({ username: existingUserData.username });
           } else {
             //if user doesnt exist
             console.log("error fetching user");
@@ -116,6 +125,7 @@ export default class LandingScreen extends Component {
                   bestScores: existingUserData.bestScores,
                   crystal: existingUserData.crystal
                 };
+                this.setState({ username: existingUserData.username });
               } else {
                 //if user doesnt exist
                 userData = {
@@ -129,6 +139,9 @@ export default class LandingScreen extends Component {
                   crystal: 0
                 };
                 userDoc.set(userData);
+                this.setState({
+                  username: data.additionalUserInfo.profile.name
+                });
               }
               this.context.reducers._logInUser(userData);
             } catch (error) {
@@ -167,47 +180,21 @@ export default class LandingScreen extends Component {
                 }}
               >
                 <Right style={styles.headerRight}>
-                  <Button
-                    large
-                    transparent
+                  <TouchableOpacity
                     onPress={() =>
                       this.setState({
                         isRulesModalVisible: true
                       })
                     }
-                    style={styles.headerRightButton}
                   >
-                    <HeaderText style={{ fontSize: 40 }}>
-                      {" "}
-                      {`${Platform.OS === "ios" ? "📜" : "💡"}`}{" "}
-                    </HeaderText>
-                  </Button>
-                </Right>
-                {/* <Right style={styles.headerRight}>
-                  <Button
-                    large
-                    transparent
-                    onPress={() => this.props.navigation.navigate("Shop")}
-                    style={styles.headerRightButton}
-                  >
-                    <View style={{ flexDirection: "row" }}>
-                      <HeaderText
-                        style={{
-                          fontSize: 30,
-                          paddingTop: 10,
-                          marginRight: -15
-                        }}
-                      >
+                    <View style={styles.headerRightButton}>
+                      <HeaderText style={{ fontSize: 30 }}>
                         {" "}
-                        💎{" "}
-                      </HeaderText>
-                      <HeaderText style={{ fontSize: 40, marginTop: -10 }}>
-                        {" "}
-                        ⛏{" "}
+                        {`${Platform.OS === "ios" ? "📜" : "💡"}`}{" "}
                       </HeaderText>
                     </View>
-                  </Button>
-                </Right> */}
+                  </TouchableOpacity>
+                </Right>
               </Header>
               {/* action buttons area */}
               <Content
@@ -217,6 +204,18 @@ export default class LandingScreen extends Component {
                   justifyContent: "center"
                 }}
               >
+                {this.state.username !== "" ? (
+                  <View
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      paddingBottom: Dimensions.window.height * 0.04
+                    }}
+                  >
+                    <HeaderText> Welcome </HeaderText>
+                    <HeaderText> {this.state.username} </HeaderText>
+                  </View>
+                ) : null}
                 <LandingActionButton
                   buttonText={" P L A Y   g a m e "}
                   navigation={this.props.navigation}
