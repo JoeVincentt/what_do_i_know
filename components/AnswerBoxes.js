@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 
   answerBox: {
     width: Dimensions.window.width / 2.5,
-    height: Dimensions.window.height * 0.06,
+    height: Dimensions.window.height * 0.08,
     justifyContent: "center",
     alignItems: "center",
     elevation: 30,

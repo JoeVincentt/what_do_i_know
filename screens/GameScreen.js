@@ -9,7 +9,6 @@ import {
   Toast,
   Spinner
 } from "native-base";
-
 import Modal from "react-native-modal";
 import {
   View,
@@ -30,6 +29,7 @@ import { getStatusBarHeight } from "react-native-status-bar-height";
 import AnswerBoxes from "../components/AnswerBoxes";
 import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
+import { soundPlay } from "../utils/soundPlay";
 import { firestore } from "firebase";
 import { showRewardedAd } from "../utils/showAd";
 require("firebase/firestore");
@@ -105,6 +105,7 @@ export default class LandingScreen extends Component {
           choiceMade: true,
           time: 0
         });
+        soundPlay(require("../assets/sounds/success.wav"));
         _showToast(" 🎉 C O R R E C T ", 500, "success");
         this._loadQuestion();
       }
@@ -114,6 +115,7 @@ export default class LandingScreen extends Component {
           time: 0
         });
         Vibration.vibrate(300);
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" ❌ I N C O R R E C T ", 500, "danger", "top");
         this.context.reducers._removeLife();
         this._loadQuestion();
@@ -126,6 +128,7 @@ export default class LandingScreen extends Component {
       time: 0
     });
     Vibration.vibrate(600);
+    soundPlay(require("../assets/sounds/wrong.wav"));
     _showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
     this.context.reducers._removeLife();
     this._loadQuestion();
@@ -134,16 +137,19 @@ export default class LandingScreen extends Component {
   _buyLife = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 35) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 35 💎 ", 3000);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 35) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 35 💎 ", 3000);
         return;
       }
     }
+    soundPlay(require("../assets/sounds/hint.wav"));
     this.context.reducers._addLife();
     _showToast(" + 1 ❤️ ", 3000, "success");
   };
@@ -151,16 +157,19 @@ export default class LandingScreen extends Component {
   _buyLifeEndGame = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 35) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 35 💎 ", 3000);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 35) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 35 💎 ", 3000);
         return;
       }
     }
+    soundPlay(require("../assets/sounds/success.wav"));
     this._loadQuestion();
     this.context.reducers._addLife();
     _showToast(" + 1 ❤️ ", 3000, "success");
@@ -169,17 +178,19 @@ export default class LandingScreen extends Component {
   _addTime = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 10) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 10 💎 ", 3000);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 10) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 10 💎 ", 3000);
         return;
       }
     }
-
+    soundPlay(require("../assets/sounds/hint.wav"));
     this.context.reducers._addTime();
     _showToast(" +⏳   t i m e   a d d e d ", 3000, "success");
   };
@@ -187,17 +198,19 @@ export default class LandingScreen extends Component {
   _showHint = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 20) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 20 💎 ", 3000);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 20) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 20 💎 ", 3000);
         return;
       }
     }
-
+    soundPlay(require("../assets/sounds/hint.wav"));
     this.context.reducers._getHint();
     _showToast(this.state.actualAnswer, 3000, "success");
   };
@@ -205,22 +218,26 @@ export default class LandingScreen extends Component {
   _skipQuestion = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 15) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 15 💎 ", 3000);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 15) {
+        soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast(" Need 15 💎 ", 3000);
         return;
       }
     }
+    soundPlay(require("../assets/sounds/hint.wav"));
     this._loadQuestion();
     this.context.reducers._skipQuestion();
     _showToast("Question skipped", 3000, "success");
   };
 
   _unlockGame = () => {
+    soundPlay(require("../assets/sounds/success.wav"));
     this.context.reducers._unlockGame();
   };
 
@@ -292,7 +309,10 @@ export default class LandingScreen extends Component {
                         style={styles.endGameText}
                       />
                       <TouchableOpacity
-                        onPress={() => this.props.navigation.navigate("Shop")}
+                        onPress={() => {
+                          this.props.navigation.navigate("Shop");
+                          soundPlay(require("../assets/sounds/click.wav"));
+                        }}
                       >
                         <View
                           style={{
@@ -468,7 +488,7 @@ export default class LandingScreen extends Component {
                     {/* answer boxes ends here */}
                     <View
                       style={{
-                        marginTop: Dimensions.window.height * 0.1,
+                        marginTop: Dimensions.window.height * 0.05,
                         flexDirection: "row"
                       }}
                     >
@@ -555,7 +575,7 @@ const styles = StyleSheet.create({
         : Dimensions.window.height * 0.03
   },
   gameHeaderRight: {
-    marginRight: Dimensions.window.width * 0.01,
+    marginRight: Dimensions.window.width * 0.04,
     marginTop: Platform.OS === "ios" ? 0 : Dimensions.window.height * 0.05
   },
   starRatingBox: {
@@ -578,7 +598,7 @@ const styles = StyleSheet.create({
   },
   answerGroup: {
     flexDirection: "row",
-    padding: 10
+    padding: 20
   },
   modalSpinnerBox: {
     flex: 1,

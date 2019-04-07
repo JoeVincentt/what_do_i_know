@@ -5,52 +5,29 @@ import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo";
 import Dimensions from "../constants/Layout";
 import { SettingsConsumer } from "../context/SettingsContext";
+import { soundPlay } from "../utils/soundPlay";
 
 class LandingActionButton extends Component {
-  state = {
-    animatedButton: ""
-  };
   handleViewRef = ref => (this.view = ref);
 
-  bounce = async (option, modalOpen) => {
-    await this.setState({ animatedButton: option });
-    let nav;
-    if (option === "newgame") {
-      nav = "Game";
-    }
-    if (option === "continue") {
-      nav = "Game";
-    }
+  bounce = async () => {
     this.view
       .pulse(800)
       .then(endState =>
-        endState.finished
-          ? nav
-            ? this.props.navigation.navigate(nav)
-            : null
-          : null
+        endState.finished ? this.props.navigation.navigate("Game") : null
       );
-    if (modalOpen) {
-      modalOpen();
-    }
   };
 
   render() {
-    const { option, buttonText, modalOpen } = this.props;
+    const { buttonText } = this.props;
     return (
       <TouchableWithoutFeedback
-        onPress={
-          modalOpen
-            ? () => {
-                this.bounce(option, modalOpen);
-              }
-            : () => this.bounce(option)
-        }
+        onPress={() => {
+          this.bounce();
+          soundPlay(require("../assets/sounds/click.wav"));
+        }}
       >
-        <Animatable.View
-          ref={this.state.animatedButton === option ? this.handleViewRef : null}
-          style={styles.defaultStyle}
-        >
+        <Animatable.View ref={this.handleViewRef} style={styles.defaultStyle}>
           <SettingsConsumer>
             {context => (
               <LinearGradient

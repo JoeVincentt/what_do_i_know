@@ -18,6 +18,7 @@ import {
   StyleSheet,
   TouchableOpacity
 } from "react-native";
+import { soundPlay } from "../utils/soundPlay";
 import HeaderText from "../constants/HeaderText";
 import Modal from "react-native-modal";
 import { EmojiButton } from "../components/HintTimeAdd";
@@ -53,6 +54,7 @@ export default class ShopScreen extends Component {
     );
     AdMobInterstitial.addEventListener("interstitialDidClose", () => {
       console.log("interstitialDidClose");
+      soundPlay(require("../assets/sounds/success.wav"));
       this.props.navigation.navigate("Shop");
       this.context.reducers._getLifeAdd(40);
     });
@@ -67,6 +69,7 @@ export default class ShopScreen extends Component {
 
     AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
       console.log("rewardedVideoDidRewardUser");
+      soundPlay(require("../assets/sounds/success.wav"));
       this.context.reducers._getLifeAdd(110);
     });
     AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {
@@ -83,8 +86,6 @@ export default class ShopScreen extends Component {
     );
     AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {
       console.log("rewardedVideoDidClose");
-      this.props.navigation.navigate("Shop");
-      this.setState({ loading: false });
     });
     AdMobRewarded.addEventListener("rewardedVideoWillLeaveApplication", () =>
       console.log("rewardedVideoWillLeaveApplication")
@@ -109,6 +110,7 @@ export default class ShopScreen extends Component {
   }
 
   _get150crystalAd = () => {
+    soundPlay(require("../assets/sounds/click.wav"));
     showInterstitialAd().catch(error => console.log(error));
     showRewardedAd().catch(error => {
       console.log(error);
@@ -116,6 +118,7 @@ export default class ShopScreen extends Component {
   };
 
   _bannerAd = () => {
+    soundPlay(require("../assets/sounds/success.wav"));
     this.context.reducers._getLifeAdd(20);
   };
 
@@ -138,7 +141,12 @@ export default class ShopScreen extends Component {
                 }}
               >
                 <Left style={styles.headerLeft}>
-                  <TouchableOpacity onPress={() => this.props.navigation.pop()}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.props.navigation.pop();
+                      soundPlay(require("../assets/sounds/click.wav"));
+                    }}
+                  >
                     <View style={styles.headerLeftButton}>
                       <HeaderText style={{ fontSize: 30 }}>
                         {" "}
@@ -149,7 +157,10 @@ export default class ShopScreen extends Component {
                 </Left>
                 <Right style={styles.headerRight}>
                   <TouchableOpacity
-                    onPress={() => this.setState({ showInfoModal: true })}
+                    onPress={() => {
+                      this.setState({ showInfoModal: true });
+                      soundPlay(require("../assets/sounds/click.wav"));
+                    }}
                   >
                     <View style={styles.headerLeftButton}>
                       <HeaderText style={{ fontSize: 30 }}>
@@ -250,7 +261,10 @@ export default class ShopScreen extends Component {
                   </HeaderText>
                   <View>
                     <TouchableOpacity
-                      onPress={() => this.setState({ showInfoModal: false })}
+                      onPress={() => {
+                        this.setState({ showInfoModal: false });
+                        soundPlay(require("../assets/sounds/click.wav"));
+                      }}
                     >
                       <View>
                         <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>

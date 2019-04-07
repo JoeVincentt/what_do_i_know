@@ -5,10 +5,8 @@ import {
   Icon,
   Spinner,
   Header,
-  Body,
   Left,
-  Right,
-  Container
+  Right
 } from "native-base";
 import {
   View,
@@ -22,7 +20,8 @@ import { firestore, auth } from "firebase";
 require("firebase/firestore");
 import HeaderText from "../constants/HeaderText";
 import Modal from "react-native-modal";
-import { LinearGradient, Constants } from "expo";
+import { LinearGradient, Constants, Audio } from "expo";
+import { soundPlay } from "../utils/soundPlay";
 import { SettingsConsumer } from "../context/SettingsContext";
 import LandingActionButton from "../components/LandingActionButton";
 import BaseLayout from "../components/BaseLayout";
@@ -161,6 +160,11 @@ export default class LandingScreen extends Component {
     }
   };
 
+  _logOut = () => {
+    auth().signOut();
+    this.context.reducers._logOutUser();
+  };
+
   render() {
     return (
       <BaseLayout>
@@ -179,13 +183,21 @@ export default class LandingScreen extends Component {
                   height: 54 + getStatusBarHeight()
                 }}
               >
+                <Left style={styles.headerLeft}>
+                  <TouchableOpacity onPress={() => this._logOut()}>
+                    <View style={styles.headerLeftButton}>
+                      <Icon name="log-out" style={{ fontSize: 40 }} />
+                    </View>
+                  </TouchableOpacity>
+                </Left>
                 <Right style={styles.headerRight}>
                   <TouchableOpacity
-                    onPress={() =>
+                    onPress={async () => {
                       this.setState({
                         isRulesModalVisible: true
-                      })
-                    }
+                      }),
+                        soundPlay(require("../assets/sounds/click.wav"));
+                    }}
                   >
                     <View style={styles.headerRightButton}>
                       <HeaderText style={{ fontSize: 30 }}>
@@ -209,22 +221,27 @@ export default class LandingScreen extends Component {
                     style={{
                       alignItems: "center",
                       justifyContent: "center",
-                      paddingBottom: Dimensions.window.height * 0.04
+                      height: Dimensions.window.height * 0.15
                     }}
                   >
                     <HeaderText> Welcome </HeaderText>
                     <HeaderText> {this.state.username} </HeaderText>
                   </View>
-                ) : null}
+                ) : (
+                  <View style={{ height: Dimensions.window.height * 0.15 }} />
+                )}
+
                 <LandingActionButton
-                  buttonText={" P L A Y   g a m e "}
+                  buttonText={" p l a y   g a m e "}
                   navigation={this.props.navigation}
-                  option={"newgame"}
                 />
 
                 <View style={styles.mainBox}>
                   <Button
-                    onPress={() => this._alreadyLoggedCheck()}
+                    onPress={() => {
+                      this._alreadyLoggedCheck();
+                      soundPlay(require("../assets/sounds/click.wav"));
+                    }}
                     style={{ borderRadius: 10 }}
                   >
                     <Icon name="logo-facebook" style={{ fontSize: 30 }} />
@@ -351,9 +368,10 @@ export default class LandingScreen extends Component {
                       </View>
                       <View>
                         <TouchableOpacity
-                          onPress={() =>
-                            this.setState({ isRulesModalVisible: false })
-                          }
+                          onPress={() => {
+                            this.setState({ isRulesModalVisible: false });
+                            soundPlay(require("../assets/sounds/click.wav"));
+                          }}
                         >
                           <View>
                             <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>

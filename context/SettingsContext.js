@@ -76,6 +76,21 @@ export class SettingsProvider extends React.Component {
       _logInUser: user => {
         this.setState({ loggedIn: true, user });
       },
+      _logOutUser: () => {
+        this.setState({
+          loggedIn: false,
+          user: {
+            avatar: "",
+            bestScores: null,
+            crystal: null,
+            email: "",
+            id: "",
+            life: null,
+            scores: null,
+            username: ""
+          }
+        });
+      },
       //End game
       _unlockGame: async () => {
         if (this.state.loggedIn) {
