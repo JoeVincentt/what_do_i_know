@@ -1,13 +1,20 @@
 import React, { Component } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, Image } from "react-native";
+import { Item } from "native-base";
 import HeaderText from "../constants/HeaderText";
 import { _timerSettings } from "../utils/TimerSettings";
 
-export const EmojiButton = ({ action, text, style }) => (
-  <TouchableOpacity onPress={() => action()}>
-    <View
-      style={{ padding: 10, justifyContent: "center", alignItems: "center" }}
-    >
+export const EmojiButton = ({ action, text, style, source }) => (
+  <Item style={{ borderBottomColor: "transparent", padding: 10 }}>
+    <Image
+      source={source}
+      style={{
+        overflow: "visible",
+        height: 40,
+        width: 40
+      }}
+    />
+    <TouchableOpacity onPress={() => action()}>
       <HeaderText
         style={[
           {
@@ -22,6 +29,6 @@ export const EmojiButton = ({ action, text, style }) => (
       >
         {text}
       </HeaderText>
-    </View>
-  </TouchableOpacity>
+    </TouchableOpacity>
+  </Item>
 );

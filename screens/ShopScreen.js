@@ -1,22 +1,13 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Content,
-  Header,
-  Left,
-  Right,
-  FooterTab,
-  Footer,
-  Spinner,
-  Icon
-} from "native-base";
+import { Content, Header, Left, Right, Footer, Spinner } from "native-base";
 import {
   View,
   YellowBox,
   Platform,
   Text,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from "react-native";
 import { soundPlay } from "../utils/soundPlay";
 import HeaderText from "../constants/HeaderText";
@@ -37,63 +28,43 @@ import { showInterstitialAd, showRewardedAd } from "../utils/showAd";
 
 export default class ShopScreen extends Component {
   state = {
-    showInfoModal: false,
-    loading: false
+    showInfoModal: false
   };
 
   componentDidMount() {
     // Interstitial ad
-    AdMobInterstitial.addEventListener("interstitialDidLoad", () =>
-      console.log("interstitialDidLoad")
-    );
-    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () =>
-      console.log("interstitialDidFailToLoad")
-    );
-    AdMobInterstitial.addEventListener("interstitialDidOpen", () =>
-      console.log("interstitialDidOpen")
-    );
+    AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
+    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
+    AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
     AdMobInterstitial.addEventListener("interstitialDidClose", () => {
-      console.log("interstitialDidClose");
       soundPlay(require("../assets/sounds/success.wav"));
       this.props.navigation.navigate("Shop");
       this.context.reducers._getLifeAdd(40);
     });
     AdMobInterstitial.addEventListener(
       "interstitialWillLeaveApplication",
-      () => {
-        console.log("interstitialWillLeaveApplication");
-      }
+      () => {}
     );
 
     //Rewarded Add
 
     AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
-      console.log("rewardedVideoDidRewardUser");
       soundPlay(require("../assets/sounds/success.wav"));
       this.context.reducers._getLifeAdd(110);
     });
-    AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {
-      console.log("rewardedVideoDidLoad");
-    });
-    AdMobRewarded.addEventListener("rewardedVideoDidStart", () =>
-      console.log("rewardedVideoDidStart")
-    );
-    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () =>
-      console.log("rewardedVideoDidFailToLoad")
-    );
-    AdMobRewarded.addEventListener("rewardedVideoDidOpen", () =>
-      console.log("rewardedVideoDidOpen")
-    );
-    AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {
-      console.log("rewardedVideoDidClose");
-    });
-    AdMobRewarded.addEventListener("rewardedVideoWillLeaveApplication", () =>
-      console.log("rewardedVideoWillLeaveApplication")
+    AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidOpen", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {});
+    AdMobRewarded.addEventListener(
+      "rewardedVideoWillLeaveApplication",
+      () => {}
     );
   }
 
   componentWillUnmount() {
-    console.log("compomnent Unmounted");
+    // console.log("compomnent Unmounted");
     AdMobInterstitial.removeAllListeners();
     AdMobRewarded.removeAllListeners();
   }
@@ -150,7 +121,7 @@ export default class ShopScreen extends Component {
                     <View style={styles.headerLeftButton}>
                       <HeaderText style={{ fontSize: 30 }}>
                         {" "}
-                        back to 🎮{" "}
+                        go{"   "}back{" "}
                       </HeaderText>
                     </View>
                   </TouchableOpacity>
@@ -163,10 +134,13 @@ export default class ShopScreen extends Component {
                     }}
                   >
                     <View style={styles.headerLeftButton}>
-                      <HeaderText style={{ fontSize: 30 }}>
-                        {" "}
-                        click me{" "}
-                      </HeaderText>
+                      <Image
+                        source={require("../assets/images/info.png")}
+                        style={{
+                          height: 40,
+                          width: 40
+                        }}
+                      />
                     </View>
                   </TouchableOpacity>
                 </Right>
@@ -182,10 +156,22 @@ export default class ShopScreen extends Component {
                 <View style={styles.adBox}>
                   <View>
                     <EmojiButton
+                      source={require("../assets/images/crystal.png")}
                       action={this._get150crystalAd}
-                      text={"  get  1 5 0  💎  "}
+                      text={"  get  1 5 0    "}
                       style={styles.adText}
                     />
+                  </View>
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.props.navigation.navigate("AddQuestion");
+                      }}
+                    >
+                      <View>
+                        <HeaderText> add own question </HeaderText>
+                      </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </Content>
@@ -193,10 +179,24 @@ export default class ShopScreen extends Component {
               <Footer
                 Footer
                 transparent
-                style={{ backgroundColor: "transparent" }}
+                style={{
+                  backgroundColor: "transparent",
+                  borderColor: "transparent"
+                }}
               >
                 {/* // Display a DFP Publisher banner */}
-                <HeaderText> + 20 💎 banner click </HeaderText>
+                <View style={{ flexDirection: "row" }}>
+                  <HeaderText> + 20{"   "}</HeaderText>
+                  <Image
+                    source={require("../assets/images/crystal.png")}
+                    style={{
+                      overflow: "visible",
+                      height: 30,
+                      width: 30
+                    }}
+                  />
+                  <HeaderText>{"   "}per banner click </HeaderText>
+                </View>
               </Footer>
               <TouchableOpacity onPress={() => this._bannerAd()}>
                 <Footer
@@ -257,7 +257,7 @@ export default class ShopScreen extends Component {
                     {" "}
                     For playing "what do i know ?", we hope you are enjoying it!
                     please support creator watch and click ads. And use your
-                    reward wisely 😉{" "}
+                    reward wisely.{" "}
                   </HeaderText>
                   <View>
                     <TouchableOpacity
@@ -267,7 +267,14 @@ export default class ShopScreen extends Component {
                       }}
                     >
                       <View>
-                        <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
+                        <Image
+                          source={require("../assets/images/cross.png")}
+                          style={{
+                            height: 40,
+                            width: 40,
+                            overflow: "visible"
+                          }}
+                        />
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -276,20 +283,6 @@ export default class ShopScreen extends Component {
             </Modal>
           )}
         </SettingsConsumer>
-        <Modal
-          isVisible={this.state.loading}
-          animationIn="zoomInDown"
-          animationOut="zoomOutUp"
-          useNativeDriver={true}
-          animationInTiming={500}
-          animationOutTiming={500}
-          backdropTransitionInTiming={500}
-          backdropTransitionOutTiming={500}
-        >
-          <View style={styles.modalSpinnerBox}>
-            <Spinner />
-          </View>
-        </Modal>
       </BaseLayout>
     );
   }

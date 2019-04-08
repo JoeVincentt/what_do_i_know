@@ -6,8 +6,8 @@ import {
   Left,
   Right,
   Body,
-  Toast,
-  Spinner
+  Spinner,
+  Item
 } from "native-base";
 import Modal from "react-native-modal";
 import {
@@ -16,7 +16,8 @@ import {
   Platform,
   Vibration,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from "react-native";
 import { _showToast } from "../utils/ShowToast";
 import StarRating from "react-native-star-rating";
@@ -31,7 +32,7 @@ import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
 import { soundPlay } from "../utils/soundPlay";
 import { firestore } from "firebase";
-import { showRewardedAd } from "../utils/showAd";
+
 require("firebase/firestore");
 
 const db = firestore();
@@ -288,51 +289,64 @@ export default class LandingScreen extends Component {
                     </Left>
 
                     <Right>
-                      <HeaderText style={styles.endGameHeaderRight}>
-                        💎{" "}
-                        {context.loggedIn
-                          ? context.user.crystal
-                          : context.crystal}{" "}
-                      </HeaderText>
+                      <Item style={{ borderBottomColor: "transparent" }}>
+                        <Image
+                          source={require("../assets/images/crystal.png")}
+                          style={{
+                            overflow: "visible",
+                            height: 40,
+                            width: 40
+                          }}
+                        />
+                        <HeaderText style={styles.endGameHeaderRight}>
+                          {" "}
+                          {context.loggedIn
+                            ? context.user.crystal
+                            : context.crystal}{" "}
+                        </HeaderText>
+                      </Item>
                     </Right>
                   </Header>
                   <View style={styles.endGameBox}>
                     <View>
                       <EmojiButton
                         action={this._unlockGame}
-                        text={"   🔥    s t a r t   a    n e w  g a m e "}
+                        source={require("../assets/images/newgame.png")}
+                        text={"   s t a r t   a    n e w  g a m e "}
                         style={styles.endGameText}
                       />
                       <EmojiButton
+                        source={require("../assets/images/crystal.png")}
                         action={this._buyLifeEndGame}
-                        text={"   + 1 ❤️   t r a d e  35 💎"}
+                        text={"  t r a d e  35 for life "}
                         style={styles.endGameText}
                       />
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.props.navigation.navigate("Shop");
-                          soundPlay(require("../assets/sounds/click.wav"));
+
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          paddingTop: 20
                         }}
                       >
-                        <View
+                        <Image
+                          source={require("../assets/images/pickaxe.png")}
                           style={{
-                            flexDirection: "row",
-                            paddingTop: 10
+                            height: 30,
+                            width: 40,
+                            overflow: "visible"
+                          }}
+                        />
+                        <TouchableOpacity
+                          onPress={() => {
+                            this.props.navigation.navigate("Shop");
+                            soundPlay(require("../assets/sounds/click.wav"));
                           }}
                         >
-                          <HeaderText style={styles.mineIconCrystal}>
-                            {"          "}
-                            💎{" "}
-                          </HeaderText>
-                          <HeaderText style={styles.mineIconMine}>
-                            {" "}
-                            ⛏{" "}
-                          </HeaderText>
                           <HeaderText style={styles.mineText}>
-                            go to the mine{" "}
+                            {"  "}go to the mine{" "}
                           </HeaderText>
-                        </View>
-                      </TouchableOpacity>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -356,26 +370,42 @@ export default class LandingScreen extends Component {
                             : Dimensions.window.height * 0.05
                       }}
                     >
-                      <HeaderText>
-                        💎
-                        {context.loggedIn
-                          ? context.user.crystal + " "
-                          : context.crystal + " "}
-                        {"  "}
-                      </HeaderText>
+                      <Item style={{ borderBottomColor: "transparent" }}>
+                        <Image
+                          source={require("../assets/images/crystal.png")}
+                          style={{
+                            height: 40,
+                            width: 20,
+                            overflow: "visible"
+                          }}
+                        />
+                        <HeaderText>
+                          {"  "}
+                          {context.loggedIn
+                            ? context.user.crystal + " "
+                            : context.crystal + " "}
+                          {"  "}
+                        </HeaderText>
+                      </Item>
                     </Left>
-                    <Body>
-                      <HeaderText style={styles.gameHeaderBody}>
-                        🏆{" "}
-                        {context.loggedIn
-                          ? context.overallBestScores.gold.bestScores
-                          : context.bestScores}{" "}
-                      </HeaderText>
-                    </Body>
+
                     <Right>
-                      <HeaderText style={styles.gameHeaderRight}>
-                        ❤️ {context.loggedIn ? context.user.life : context.life}{" "}
-                      </HeaderText>
+                      <Item style={{ borderBottomColor: "transparent" }}>
+                        <Image
+                          source={require("../assets/images/heart.png")}
+                          style={{
+                            height: 40,
+                            width: 20,
+                            overflow: "visible"
+                          }}
+                        />
+                        <HeaderText style={styles.gameHeaderRight}>
+                          {"   "}
+                          {context.loggedIn
+                            ? context.user.life
+                            : context.life}{" "}
+                        </HeaderText>
+                      </Item>
                     </Right>
                   </Header>
 
@@ -418,17 +448,27 @@ export default class LandingScreen extends Component {
 
                         <View
                           style={{
-                            flexDirection: "row"
+                            flexDirection: "row",
+                            marginTop: Dimensions.window.height * 0.01
                           }}
                         >
                           <View>
-                            <HeaderText
+                            <Item
                               style={{
-                                marginHorizontal: Dimensions.window.width * 0.01
+                                borderBottomColor: "transparent",
+                                marginRight: Dimensions.window.width * 0.015,
+                                marginLeft: Dimensions.window.width * 0.035
                               }}
                             >
-                              ⏳
-                            </HeaderText>
+                              <Image
+                                source={require("../assets/images/timer.png")}
+                                style={{
+                                  height: 35,
+                                  width: 20,
+                                  overflow: "visible"
+                                }}
+                              />
+                            </Item>
                           </View>
 
                           <View>
@@ -492,10 +532,86 @@ export default class LandingScreen extends Component {
                         flexDirection: "row"
                       }}
                     >
-                      <EmojiButton action={this._showHint} text={" 🗝 "} />
-                      <EmojiButton action={this._addTime} text={" +⏳ "} />
-                      <EmojiButton action={this._buyLife} text={" +❤️ "} />
-                      <EmojiButton action={this._skipQuestion} text={" ⏩ "} />
+                      <TouchableOpacity onPress={() => this._showHint()}>
+                        <View
+                          style={{
+                            shadowColor: "white",
+                            shadowRadius: 30,
+                            shadowOpacity: 3,
+                            elevation: 150,
+                            fontSize: 35,
+                            paddingHorizontal: 20
+                          }}
+                        >
+                          <Image
+                            source={require("../assets/images/key.png")}
+                            style={{
+                              height: 40,
+                              width: 40
+                            }}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => this._addTime()}>
+                        <View
+                          style={{
+                            shadowColor: "white",
+                            shadowRadius: 30,
+                            shadowOpacity: 3,
+                            elevation: 150,
+                            fontSize: 35,
+                            paddingHorizontal: 20
+                          }}
+                        >
+                          <Image
+                            source={require("../assets/images/timer.png")}
+                            style={{
+                              height: 40,
+                              width: 40
+                            }}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => this._buyLife()}>
+                        <View
+                          style={{
+                            shadowColor: "white",
+                            shadowRadius: 30,
+                            shadowOpacity: 3,
+                            elevation: 150,
+                            fontSize: 35,
+                            paddingHorizontal: 20
+                          }}
+                        >
+                          <Image
+                            source={require("../assets/images/heart.png")}
+                            style={{
+                              height: 40,
+                              width: 40
+                            }}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => this._skipQuestion()}>
+                        <View
+                          style={{
+                            shadowColor: "white",
+                            shadowRadius: 30,
+                            shadowOpacity: 3,
+                            elevation: 150,
+                            fontSize: 35,
+                            paddingHorizontal: 20
+                          }}
+                        >
+                          <Image
+                            source={require("../assets/images/skip.png")}
+                            style={{
+                              height: 40,
+                              width: 40
+                            }}
+                          />
+                        </View>
+                      </TouchableOpacity>
                     </View>
                   </Content>
                 </View>
@@ -568,11 +684,11 @@ const styles = StyleSheet.create({
   },
   gameHeaderBody: {
     paddingBottom: Platform.OS === "ios" ? Dimensions.window.height * 0.12 : 0,
-    paddingLeft: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.1,
-    paddingTop:
-      Platform.OS === "ios"
-        ? Dimensions.window.height * 0.03
-        : Dimensions.window.height * 0.03
+    paddingLeft: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.1
+    // paddingTop:
+    //   Platform.OS === "ios"
+    //     ? Dimensions.window.height * 0.03
+    //     : Dimensions.window.height * 0.03
   },
   gameHeaderRight: {
     marginRight: Dimensions.window.width * 0.04,

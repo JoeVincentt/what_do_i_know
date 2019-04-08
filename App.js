@@ -39,7 +39,21 @@ export default class App extends React.Component {
         require("./assets/sounds/click.wav"),
         require("./assets/sounds/hint.wav"),
         require("./assets/sounds/success.wav"),
-        require("./assets/sounds/wrong.wav")
+        require("./assets/sounds/wrong.wav"),
+        require("./assets/images/goldmedal.png"),
+        require("./assets/images/silvermedal.png"),
+        require("./assets/images/bronzemedal.png"),
+        require("./assets/images/life.png"),
+        require("./assets/images/info.png"),
+        require("./assets/images/newgame.png"),
+        require("./assets/images/pickaxe.png"),
+        require("./assets/images/skip.png"),
+        require("./assets/images/target.png"),
+        require("./assets/images/timer.png"),
+        require("./assets/images/star.png"),
+        require("./assets/images/crystal.png"),
+        require("./assets/images/cross.png"),
+        require("./assets/images/question.png")
       ]),
       Font.loadAsync({
         // This is the font that we are using for our tab bar

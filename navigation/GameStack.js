@@ -2,15 +2,17 @@ import { createStackNavigator } from "react-navigation";
 import LandingScreen from "../screens/LandingScreen";
 import GameScreen from "../screens/GameScreen";
 import ShopScreen from "../screens/ShopScreen";
+import SuggestQuestionScreen from "../screens/SuggestQuestionScreen";
 
 export default createStackNavigator(
   {
     Landing: LandingScreen,
     Game: GameScreen,
-    Shop: ShopScreen
+    Shop: ShopScreen,
+    AddQuestion: SuggestQuestionScreen
   },
   {
     headerMode: "none",
-    initialRouteName: "Landing"
+    initialRouteName: "AddQuestion"
   }
 );

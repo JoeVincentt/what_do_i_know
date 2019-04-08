@@ -6,7 +6,8 @@ import {
   Spinner,
   Header,
   Left,
-  Right
+  Right,
+  Item
 } from "native-base";
 import {
   View,
@@ -14,7 +15,8 @@ import {
   Platform,
   Text,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from "react-native";
 import { firestore, auth } from "firebase";
 require("firebase/firestore");
@@ -187,8 +189,11 @@ export default class LandingScreen extends Component {
               >
                 <Left style={styles.headerLeft}>
                   <TouchableOpacity onPress={() => this._logOut()}>
-                    <View>
-                      <Icon name="log-out" style={styles.headerLeftButton} />
+                    <View style={styles.headerLeftButton}>
+                      <Image
+                        source={require("../assets/images/signout.png")}
+                        style={{ height: 45, width: 45 }}
+                      />
                     </View>
                   </TouchableOpacity>
                 </Left>
@@ -202,10 +207,10 @@ export default class LandingScreen extends Component {
                     }}
                   >
                     <View style={styles.headerRightButton}>
-                      <HeaderText style={{ fontSize: 30 }}>
-                        {" "}
-                        {`${Platform.OS === "ios" ? "📜" : "💡"}`}{" "}
-                      </HeaderText>
+                      <Image
+                        source={require("../assets/images/info.png")}
+                        style={{ height: 45, width: 45 }}
+                      />
                     </View>
                   </TouchableOpacity>
                 </Right>
@@ -262,24 +267,42 @@ export default class LandingScreen extends Component {
                         <HeaderText>b e s t{"   "}r e s u l t s : </HeaderText>
                       </View>
                       <View style={{}}>
-                        <HeaderText style={{ fontSize: 26 }}>
-                          🥇{"   "}
-                          {context.overallBestScores.gold.bestScores}
-                          {"   "}
-                          {context.overallBestScores.gold.username}{" "}
-                        </HeaderText>
-                        <HeaderText style={{ fontSize: 25 }}>
-                          🥈{"   "}
-                          {context.overallBestScores.silver.bestScores}
-                          {"   "}
-                          {context.overallBestScores.silver.username}{" "}
-                        </HeaderText>
-                        <HeaderText style={{ fontSize: 24 }}>
-                          🥉{"   "}
-                          {context.overallBestScores.bronze.bestScores}
-                          {"   "}
-                          {context.overallBestScores.bronze.username}{" "}
-                        </HeaderText>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/goldmedal.png")}
+                            style={{ height: 35, width: 25 }}
+                          />
+                          <HeaderText style={{ fontSize: 26 }}>
+                            {"   "}
+                            {context.overallBestScores.gold.bestScores}
+                            {"   "}
+                            {context.overallBestScores.gold.username}{" "}
+                          </HeaderText>
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/silvermedal.png")}
+                            style={{ height: 34, width: 24 }}
+                          />
+                          <HeaderText style={{ fontSize: 25 }}>
+                            {"   "}
+                            {context.overallBestScores.silver.bestScores}
+                            {"   "}
+                            {context.overallBestScores.silver.username}{" "}
+                          </HeaderText>
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/bronzemedal.png")}
+                            style={{ height: 33, width: 23 }}
+                          />
+                          <HeaderText style={{ fontSize: 24 }}>
+                            {"   "}
+                            {context.overallBestScores.bronze.bestScores}
+                            {"   "}
+                            {context.overallBestScores.bronze.username}{" "}
+                          </HeaderText>
+                        </Item>
                       </View>
                     </View>
                   ) : (
@@ -317,35 +340,128 @@ export default class LandingScreen extends Component {
                         <View style={{ paddingBottom: 10 }}>
                           <HeaderText> g a m e{"  "}r u l e s : </HeaderText>
                         </View>
-
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          ❔ answer questions{" "}
-                        </HeaderText>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          🏆 get the best score{" "}
-                        </HeaderText>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          🎯 get in top chart{"  "}
-                        </HeaderText>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          🗝 get hint for 20 💎{" "}
-                        </HeaderText>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          +⏳ reset countdown for 10 💎{" "}
-                        </HeaderText>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          + 1 ❤️ for 35 💎
-                        </HeaderText>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          ⏩ skip question for 15 💎
-                        </HeaderText>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/question.png")}
+                            style={{
+                              height: 40,
+                              width: 40
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {" "}
+                            answer questions{" "}
+                          </HeaderText>
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/trophy.png")}
+                            style={{
+                              height: 40,
+                              width: 40
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            get the best score{" "}
+                          </HeaderText>
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/target.png")}
+                            style={{
+                              height: 40,
+                              width: 40
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {" "}
+                            get in top chart{"  "}
+                          </HeaderText>
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/key.png")}
+                            style={{
+                              height: 35,
+                              width: 30
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {"   "}
+                            get hint for 20{"  "}
+                          </HeaderText>
+                          <Image
+                            source={require("../assets/images/crystal.png")}
+                            style={{
+                              overflow: "visible",
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/timer.png")}
+                            style={{
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {"   "}
+                            reset countdown for 10{"  "}
+                          </HeaderText>
+                          <Image
+                            source={require("../assets/images/crystal.png")}
+                            style={{
+                              overflow: "visible",
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/heart.png")}
+                            style={{
+                              height: 40,
+                              width: 40
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {" "}
+                            for 35{"   "}
+                          </HeaderText>
+                          <Image
+                            source={require("../assets/images/crystal.png")}
+                            style={{
+                              overflow: "visible",
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/skip.png")}
+                            style={{
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {"  "}
+                            skip question for 15{"   "}
+                          </HeaderText>
+                          <Image
+                            source={require("../assets/images/crystal.png")}
+                            style={{
+                              overflow: "visible",
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                        </Item>
 
                         <View
                           style={{
@@ -355,28 +471,84 @@ export default class LandingScreen extends Component {
                         >
                           <HeaderText> Question difficulty : </HeaderText>
                         </View>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          ⭐️ +1 score{" "}
-                        </HeaderText>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          ⭐️⭐️ +2 score{" "}
-                        </HeaderText>
-                        <HeaderText style={styles.modalText}>
-                          {" "}
-                          ⭐️⭐️⭐️ +3 score{" "}
-                        </HeaderText>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/star.png")}
+                            style={{
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {" "}
+                            +1 score{" "}
+                          </HeaderText>
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/star.png")}
+                            style={{
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                          <Image
+                            source={require("../assets/images/star.png")}
+                            style={{
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {" "}
+                            +2 score{" "}
+                          </HeaderText>
+                        </Item>
+                        <Item style={styles.itemStyle}>
+                          <Image
+                            source={require("../assets/images/star.png")}
+                            style={{
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                          <Image
+                            source={require("../assets/images/star.png")}
+                            style={{
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                          <Image
+                            source={require("../assets/images/star.png")}
+                            style={{
+                              height: 30,
+                              width: 30
+                            }}
+                          />
+                          <HeaderText style={styles.modalText}>
+                            {" "}
+                            +3 score{" "}
+                          </HeaderText>
+                        </Item>
                       </View>
-                      <View>
+                      <View style={{ padding: 10 }}>
                         <TouchableOpacity
                           onPress={() => {
                             this.setState({ isRulesModalVisible: false });
                             soundPlay(require("../assets/sounds/click.wav"));
                           }}
                         >
-                          <View>
-                            <HeaderText style={{ fontSize: 40 }}>❌</HeaderText>
+                          <View style={{ elevation: 200 }}>
+                            <Image
+                              source={require("../assets/images/cross.png")}
+                              style={{
+                                height: 40,
+                                width: 40,
+
+                                overflow: "visible"
+                              }}
+                            />
                           </View>
                         </TouchableOpacity>
                       </View>
@@ -448,5 +620,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
-  modalText: { fontSize: 20 }
+  modalText: { fontSize: 20 },
+  itemStyle: {
+    borderBottomColor: "transparent",
+    padding: 3
+  }
 });
