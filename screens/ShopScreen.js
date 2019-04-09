@@ -24,7 +24,7 @@ import {
   AdMobInterstitial,
   AdMobRewarded
 } from "expo";
-import { showInterstitialAd, showRewardedAd } from "../utils/showAd";
+import { showInterstitialAd, showRewardedAd, BANNER_ID } from "../utils/showAd";
 
 export default class ShopScreen extends Component {
   state = {
@@ -37,9 +37,7 @@ export default class ShopScreen extends Component {
     AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
     AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
     AdMobInterstitial.addEventListener("interstitialDidClose", () => {
-      soundPlay(require("../assets/sounds/success.wav"));
-      this.props.navigation.navigate("Shop");
-      this.context.reducers._getLifeAdd(40);
+      this.props.navigation.pop();
     });
     AdMobInterstitial.addEventListener(
       "interstitialWillLeaveApplication",
@@ -50,7 +48,7 @@ export default class ShopScreen extends Component {
 
     AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
       soundPlay(require("../assets/sounds/success.wav"));
-      this.context.reducers._getLifeAdd(110);
+      this.context.reducers._getLifeAdd(105);
     });
     AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
     AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
@@ -158,11 +156,11 @@ export default class ShopScreen extends Component {
                     <EmojiButton
                       source={require("../assets/images/crystal.png")}
                       action={this._get150crystalAd}
-                      text={"  get  1 5 0    "}
+                      text={"  get  1 0 5    "}
                       style={styles.adText}
                     />
                   </View>
-                  <View>
+                  <View style={{ paddingTop: 40 }}>
                     <TouchableOpacity
                       onPress={() => {
                         this.props.navigation.navigate("AddQuestion");
@@ -256,8 +254,8 @@ export default class ShopScreen extends Component {
                   <HeaderText>
                     {" "}
                     For playing "what do i know ?", we hope you are enjoying it!
-                    please support creator watch and click ads. And use your
-                    reward wisely.{" "}
+                    please support creator watch and click ads or suggest your
+                    own question!{" "}
                   </HeaderText>
                   <View>
                     <TouchableOpacity

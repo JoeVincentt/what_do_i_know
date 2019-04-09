@@ -31,6 +31,7 @@ import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import AnimTextView from "../components/AnimViewText";
+import { _showToast } from "../utils/ShowToast";
 
 const db = firestore();
 
@@ -74,12 +75,14 @@ export default class LandingScreen extends Component {
             this.setState({ username: existingUserData.username });
           } else {
             //if user doesnt exist
-            console.log("error fetching user");
+            // console.log("error fetching user");
+            _showToast("error occurred", 3000, "warning");
           }
           this.context.reducers._logInUser(userData);
           // this.props.navigation.navigate("Game");
         } catch (error) {
-          console.log(error);
+          _showToast("error occurred", 3000, "warning");
+          // console.log(error);
         }
       } else {
         this._facebookLogIn();
@@ -147,19 +150,23 @@ export default class LandingScreen extends Component {
               }
               this.context.reducers._logInUser(userData);
             } catch (error) {
-              console.log(error);
+              // console.log(error);
+              _showToast("error occurred", 3000, "warning");
             }
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
+          _showToast("error occurred", 3000, "warning");
         }
       } else {
         // type === 'cancel'
-        console.log("cancel");
+        // console.log("cancel");
+        _showToast("log in to play online", 3000, "warning");
       }
     } catch ({ message }) {
-      console.log(message);
-      alert(`Facebook Login Error: ${message}`);
+      // console.log(message);
+      // alert(`Facebook Login Error: ${message}`);
+      _showToast(`${message}`, 3000, "warning");
     }
   };
 
@@ -223,20 +230,22 @@ export default class LandingScreen extends Component {
                   justifyContent: "center"
                 }}
               >
-                {this.state.username !== "" ? (
-                  <AnimTextView
-                    style={{
-                      alignItems: "center",
-                      justifyContent: "center",
-                      height: Dimensions.window.height * 0.15
-                    }}
-                  >
-                    <HeaderText> Welcome </HeaderText>
-                    <HeaderText> {this.state.username} </HeaderText>
-                  </AnimTextView>
-                ) : (
-                  <View style={{ height: Dimensions.window.height * 0.17 }} />
-                )}
+                <View style={{ height: Dimensions.window.height * 0.17 }}>
+                  {this.state.username !== "" ? (
+                    <AnimTextView
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: Dimensions.window.height * 0.15
+                      }}
+                    >
+                      <HeaderText> Welcome </HeaderText>
+                      <HeaderText> {this.state.username} </HeaderText>
+                    </AnimTextView>
+                  ) : (
+                    <View style={{ height: Dimensions.window.height * 0.17 }} />
+                  )}
+                </View>
 
                 <LandingActionButton
                   buttonText={" p l a y   g a m e "}
@@ -260,9 +269,15 @@ export default class LandingScreen extends Component {
                 </View>
 
                 {/* //* best results chart */}
-                <View>
+                <View
+                  style={{
+                    height: Dimensions.window.height * 0.4,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
                   {context.overallBestScores.gold.username !== "" ? (
-                    <View style={styles.topChartBox}>
+                    <AnimTextView style={styles.topChartBox}>
                       <View style={{ paddingBottom: 10 }}>
                         <HeaderText>b e s t{"   "}r e s u l t s : </HeaderText>
                       </View>
@@ -304,11 +319,11 @@ export default class LandingScreen extends Component {
                           </HeaderText>
                         </Item>
                       </View>
-                    </View>
+                    </AnimTextView>
                   ) : (
                     <View
                       style={{
-                        height: Dimensions.window.height * 0.3,
+                        height: Dimensions.window.height * 0.4,
                         justifyContent: "center",
                         alignItems: "center"
                       }}

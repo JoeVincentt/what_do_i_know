@@ -49,7 +49,7 @@ export default class LandingScreen extends Component {
     notEnoughCrystals: null,
     showToast: false,
     loadingQuestion: false,
-    maxNumOfQuestions: 4
+    maxNumOfQuestions: 500
   };
 
   componentDidMount() {
@@ -81,7 +81,7 @@ export default class LandingScreen extends Component {
               actualAnswer: question.rightAnswer,
               answers: question.answers,
               rating: Number(question.rating),
-              time: 25000,
+              time: 15000,
               loadingQuestion: false
             });
           } else {
@@ -107,7 +107,7 @@ export default class LandingScreen extends Component {
           time: 0
         });
         soundPlay(require("../assets/sounds/success.wav"));
-        _showToast(" 🎉 C O R R E C T ", 500, "success");
+        _showToast("  C O R R E C T ", 500, "success");
         this._loadQuestion();
       }
       if (this.state.actualAnswer !== answer) {
@@ -117,7 +117,7 @@ export default class LandingScreen extends Component {
         });
         Vibration.vibrate(300);
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" ❌ I N C O R R E C T ", 500, "danger", "top");
+        _showToast("  I N C O R R E C T ", 500, "danger", "top");
         this.context.reducers._removeLife();
         this._loadQuestion();
       }
@@ -130,7 +130,7 @@ export default class LandingScreen extends Component {
     });
     Vibration.vibrate(600);
     soundPlay(require("../assets/sounds/wrong.wav"));
-    _showToast(" 🛎 T I M E   E X P I R E D ", 500, "warning", "bottom");
+    _showToast("  T I M E   E X P I R E D ", 500, "warning", "bottom");
     this.context.reducers._removeLife();
     this._loadQuestion();
   };
@@ -139,107 +139,111 @@ export default class LandingScreen extends Component {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 35) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 35 💎 ", 3000);
+        _showToast(" Need 35 crystals ", 1500);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 35) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 35 💎 ", 3000);
+        _showToast(" Need 35 crystals ", 1500);
         return;
       }
     }
     soundPlay(require("../assets/sounds/hint.wav"));
     this.context.reducers._addLife();
-    _showToast(" + 1 ❤️ ", 3000, "success");
+    _showToast(" + 1 life ", 1500, "success");
   };
 
   _buyLifeEndGame = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 35) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 35 💎 ", 3000);
+        _showToast(" Need 35 crystals ", 1500);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 35) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 35 💎 ", 3000);
+        _showToast(" Need 35 crystals ", 1500);
         return;
       }
     }
     soundPlay(require("../assets/sounds/success.wav"));
     this._loadQuestion();
     this.context.reducers._addLife();
-    _showToast(" + 1 ❤️ ", 3000, "success");
+    _showToast(" + 1 life ", 1500, "success");
   };
 
   _addTime = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 10) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 10 💎 ", 3000);
+        _showToast(" Need 10 crystals ", 1500);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 10) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 10 💎 ", 3000);
+        _showToast(" Need 10 crystals ", 1500);
         return;
       }
     }
     soundPlay(require("../assets/sounds/hint.wav"));
     this.context.reducers._addTime();
-    _showToast(" +⏳   t i m e   a d d e d ", 3000, "success");
+    _showToast(" t i m e   a d d e d ", 1500, "success");
   };
 
   _showHint = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 20) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 20 💎 ", 3000);
+        _showToast(" Need 20 crystals ", 1500);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 20) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 20 💎 ", 3000);
+        _showToast(" Need 20 crystals ", 1500);
         return;
       }
     }
     soundPlay(require("../assets/sounds/hint.wav"));
     this.context.reducers._getHint();
-    _showToast(this.state.actualAnswer, 3000, "success");
+    _showToast(this.state.actualAnswer, 1500, "success");
   };
 
   _skipQuestion = () => {
     if (this.context.loggedIn) {
       if (this.context.user.crystal < 15) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 15 💎 ", 3000);
+        _showToast(" Need 15 crystals ", 1500);
         return;
       }
     }
     if (!this.context.loggedIn) {
       if (this.context.crystal < 15) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 15 💎 ", 3000);
+        _showToast(" Need 15 crystals ", 1500);
         return;
       }
     }
     soundPlay(require("../assets/sounds/hint.wav"));
     this._loadQuestion();
     this.context.reducers._skipQuestion();
-    _showToast("Question skipped", 3000, "success");
+    _showToast("Question skipped", 1500, "success");
   };
 
   _unlockGame = () => {
     soundPlay(require("../assets/sounds/success.wav"));
     this.context.reducers._unlockGame();
+  };
+
+  _timeLowSound = () => {
+    soundPlay(require("../assets/sounds/ticking.wav"));
   };
 
   render() {
@@ -473,6 +477,11 @@ export default class LandingScreen extends Component {
 
                           <View>
                             <TimerCountdown
+                              onTick={milliseconds =>
+                                milliseconds <= 5000 && milliseconds >= 4900
+                                  ? this._timeLowSound()
+                                  : null
+                              }
                               initialMilliseconds={time}
                               onExpire={() => this._timeExpired()}
                               formatMilliseconds={milliseconds =>
@@ -695,7 +704,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === "ios" ? 0 : Dimensions.window.height * 0.05
   },
   starRatingBox: {
-    shadowColor: "red",
+    shadowColor: "grey",
     shadowOpacity: 0.5,
     shadowRadius: 7,
     elevation: 40,

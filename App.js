@@ -37,6 +37,7 @@ export default class App extends React.Component {
     return Promise.all([
       Asset.loadAsync([
         require("./assets/sounds/click.wav"),
+        require("./assets/sounds/ticking.wav"),
         require("./assets/sounds/hint.wav"),
         require("./assets/sounds/success.wav"),
         require("./assets/sounds/wrong.wav"),

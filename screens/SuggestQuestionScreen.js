@@ -11,31 +11,37 @@ import {
   TextInput,
   LinearGradient
 } from "react-native";
+import StarRating from "react-native-star-rating";
 import { soundPlay } from "../utils/soundPlay";
+import { _showToast } from "../utils/ShowToast";
+import { auth } from "firebase";
 import HeaderText from "../constants/HeaderText";
 import BaseLayout from "../components/BaseLayout";
 import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
-import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { AdMobBanner, PublisherBanner, AdMobInterstitial } from "expo";
-import { showInterstitialAd } from "../utils/showAd";
+import { showInterstitialAd, BANNER_ID } from "../utils/showAd";
 
 export default class ShopScreen extends Component {
   state = {
     showInfoModal: false,
-    text: ""
+    question: "",
+    choice1: "",
+    choice2: "",
+    choice3: "",
+    choice4: "",
+    answer: "",
+    starCount: 1
   };
 
   componentDidMount() {
-    // showInterstitialAd().catch(error => console.log(error));
     // Interstitial ad
     AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
     AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
     AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
     AdMobInterstitial.addEventListener("interstitialDidClose", () => {
-      soundPlay(require("../assets/sounds/success.wav"));
-      this.props.navigation.navigate("AddQuestion");
+      this.props.navigation.pop();
     });
     AdMobInterstitial.addEventListener(
       "interstitialWillLeaveApplication",
@@ -50,20 +56,70 @@ export default class ShopScreen extends Component {
     AdMobInterstitial.removeAllListeners();
   }
 
-  async componentWillMount() {
-    //Ignore Warning on Android
-    YellowBox.ignoreWarnings(["Setting a timer"]);
-    const _console = _.clone(console);
-    console.warn = message => {
-      if (message.indexOf("Setting a timer") <= -1) {
-        _console.warn(message);
-      }
-    };
-  }
+  // async componentWillMount() {
+  //   // Ignore Warning on Android
+  //   YellowBox.ignoreWarnings(["Setting a timer"]);
+  //   const _console = _.clone(console);
+  //   console.warn = message => {
+  //     if (message.indexOf("Setting a timer") <= -1) {
+  //       _console.warn(message);
+  //     }
+  //   };
+  // }
 
   _bannerAd = () => {
     soundPlay(require("../assets/sounds/success.wav"));
     this.context.reducers._getLifeAdd(20);
+  };
+
+  onStarRatingPress = rating => {
+    this.setState({
+      starCount: rating
+    });
+  };
+
+  postQuestion = async () => {
+    const user = auth().currentUser;
+    if (user) {
+      if (
+        this.state.question.trim().length >= 4 &&
+        this.state.answer.trim().length !== 0 &&
+        this.state.choice1.trim().length !== 0 &&
+        this.state.choice2.trim().length !== 0 &&
+        this.state.choice3.trim().length !== 0 &&
+        this.state.choice4.trim().length !== 0
+      ) {
+        await this.context.reducers._suggestQuestion(
+          this.state.question,
+          this.state.choice1,
+          this.state.choice2,
+          this.state.choice3,
+          this.state.choice4,
+          this.state.answer,
+          this.state.starCount,
+          user.email
+        );
+        await this.setState({
+          question: "",
+          choice1: "",
+          choice2: "",
+          choice3: "",
+          choice4: "",
+          answer: "",
+          starCount: 1
+        });
+
+        soundPlay(require("../assets/sounds/success.wav"));
+        this.context.reducers._getLifeAdd(35);
+        _showToast("Question added. Thank you!", 3000, "success");
+        showInterstitialAd().catch(error => console.log(error));
+      } else {
+        soundPlay(require("../assets/sounds/wrong.wav"));
+        _showToast("fill in all the fields please!", 3000, "warning");
+      }
+    } else {
+      _showToast("Please sing in!", 3000, "danger");
+    }
   };
 
   render() {
@@ -102,21 +158,28 @@ export default class ShopScreen extends Component {
               </Header>
               {/* action buttons area */}
               <Content contentContainerStyle={{}}>
+                <View
+                  style={{
+                    alignItems: "center",
+                    shadowColor: "grey",
+                    shadowOpacity: 0.5,
+                    shadowRadius: 2,
+                    elevation: 40
+                  }}
+                >
+                  <StarRating
+                    starSize={35}
+                    fullStarColor="#ff8f00"
+                    starStyle={{ padding: 3 }}
+                    disabled={false}
+                    maxStars={3}
+                    rating={this.state.starCount}
+                    selectedStar={rating => this.onStarRatingPress(rating)}
+                  />
+                </View>
+
                 <View>
-                  <View
-                    style={{
-                      width: Dimensions.window.width * 0.9,
-                      height: Dimensions.window.height * 0.2,
-                      backgroundColor: "white",
-                      borderRadius: 30,
-                      shadowColor: "black",
-                      elevation: 20,
-                      shadowOpacity: 0.8,
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowRadius: 15,
-                      margin: Dimensions.window.height * 0.03
-                    }}
-                  >
+                  <View style={styles.questionBox}>
                     <TextInput
                       style={{
                         flex: 1,
@@ -124,51 +187,104 @@ export default class ShopScreen extends Component {
                         fontWeight: "500",
                         margin: 10
                       }}
+                      placeholder="Your question..."
                       editable={true}
+                      defaultValue={this.state.question}
                       maxLength={100}
                       multiline={true}
                       numberOfLines={4}
-                      onChangeText={text => this.setState({ text })}
-                      value={this.state.text}
+                      onChangeText={question => this.setState({ question })}
                     />
                   </View>
                   <View>
-                    <View>
-                      <View>
-                        <TouchableOpacity onPress={() => {}}>
-                          <View>
-                            <HeaderText style={{ fontSize: 20 }}>
-                              four
-                            </HeaderText>
-                          </View>
-                        </TouchableOpacity>
+                    <View
+                      style={{ alignItems: "center", justifyContent: "center" }}
+                    >
+                      <View style={{ flexDirection: "row" }}>
+                        <View style={styles.answerBox}>
+                          <TextInput
+                            style={styles.answerPlaceholder}
+                            placeholder="CHOICE 1"
+                            editable={true}
+                            multiline={true}
+                            defaultValue={this.state.choice1}
+                            maxLength={14}
+                            onChangeText={choice1 => this.setState({ choice1 })}
+                          />
+                        </View>
 
-                        <TouchableOpacity onPress={() => {}}>
-                          <View>
-                            <HeaderText style={{ fontSize: 20 }}>
-                              one
-                            </HeaderText>
-                          </View>
-                        </TouchableOpacity>
+                        <View style={styles.answerBox}>
+                          <TextInput
+                            style={styles.answerPlaceholder}
+                            placeholder="CHOICE 2"
+                            editable={true}
+                            maxLength={14}
+                            defaultValue={this.state.choice2}
+                            multiline={true}
+                            onChangeText={choice2 => this.setState({ choice2 })}
+                          />
+                        </View>
                       </View>
-                      <View>
-                        <TouchableOpacity onPress={() => {}}>
-                          <View>
-                            <HeaderText style={{ fontSize: 20 }}>
-                              two
-                            </HeaderText>
-                          </View>
-                        </TouchableOpacity>
+                      <View style={{ flexDirection: "row" }}>
+                        <View style={styles.answerBox}>
+                          <TextInput
+                            style={styles.answerPlaceholder}
+                            placeholder="CHOICE 3"
+                            editable={true}
+                            maxLength={14}
+                            defaultValue={this.state.choice3}
+                            multiline={true}
+                            onChangeText={choice3 => this.setState({ choice3 })}
+                          />
+                        </View>
 
-                        <TouchableOpacity onPress={() => {}}>
-                          <View>
-                            <HeaderText style={{ fontSize: 20 }}>
-                              three
-                            </HeaderText>
-                          </View>
-                        </TouchableOpacity>
+                        <View style={styles.answerBox}>
+                          <TextInput
+                            style={styles.answerPlaceholder}
+                            placeholder="CHOICE 4"
+                            editable={true}
+                            maxLength={14}
+                            defaultValue={this.state.choice4}
+                            multiline={true}
+                            onChangeText={choice4 => this.setState({ choice4 })}
+                          />
+                        </View>
+
                         <View style={{ marginVertical: 10 }} />
                       </View>
+                    </View>
+                    <View
+                      style={{ justifyContent: "center", alignItems: "center" }}
+                    >
+                      <View style={styles.answerBox}>
+                        <TextInput
+                          style={styles.answerPlaceholder}
+                          placeholder="RIGHT ANSWER"
+                          editable={true}
+                          maxLength={14}
+                          defaultValue={this.state.answer}
+                          multiline={true}
+                          onChangeText={answer => this.setState({ answer })}
+                        />
+                      </View>
+                    </View>
+                    <View
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.postQuestion();
+                        }}
+                      >
+                        <View style={styles.submitButton}>
+                          <HeaderText style={{ fontSize: 20 }}>
+                            submit
+                          </HeaderText>
+                        </View>
+                      </TouchableOpacity>
                     </View>
                   </View>
                 </View>
@@ -242,5 +358,50 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 5,
     elevation: 100
+  },
+  answerBox: {
+    width: Dimensions.window.width * 0.4,
+    height: Dimensions.window.height * 0.06,
+    backgroundColor: "white",
+    borderRadius: 30,
+    shadowColor: "black",
+    elevation: 20,
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: Dimensions.window.width * 0.005,
+    marginVertical: Dimensions.window.height * 0.005
+  },
+  submitButton: {
+    width: Dimensions.window.width * 0.4,
+    height: Dimensions.window.height * 0.06,
+    shadowColor: "green",
+    shadowOpacity: 0.6,
+    shadowRadius: 3,
+    backgroundColor: "green",
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: Dimensions.window.height * 0.03
+  },
+  questionBox: {
+    width: Dimensions.window.width * 0.9,
+    height: Dimensions.window.height * 0.2,
+    backgroundColor: "white",
+    borderRadius: 30,
+    shadowColor: "black",
+    elevation: 20,
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 15,
+    margin: Dimensions.window.height * 0.03
+  },
+  answerPlaceholder: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: "500",
+    margin: 10
   }
 });

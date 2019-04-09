@@ -40,7 +40,7 @@ export class SettingsProvider extends React.Component {
   state = {
     isInternetConnected: false,
     loggedIn: false,
-    maxNumOfQuestions: 12,
+    maxNumOfQuestions: 500,
     overallBestScores: {
       gold: {
         username: "",
@@ -245,6 +245,33 @@ export class SettingsProvider extends React.Component {
           saveDataToSecureStorage("WordsMeaningLife", this.state.life);
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
+      },
+      _suggestQuestion: async (
+        question,
+        choice1,
+        choice2,
+        choice3,
+        choice4,
+        answer,
+        rating,
+        author
+      ) => {
+        db.collection("suggestedQuestions")
+          .doc(Date.now().toString())
+          .set({
+            question: question,
+            choice1: choice1,
+            choice2: choice2,
+            choice3: choice3,
+            choice4: choice4,
+            answer: answer,
+            rating: rating,
+            author: author
+          })
+          .then(function() {
+            // console.log("Document successfully written!");
+          })
+          .catch(function(error) {});
       },
       //add score and update score in DB or LocalStorage
       _addScore: async rating => {

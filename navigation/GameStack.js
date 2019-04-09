@@ -13,6 +13,6 @@ export default createStackNavigator(
   },
   {
     headerMode: "none",
-    initialRouteName: "AddQuestion"
+    initialRouteName: "Landing"
   }
 );
