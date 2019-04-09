@@ -25,10 +25,13 @@ import {
   AdMobRewarded
 } from "expo";
 import { showInterstitialAd, showRewardedAd, BANNER_ID } from "../utils/showAd";
+import { _showToast } from "../utils/ShowToast";
 
 export default class ShopScreen extends Component {
   state = {
-    showInfoModal: false
+    showInfoModal: false,
+    bannerTopClicked: false,
+    bannerBottomClicked: false
   };
 
   componentDidMount() {
@@ -62,7 +65,6 @@ export default class ShopScreen extends Component {
   }
 
   componentWillUnmount() {
-    // console.log("compomnent Unmounted");
     AdMobInterstitial.removeAllListeners();
     AdMobRewarded.removeAllListeners();
   }
@@ -80,15 +82,34 @@ export default class ShopScreen extends Component {
 
   _get150crystalAd = () => {
     soundPlay(require("../assets/sounds/click.wav"));
-    showInterstitialAd().catch(error => console.log(error));
+    showInterstitialAd().catch(error =>
+      _showToast("Error showing ad", 2000, "warning")
+    );
     showRewardedAd().catch(error => {
-      console.log(error);
+      _showToast("Error showing ad", 2000, "warning");
     });
   };
 
   _bannerAd = () => {
     soundPlay(require("../assets/sounds/success.wav"));
     this.context.reducers._getLifeAdd(20);
+  };
+
+  _bannerClick = (top, bottom) => {
+    if (top !== null) {
+      if (this.state.bannerTopClicked) {
+        return;
+      }
+      this._bannerAd();
+      this.setState({ bannerTopClicked: true });
+    }
+    if (bottom !== null) {
+      if (this.state.bannerBottomClicked) {
+        return;
+      }
+      this._bannerAd();
+      this.setState({ bannerBottomClicked: true });
+    }
   };
 
   render() {
@@ -175,14 +196,13 @@ export default class ShopScreen extends Component {
               </Content>
 
               <Footer
-                Footer
                 transparent
                 style={{
                   backgroundColor: "transparent",
-                  borderColor: "transparent"
+                  borderColor: "transparent",
+                  flexDirection: "column"
                 }}
               >
-                {/* // Display a DFP Publisher banner */}
                 <View style={{ flexDirection: "row" }}>
                   <HeaderText> + 20{"   "}</HeaderText>
                   <Image
@@ -195,24 +215,26 @@ export default class ShopScreen extends Component {
                   />
                   <HeaderText>{"   "}per banner click </HeaderText>
                 </View>
+
+                <TouchableOpacity onPress={top => this._bannerClick(top, null)}>
+                  <Footer
+                    transparent
+                    style={{ backgroundColor: "transparent" }}
+                  >
+                    {/* // Display a DFP Publisher banner */}
+                    <PublisherBanner
+                      bannerSize="fullBanner"
+                      adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                      testDeviceID="EMULATOR"
+                      onDidFailToReceiveAdWithError={this.bannerError}
+                      onAdMobDispatchAppEvent={this.adMobEvent}
+                    />
+                  </Footer>
+                </TouchableOpacity>
               </Footer>
-              <TouchableOpacity onPress={() => this._bannerAd()}>
-                <Footer
-                  Footer
-                  transparent
-                  style={{ backgroundColor: "transparent" }}
-                >
-                  {/* // Display a DFP Publisher banner */}
-                  <PublisherBanner
-                    bannerSize="fullBanner"
-                    adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-                    testDeviceID="EMULATOR"
-                    onDidFailToReceiveAdWithError={this.bannerError}
-                    onAdMobDispatchAppEvent={this.adMobEvent}
-                  />
-                </Footer>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => this._bannerAd()}>
+              <TouchableOpacity
+                onPress={bottom => this._bannerClick(null, bottom)}
+              >
                 <Footer transparent style={{ backgroundColor: "transparent" }}>
                   {/* // Display a banner */}
 

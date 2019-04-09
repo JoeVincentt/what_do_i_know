@@ -45,11 +45,13 @@ export default class LandingScreen extends Component {
     answers: [],
     loading: true,
     rating: null,
-    time: 0,
+    time: 25000,
     notEnoughCrystals: null,
     showToast: false,
     loadingQuestion: false,
-    maxNumOfQuestions: 500
+    maxNumOfQuestions: 10000,
+    previousQuestionNumber: null,
+    answeredQuestions: []
   };
 
   componentDidMount() {
@@ -67,7 +69,22 @@ export default class LandingScreen extends Component {
   _loadQuestion = async () => {
     let maxNumOfQuestions = this.state.maxNumOfQuestions;
     let questionId = await this.getRandomInt(0, maxNumOfQuestions);
-    this.setState({ loadingQuestion: true, choiceMade: true });
+    // let questionId = await this.getRandomInt(0, 10);
+
+    //return new quesstion if prev question id the same as new one
+    if (
+      this.state.previousQuestionNumber === questionId ||
+      this.state.answeredQuestions.indexOf(questionId) !== -1
+    ) {
+      return this._loadQuestion();
+    }
+
+    //set state and get questions
+    this.setState({
+      loadingQuestion: true,
+      choiceMade: true,
+      previousQuestionNumber: questionId
+    });
     try {
       const docRef = db.collection("questions").doc(`${questionId}`);
       docRef
@@ -81,30 +98,33 @@ export default class LandingScreen extends Component {
               actualAnswer: question.rightAnswer,
               answers: question.answers,
               rating: Number(question.rating),
-              time: 15000,
+              time: 25000,
               loadingQuestion: false
             });
           } else {
             // doc.data() will be undefined in this case
             this._loadQuestion();
-            // console.log("No such document!");
           }
         })
         .catch(function(error) {
-          console.log("Error getting document:", error);
+          _showToast(`${error}`, 2000, "danger");
+          // console.log("Error getting document:", error);
         });
     } catch (error) {
-      console.log(error);
+      _showToast(`${error}`, 2000, "danger");
+      // console.log(error);
     }
   };
 
-  _checkAnswer = answer => {
+  _checkAnswer = async answer => {
     if (!this.state.choiceMade) {
       if (this.state.actualAnswer === answer) {
         this.context.reducers._addScore(this.state.rating);
-        this.setState({
+        await this.setState({
           choiceMade: true,
-          time: 0
+          answeredQuestions: this.state.answeredQuestions.concat(
+            this.state.previousQuestionNumber
+          )
         });
         soundPlay(require("../assets/sounds/success.wav"));
         _showToast("  C O R R E C T ", 500, "success");
@@ -112,8 +132,8 @@ export default class LandingScreen extends Component {
       }
       if (this.state.actualAnswer !== answer) {
         this.setState({
-          choiceMade: true,
-          time: 0
+          choiceMade: true
+          // time: 0
         });
         Vibration.vibrate(300);
         soundPlay(require("../assets/sounds/wrong.wav"));
@@ -478,7 +498,7 @@ export default class LandingScreen extends Component {
                           <View>
                             <TimerCountdown
                               onTick={milliseconds =>
-                                milliseconds <= 5000 && milliseconds >= 4900
+                                milliseconds <= 5000
                                   ? this._timeLowSound()
                                   : null
                               }

@@ -32,7 +32,8 @@ export default class ShopScreen extends Component {
     choice3: "",
     choice4: "",
     answer: "",
-    starCount: 1
+    starCount: 1,
+    bannerClicked: false
   };
 
   componentDidMount() {
@@ -52,22 +53,14 @@ export default class ShopScreen extends Component {
   }
 
   componentWillUnmount() {
-    // console.log("compomnent Unmounted");
     AdMobInterstitial.removeAllListeners();
   }
 
-  // async componentWillMount() {
-  //   // Ignore Warning on Android
-  //   YellowBox.ignoreWarnings(["Setting a timer"]);
-  //   const _console = _.clone(console);
-  //   console.warn = message => {
-  //     if (message.indexOf("Setting a timer") <= -1) {
-  //       _console.warn(message);
-  //     }
-  //   };
-  // }
-
   _bannerAd = () => {
+    if (this.state.bannerClicked) {
+      return;
+    }
+    this.setState({ bannerClicked: true });
     soundPlay(require("../assets/sounds/success.wav"));
     this.context.reducers._getLifeAdd(20);
   };
@@ -112,7 +105,9 @@ export default class ShopScreen extends Component {
         soundPlay(require("../assets/sounds/success.wav"));
         this.context.reducers._getLifeAdd(35);
         _showToast("Question added. Thank you!", 3000, "success");
-        showInterstitialAd().catch(error => console.log(error));
+        showInterstitialAd().catch(error =>
+          _showToast("Error showing ad", 2000, "warning")
+        );
       } else {
         soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast("fill in all the fields please!", 3000, "warning");
@@ -299,6 +294,14 @@ export default class ShopScreen extends Component {
                 }}
               >
                 {/* // Display a DFP Publisher banner */}
+              </Footer>
+              <Footer
+                style={{
+                  flexDirection: "column",
+                  backgroundColor: "transparent",
+                  borderColor: "transparent"
+                }}
+              >
                 <View style={{ flexDirection: "row" }}>
                   <HeaderText> + 20{"   "}</HeaderText>
                   <Image
@@ -311,34 +314,28 @@ export default class ShopScreen extends Component {
                   />
                   <HeaderText>{"   "}per banner click </HeaderText>
                 </View>
-              </Footer>
-              <TouchableOpacity onPress={() => this._bannerAd()}>
-                <Footer
-                  Footer
-                  transparent
-                  style={{ backgroundColor: "transparent" }}
+                <TouchableOpacity
+                  onPress={() => {
+                    this._bannerAd();
+                  }}
                 >
-                  {/* // Display a DFP Publisher banner */}
-                  <PublisherBanner
-                    bannerSize="fullBanner"
-                    adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-                    testDeviceID="EMULATOR"
-                    onDidFailToReceiveAdWithError={this.bannerError}
-                    onAdMobDispatchAppEvent={this.adMobEvent}
-                  />
-                </Footer>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => this._bannerAd()}>
-                <Footer transparent style={{ backgroundColor: "transparent" }}>
-                  {/* // Display a banner */}
-                  <AdMobBanner
-                    bannerSize="fullBanner"
-                    adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-                    testDeviceID="EMULATOR"
-                    onDidFailToReceiveAdWithError={this.bannerError}
-                  />
-                </Footer>
-              </TouchableOpacity>
+                  <Footer
+                    transparent
+                    style={{
+                      backgroundColor: "transparent",
+                      paddingBottom: Dimensions.window.height * 0.03
+                    }}
+                  >
+                    {/* // Display a banner */}
+                    <AdMobBanner
+                      bannerSize="fullBanner"
+                      adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                      testDeviceID="EMULATOR"
+                      onDidFailToReceiveAdWithError={this.bannerError}
+                    />
+                  </Footer>
+                </TouchableOpacity>
+              </Footer>
             </View>
           )}
         </SettingsConsumer>
@@ -371,7 +368,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: Dimensions.window.width * 0.005,
+    marginHorizontal: Dimensions.window.width * 0.01,
     marginVertical: Dimensions.window.height * 0.005
   },
   submitButton: {

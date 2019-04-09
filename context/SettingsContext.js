@@ -40,7 +40,7 @@ export class SettingsProvider extends React.Component {
   state = {
     isInternetConnected: false,
     loggedIn: false,
-    maxNumOfQuestions: 500,
+    maxNumOfQuestions: 1000,
     overallBestScores: {
       gold: {
         username: "",
@@ -280,7 +280,7 @@ export class SettingsProvider extends React.Component {
             user: {
               ...this.state.user,
               scores: this.state.user.scores + 1,
-              crystal: this.state.user.crystal + rating
+              crystal: this.state.user.crystal + (rating + 2)
             }
           });
           saveDataToDatabase(
@@ -312,11 +312,11 @@ export class SettingsProvider extends React.Component {
                   }
                 } else {
                   // doc.data() will be undefined in this case
-                  console.log("No such document!");
+                  // console.log("No such document!");
                 }
               })
               .catch(function(error) {
-                console.log("Error getting document:", error);
+                // console.log("Error getting document:", error);
               });
           }
           if (
@@ -340,7 +340,7 @@ export class SettingsProvider extends React.Component {
                 }
               })
               .catch(function(error) {
-                console.log("Error getting document:", error);
+                // console.log("Error getting document:", error);
               });
           }
           if (
@@ -361,11 +361,11 @@ export class SettingsProvider extends React.Component {
                   }
                 } else {
                   // doc.data() will be undefined in this case
-                  console.log("No such document!");
+                  // console.log("No such document!");
                 }
               })
               .catch(function(error) {
-                console.log("Error getting document:", error);
+                // console.log("Error getting document:", error);
               });
           }
         } else {
@@ -429,11 +429,11 @@ export class SettingsProvider extends React.Component {
               // console.log("Document data:", doc.data());
             } else {
               // doc.data() will be undefined in this case
-              console.log("No such document!");
+              // console.log("No such document!");
             }
           })
           .catch(function(error) {
-            console.log("Error getting document:", error);
+            // console.log("Error getting document:", error);
           });
 
         //Set best overallresult
@@ -450,11 +450,11 @@ export class SettingsProvider extends React.Component {
               // console.log("Document data:", doc.data());
             } else {
               // doc.data() will be undefined in this case
-              console.log("No such document!");
+              // console.log("No such document!");
             }
           })
           .catch(function(error) {
-            console.log("Error getting document:", error);
+            // console.log("Error getting document:", error);
           });
 
         //Set best overallresult
@@ -475,11 +475,11 @@ export class SettingsProvider extends React.Component {
               // console.log("Document data:", doc.data());
             } else {
               // doc.data() will be undefined in this case
-              console.log("No such document!");
+              // console.log("No such document!");
             }
           })
           .catch(function(error) {
-            console.log("Error getting document:", error);
+            // console.log("Error getting document:", error);
           });
 
         const resRefBronze = db.collection("bestScores").doc("bronze");
@@ -499,11 +499,11 @@ export class SettingsProvider extends React.Component {
               // console.log("Document data:", doc.data());
             } else {
               // doc.data() will be undefined in this case
-              console.log("No such document!");
+              // console.log("No such document!");
             }
           })
           .catch(function(error) {
-            console.log("Error getting document:", error);
+            // console.log("Error getting document:", error);
           });
 
         const resRefSilver = db.collection("bestScores").doc("silver");
@@ -528,7 +528,7 @@ export class SettingsProvider extends React.Component {
             }
           })
           .catch(function(error) {
-            console.log("Error getting document:", error);
+            // console.log("Error getting document:", error);
           });
 
         //Get bestScore from ss
@@ -577,7 +577,7 @@ export class SettingsProvider extends React.Component {
       };
       NetInfo.addEventListener("connectionChange", handleConnectivityChange);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }
 
