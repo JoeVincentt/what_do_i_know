@@ -6,13 +6,12 @@ import SuggestQuestionScreen from "../screens/SuggestQuestionScreen";
 
 export default createStackNavigator(
   {
-    Landing: LandingScreen,
     Game: GameScreen,
     Shop: ShopScreen,
     AddQuestion: SuggestQuestionScreen
   },
   {
     headerMode: "none",
-    initialRouteName: "Landing"
+    initialRouteName: "Game"
   }
 );

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  AdMobBanner,
-  AdMobInterstitial,
-  PublisherBanner,
-  AdMobRewarded,
-  Constants
-} from "expo";
+import { Constants } from "expo";
 import { NetInfo } from "react-native";
 import { _showToast } from "../utils/ShowToast";
 import { initializeApp, firestore } from "firebase";
@@ -54,6 +48,11 @@ export class SettingsProvider extends React.Component {
         username: "",
         bestScores: ""
       }
+    },
+    announcement: {
+      header: "",
+      message: "",
+      footer: ""
     },
     user: {
       avatar: "",
@@ -280,7 +279,7 @@ export class SettingsProvider extends React.Component {
             user: {
               ...this.state.user,
               scores: this.state.user.scores + 1,
-              crystal: this.state.user.crystal + (rating + 2)
+              crystal: this.state.user.crystal + (rating + 1)
             }
           });
           saveDataToDatabase(
@@ -518,6 +517,30 @@ export class SettingsProvider extends React.Component {
                     bestScores: doc.data().bestScores,
                     username: doc.data().username
                   }
+                }
+              });
+              // console.log("Document data:", doc.data());
+            } else {
+              // doc.data() will be undefined in this case
+              return;
+              // console.log("No such document!");
+            }
+          })
+          .catch(function(error) {
+            // console.log("Error getting document:", error);
+          });
+
+        //set announcement
+        const resRefAnnoun = db.collection("announcement").doc("announcement");
+        resRefAnnoun
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              this.setState({
+                announcement: {
+                  header: doc.data().header,
+                  message: doc.data().message,
+                  footer: doc.data().footer
                 }
               });
               // console.log("Document data:", doc.data());

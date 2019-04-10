@@ -62,6 +62,7 @@ export default class LandingScreen extends Component {
   async componentWillMount() {
     await this._loadQuestion();
   }
+  componentWillUnmount() {}
 
   getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;

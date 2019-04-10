@@ -39,9 +39,7 @@ export default class ShopScreen extends Component {
     AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
     AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
     AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidClose", () => {
-      this.props.navigation.pop();
-    });
+    AdMobInterstitial.addEventListener("interstitialDidClose", () => {});
     AdMobInterstitial.addEventListener(
       "interstitialWillLeaveApplication",
       () => {}
