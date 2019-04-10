@@ -74,7 +74,7 @@ export default class LandingScreen extends Component {
                   email: existingUserData.email,
                   username: existingUserData.username,
                   avatar: existingUserData.avatar,
-                  life: existingUserData.life - 1,
+                  life: existingUserData.life,
                   scores: existingUserData.scores,
                   bestScores: existingUserData.bestScores,
                   crystal: existingUserData.crystal

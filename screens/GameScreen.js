@@ -32,11 +32,9 @@ import AnswerBoxes from "../components/AnswerBoxes";
 import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
 import { soundPlay } from "../utils/soundPlay";
-import { firestore } from "firebase";
+import { database } from "firebase";
 import { AdMobBanner } from "expo";
 require("firebase/firestore");
-
-const db = firestore();
 
 export default class LandingScreen extends Component {
   state = {
@@ -88,12 +86,12 @@ export default class LandingScreen extends Component {
       previousQuestionNumber: questionId
     });
     try {
-      const docRef = db.collection("questions").doc(`${questionId}`);
+      const docRef = database().ref(`questions/${questionId}`);
       docRef
-        .get()
+        .once("value")
         .then(doc => {
-          if (doc.exists) {
-            let question = doc.data();
+          const question = doc.val();
+          if (question !== null) {
             this.setState({
               choiceMade: false,
               question: question.question,
@@ -108,12 +106,12 @@ export default class LandingScreen extends Component {
             this._loadQuestion();
           }
         })
-        .catch(function(error) {
-          _showToast(`${error}`, 2000, "danger");
+        .catch(error => {
+          _showToast(`error occurred`, 2000, "danger");
           // console.log("Error getting document:", error);
         });
     } catch (error) {
-      _showToast(`${error}`, 2000, "danger");
+      _showToast(`error occurred`, 2000, "danger");
       // console.log(error);
     }
   };

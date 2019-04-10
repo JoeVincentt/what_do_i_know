@@ -11,25 +11,13 @@ const db = firestore();
 export const SettingsContext = React.createContext();
 export const SettingsConsumer = SettingsContext.Consumer;
 
-//save data to server
-// const saveDataToDatabase = async (userId, key, value) => {
-//   var usersUpdate = {};
-//   usersUpdate[`${key}`] = value;
-//   const userRef = db
-//     .collection("users")
-//     .doc(userId)
-//     .update(usersUpdate);
-// };
 const saveDataToDatabase = async (userId, key, value) => {
   var usersUpdate = {};
   usersUpdate[`${key}`] = value;
-
   database()
     .ref("users/" + userId)
     .update(usersUpdate);
 };
-
-//getData from server
 
 //Save and retrieve data from local storage
 const saveDataToSecureStorage = async (key, item) =>
@@ -253,32 +241,16 @@ export class SettingsProvider extends React.Component {
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
       },
-      _suggestQuestion: async (
-        question,
-        choice1,
-        choice2,
-        choice3,
-        choice4,
-        answer,
-        rating,
-        author
-      ) => {
-        db.collection("suggestedQuestions")
-          .doc(Date.now().toString())
+      _suggestQuestion: async (question, answers, answer, rating, author) => {
+        database()
+          .ref(`suggestedQuestions/${Date.now().toString()}`)
           .set({
             question: question,
-            choice1: choice1,
-            choice2: choice2,
-            choice3: choice3,
-            choice4: choice4,
-            answer: answer,
+            answers: answers,
+            rightAnswer: answer,
             rating: rating,
             author: author
-          })
-          .then(function() {
-            // console.log("Document successfully written!");
-          })
-          .catch(function(error) {});
+          });
       },
       //add score and update score in DB or LocalStorage
       _addScore: async rating => {
@@ -306,74 +278,19 @@ export class SettingsProvider extends React.Component {
             this.state.user.scores >
             this.state.overallBestScores.bronze.bestScores
           ) {
-            const resRefBronze = db.collection("bestScores").doc("bronze");
-            resRefBronze
-              .get()
-              .then(doc => {
-                if (doc.exists) {
-                  if (doc.data().bestScores < this.state.user.scores) {
-                    resRefBronze.update({
-                      username: this.state.user.username,
-                      bestScores: this.state.user.scores
-                    });
-                  }
-                } else {
-                  // doc.data() will be undefined in this case
-                  // console.log("No such document!");
-                }
-              })
-              .catch(function(error) {
-                // console.log("Error getting document:", error);
-              });
+            this.state.reducers._updateBestScores("bronze");
           }
           if (
             this.state.user.scores >
             this.state.overallBestScores.silver.bestScores
           ) {
-            const resRefSilver = db.collection("bestScores").doc("silver");
-            resRefSilver
-              .get()
-              .then(doc => {
-                if (doc.exists) {
-                  if (doc.data().bestScores < this.state.user.scores) {
-                    resRefSilver.update({
-                      username: this.state.user.username,
-                      bestScores: this.state.user.scores
-                    });
-                  }
-                } else {
-                  // doc.data() will be undefined in this case
-                  // console.log("No such document!");
-                }
-              })
-              .catch(function(error) {
-                // console.log("Error getting document:", error);
-              });
+            this.state.reducers._updateBestScores("silver");
           }
           if (
             this.state.user.scores >
             this.state.overallBestScores.gold.bestScores
           ) {
-            //Set best overallresult
-            const resRefGold = db.collection("bestScores").doc("gold");
-            resRefGold
-              .get()
-              .then(doc => {
-                if (doc.exists) {
-                  if (doc.data().bestScores < this.state.user.scores) {
-                    resRefGold.update({
-                      username: this.state.user.username,
-                      bestScores: this.state.user.scores
-                    });
-                  }
-                } else {
-                  // doc.data() will be undefined in this case
-                  // console.log("No such document!");
-                }
-              })
-              .catch(function(error) {
-                // console.log("Error getting document:", error);
-              });
+            this.state.reducers._updateBestScores("gold");
           }
         } else {
           //Update score + crystal
@@ -390,6 +307,35 @@ export class SettingsProvider extends React.Component {
             saveDataToSecureStorage("WordsMeaningBest", this.state.scores);
           }
         }
+      },
+      _loadBestScores: parameter => {
+        database()
+          .ref(`/bestScores/${parameter}`)
+          .once("value")
+          .then(data => {
+            const rawData = data.val();
+            this.setState({
+              overallBestScores: {
+                ...this.state.overallBestScores,
+                [parameter]: {
+                  bestScores: rawData.bestScores,
+                  username: rawData.username
+                }
+              }
+            });
+          });
+      },
+      _updateBestScores: parameter => {
+        const dataRef = database().ref("bestScores/" + parameter);
+        dataRef.once("value").then(data => {
+          const rawData = data.val();
+          if (rawData.bestScores < this.state.user.scores) {
+            dataRef.update({
+              username: this.state.user.username,
+              bestScores: this.state.user.scores
+            });
+          }
+        });
       }
     }
     //background colors set
@@ -415,151 +361,53 @@ export class SettingsProvider extends React.Component {
         //if connection to internet, set game
         this.setState({ isInternetConnected: true });
         _showToast(`you are online`, 3000, "success");
+
         //get appTheme
-        const resRefColors = db.collection("appTheme").doc("appTheme");
-        resRefColors
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              const appTheme = doc.data();
-              this.setState({
-                backgroundColor: {
-                  color1: appTheme.backgroundColor.color1,
-                  color2: appTheme.backgroundColor.color2,
-                  color3: appTheme.backgroundColor.color3
-                },
-                buttonColors: {
-                  color1: appTheme.buttonColors.color1,
-                  color2: appTheme.buttonColors.color2
-                }
-              });
-              // console.log("Document data:", doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              // console.log("No such document!");
-            }
-          })
-          .catch(function(error) {
-            // console.log("Error getting document:", error);
+        database()
+          .ref("/appTheme/")
+          .once("value")
+          .then(colors => {
+            const appTheme = colors.val();
+            this.setState({
+              backgroundColor: {
+                color1: appTheme.backgroundColor.color1,
+                color2: appTheme.backgroundColor.color2,
+                color3: appTheme.backgroundColor.color3
+              },
+              buttonColors: {
+                color1: appTheme.buttonColors.color1,
+                color2: appTheme.buttonColors.color2
+              }
+            });
           });
+
+        //max amount of questions
+        const dataRef = database().ref("amountOfQuestions/");
+        dataRef.once("value").then(data => {
+          const maxNumOfQuestions = data.val();
+          this.setState({
+            maxNumOfQuestions: maxNumOfQuestions.amountOfQuestions
+          });
+        });
 
         //Set best overallresult
-        const resRefQuestions = db
-          .collection("amountOfQuestions")
-          .doc("amountOfQuestions");
-        resRefQuestions
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              this.setState({
-                maxNumOfQuestions: doc.data().amountOfQuestions
-              });
-              // console.log("Document data:", doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              // console.log("No such document!");
-            }
-          })
-          .catch(function(error) {
-            // console.log("Error getting document:", error);
-          });
+        this.state.reducers._loadBestScores("gold");
+        this.state.reducers._loadBestScores("silver");
+        this.state.reducers._loadBestScores("bronze");
 
-        //Set best overallresult
-        const resRefGold = db.collection("bestScores").doc("gold");
-        resRefGold
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              this.setState({
-                overallBestScores: {
-                  ...this.state.overallBestScores,
-                  gold: {
-                    bestScores: doc.data().bestScores,
-                    username: doc.data().username
-                  }
-                }
-              });
-              // console.log("Document data:", doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              // console.log("No such document!");
-            }
-          })
-          .catch(function(error) {
-            // console.log("Error getting document:", error);
-          });
-
-        const resRefBronze = db.collection("bestScores").doc("bronze");
-        resRefBronze
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              this.setState({
-                overallBestScores: {
-                  ...this.state.overallBestScores,
-                  bronze: {
-                    bestScores: doc.data().bestScores,
-                    username: doc.data().username
-                  }
-                }
-              });
-              // console.log("Document data:", doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              // console.log("No such document!");
-            }
-          })
-          .catch(function(error) {
-            // console.log("Error getting document:", error);
-          });
-
-        const resRefSilver = db.collection("bestScores").doc("silver");
-        resRefSilver
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              this.setState({
-                overallBestScores: {
-                  ...this.state.overallBestScores,
-                  silver: {
-                    bestScores: doc.data().bestScores,
-                    username: doc.data().username
-                  }
-                }
-              });
-              // console.log("Document data:", doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              return;
-              // console.log("No such document!");
-            }
-          })
-          .catch(function(error) {
-            // console.log("Error getting document:", error);
-          });
-
-        //set announcement
-        const resRefAnnoun = db.collection("announcement").doc("announcement");
-        resRefAnnoun
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              this.setState({
-                announcement: {
-                  header: doc.data().header,
-                  message: doc.data().message,
-                  footer: doc.data().footer
-                }
-              });
-              // console.log("Document data:", doc.data());
-            } else {
-              // doc.data() will be undefined in this case
-              return;
-              // console.log("No such document!");
-            }
-          })
-          .catch(function(error) {
-            // console.log("Error getting document:", error);
+        //Set announcement
+        database()
+          .ref("/announcement/")
+          .once("value")
+          .then(data => {
+            const announcement = data.val();
+            this.setState({
+              announcement: {
+                header: announcement.header,
+                message: announcement.message,
+                footer: announcement.footer
+              }
+            });
           });
 
         //Get bestScore from ss

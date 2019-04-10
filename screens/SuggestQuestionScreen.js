@@ -1,15 +1,12 @@
 import React, { Component } from "react";
-import { Content, Header, Left, Footer, Spinner } from "native-base";
+import { Content, Header, Left, Footer } from "native-base";
 import {
   View,
-  YellowBox,
   Platform,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Image,
-  TextInput,
-  LinearGradient
+  TextInput
 } from "react-native";
 import StarRating from "react-native-star-rating";
 import { soundPlay } from "../utils/soundPlay";
@@ -20,8 +17,8 @@ import BaseLayout from "../components/BaseLayout";
 import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { AdMobBanner, PublisherBanner, AdMobInterstitial } from "expo";
-import { showInterstitialAd, BANNER_ID } from "../utils/showAd";
+import { AdMobBanner, AdMobInterstitial } from "expo";
+import { showInterstitialAd } from "../utils/showAd";
 
 export default class ShopScreen extends Component {
   state = {
@@ -73,6 +70,11 @@ export default class ShopScreen extends Component {
 
   postQuestion = async () => {
     const user = auth().currentUser;
+    let answers = [];
+    answers.push(this.state.choice1.trim());
+    answers.push(this.state.choice2.trim());
+    answers.push(this.state.choice3.trim());
+    answers.push(this.state.choice4.trim());
     if (user) {
       if (
         this.state.question.trim().length >= 4 &&
@@ -84,10 +86,7 @@ export default class ShopScreen extends Component {
       ) {
         await this.context.reducers._suggestQuestion(
           this.state.question,
-          this.state.choice1,
-          this.state.choice2,
-          this.state.choice3,
-          this.state.choice4,
+          answers,
           this.state.answer,
           this.state.starCount,
           user.email
