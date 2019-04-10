@@ -7,7 +7,8 @@ import {
   Right,
   Body,
   Spinner,
-  Item
+  Item,
+  Footer
 } from "native-base";
 import Modal from "react-native-modal";
 import {
@@ -32,7 +33,7 @@ import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
 import { soundPlay } from "../utils/soundPlay";
 import { firestore } from "firebase";
-
+import { AdMobBanner } from "expo";
 require("firebase/firestore");
 
 const db = firestore();
@@ -374,6 +375,22 @@ export default class LandingScreen extends Component {
                       </View>
                     </View>
                   </View>
+                  <Footer
+                    transparent
+                    style={{
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
+                      paddingBottom: Dimensions.window.height * 0.03
+                    }}
+                  >
+                    {/* // Display a banner */}
+                    <AdMobBanner
+                      bannerSize="fullBanner"
+                      adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                      testDeviceID="EMULATOR"
+                      onDidFailToReceiveAdWithError={this.bannerError}
+                    />
+                  </Footer>
                 </View>
               ) : (
                 // game screen below
@@ -644,6 +661,22 @@ export default class LandingScreen extends Component {
                       </TouchableOpacity>
                     </View>
                   </Content>
+                  <Footer
+                    transparent
+                    style={{
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
+                      paddingBottom: Dimensions.window.height * 0.03
+                    }}
+                  >
+                    {/* // Display a banner */}
+                    <AdMobBanner
+                      bannerSize="fullBanner"
+                      adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                      testDeviceID="EMULATOR"
+                      onDidFailToReceiveAdWithError={this.bannerError}
+                    />
+                  </Footer>
                 </View>
               )}
               <Modal
@@ -688,23 +721,6 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   endGameText: { fontSize: 25 },
-  mineIconCrystal: {
-    fontSize: 30,
-    paddingTop: 10,
-    marginRight: -15,
-    shadowColor: "white",
-    shadowRadius: 30,
-    shadowOpacity: 3,
-    elevation: 150
-  },
-  mineIconMine: {
-    fontSize: 40,
-    marginTop: -10,
-    shadowColor: "white",
-    shadowRadius: 30,
-    shadowOpacity: 3,
-    elevation: 150
-  },
   mineText: {
     fontSize: 25,
     shadowColor: "white",

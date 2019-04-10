@@ -286,20 +286,12 @@ export default class ShopScreen extends Component {
               </Content>
 
               <Footer
-                Footer
-                transparent
-                style={{
-                  backgroundColor: "transparent",
-                  borderColor: "transparent"
-                }}
-              >
-                {/* // Display a DFP Publisher banner */}
-              </Footer>
-              <Footer
                 style={{
                   flexDirection: "column",
                   backgroundColor: "transparent",
-                  borderColor: "transparent"
+                  borderColor: "transparent",
+                  alignItems: "center",
+                  justifyContent: "center"
                 }}
               >
                 <View style={{ flexDirection: "row" }}>

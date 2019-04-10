@@ -2,7 +2,7 @@ import React from "react";
 import { Constants } from "expo";
 import { NetInfo } from "react-native";
 import { _showToast } from "../utils/ShowToast";
-import { initializeApp, firestore } from "firebase";
+import { initializeApp, firestore, database } from "firebase";
 initializeApp(Constants.manifest.extra.firebaseConfig);
 require("firebase/firestore");
 const db = firestore();
@@ -12,12 +12,20 @@ export const SettingsContext = React.createContext();
 export const SettingsConsumer = SettingsContext.Consumer;
 
 //save data to server
+// const saveDataToDatabase = async (userId, key, value) => {
+//   var usersUpdate = {};
+//   usersUpdate[`${key}`] = value;
+//   const userRef = db
+//     .collection("users")
+//     .doc(userId)
+//     .update(usersUpdate);
+// };
 const saveDataToDatabase = async (userId, key, value) => {
   var usersUpdate = {};
   usersUpdate[`${key}`] = value;
-  const userRef = db
-    .collection("users")
-    .doc(userId)
+
+  database()
+    .ref("users/" + userId)
     .update(usersUpdate);
 };
 

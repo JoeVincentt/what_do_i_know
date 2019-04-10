@@ -198,7 +198,9 @@ export default class ShopScreen extends Component {
                 style={{
                   backgroundColor: "transparent",
                   borderColor: "transparent",
-                  flexDirection: "column"
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center"
                 }}
               >
                 <View style={{ flexDirection: "row" }}>

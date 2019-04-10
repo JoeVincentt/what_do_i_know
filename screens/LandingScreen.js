@@ -18,7 +18,7 @@ import {
   TouchableOpacity,
   Image
 } from "react-native";
-import { firestore, auth } from "firebase";
+import { firestore, auth, database } from "firebase";
 require("firebase/firestore");
 import HeaderText from "../constants/HeaderText";
 import { LinearGradient, Constants, Audio } from "expo";
@@ -60,33 +60,31 @@ export default class LandingScreen extends Component {
   _alreadyLoggedCheck = async () => {
     auth().onAuthStateChanged(async user => {
       if (user != null) {
+        const userId = auth().currentUser.uid;
         try {
-          const userRef = db.collection("users").doc(auth().currentUser.uid);
           let userData;
-          const user = await userRef.get();
-          if (user.exists) {
-            existingUserData = await user.data();
-            userData = {
-              id: existingUserData.id,
-              email: existingUserData.email,
-              username: existingUserData.username,
-              avatar: existingUserData.avatar,
-              life: existingUserData.life,
-              scores: existingUserData.scores,
-              bestScores: existingUserData.bestScores,
-              crystal: existingUserData.crystal
-            };
-            this.setState({ username: existingUserData.username });
-          } else {
-            //if user doesnt exist
-            // console.log("error fetching user");
-            _showToast("error occurred", 3000, "warning");
-          }
-          this.context.reducers._logInUser(userData);
-          // this.props.navigation.navigate("Game");
+          database()
+            .ref("/users/" + userId)
+            .once("value")
+            .then(userExists => {
+              const existingUserData = userExists.val();
+              if (existingUserData !== null) {
+                userData = {
+                  id: existingUserData.id,
+                  email: existingUserData.email,
+                  username: existingUserData.username,
+                  avatar: existingUserData.avatar,
+                  life: existingUserData.life - 1,
+                  scores: existingUserData.scores,
+                  bestScores: existingUserData.bestScores,
+                  crystal: existingUserData.crystal
+                };
+                this.setState({ username: existingUserData.username });
+                this.context.reducers._logInUser(userData);
+              }
+            });
         } catch (error) {
           _showToast("error occurred", 3000, "warning");
-          // console.log(error);
         }
       } else {
         this._facebookLogIn();
@@ -95,9 +93,7 @@ export default class LandingScreen extends Component {
   };
 
   _facebookLogIn = async () => {
-    // const key = Constants.manifest.extra.fbkey;
     //Check if user logged in already(has token)
-
     try {
       const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
         Constants.manifest.facebookAppId,
@@ -114,61 +110,59 @@ export default class LandingScreen extends Component {
             credential
           );
           if (data) {
-            const usersRef = db.collection("users");
-            const userDoc = usersRef.doc(auth().currentUser.uid);
+            const userId = auth().currentUser.uid;
             try {
-              const userRef = db
-                .collection("users")
-                .doc(auth().currentUser.uid);
-              let userData;
-              const user = await userRef.get();
-              if (user.exists) {
-                existingUserData = await user.data();
-                userData = {
-                  id: existingUserData.id,
-                  email: existingUserData.email,
-                  username: existingUserData.username,
-                  avatar: existingUserData.avatar,
-                  life: existingUserData.life - 1,
-                  scores: existingUserData.scores,
-                  bestScores: existingUserData.bestScores,
-                  crystal: existingUserData.crystal
-                };
-                this.setState({ username: existingUserData.username });
-              } else {
-                //if user doesnt exist
-                userData = {
-                  id: auth().currentUser.uid,
-                  email: data.additionalUserInfo.profile.email,
-                  username: data.additionalUserInfo.profile.name,
-                  avatar: data.additionalUserInfo.profile.picture.data.url,
-                  life: 3,
-                  scores: 0,
-                  bestScores: 0,
-                  crystal: 0
-                };
-                userDoc.set(userData);
-                this.setState({
-                  username: data.additionalUserInfo.profile.name
-                });
-              }
-              this.context.reducers._logInUser(userData);
+              database()
+                .ref("/users/" + userId)
+                .once("value")
+                .then(userExists => {
+                  const existingUserData = userExists.val();
+                  let userData;
+                  if (existingUserData !== null) {
+                    userData = {
+                      id: existingUserData.id,
+                      email: existingUserData.email,
+                      username: existingUserData.username,
+                      avatar: existingUserData.avatar,
+                      life: existingUserData.life - 1,
+                      scores: existingUserData.scores,
+                      bestScores: existingUserData.bestScores,
+                      crystal: existingUserData.crystal
+                    };
+                    this.setState({ username: existingUserData.username });
+                  } else {
+                    userData = {
+                      id: auth().currentUser.uid,
+                      email: data.additionalUserInfo.profile.email,
+                      username: data.additionalUserInfo.profile.name,
+                      avatar: data.additionalUserInfo.profile.picture.data.url,
+                      life: 3,
+                      scores: 0,
+                      bestScores: 0,
+                      crystal: 0
+                    };
+                    database()
+                      .ref("users/" + userId)
+                      .set(userData);
+                    this.setState({
+                      username: data.additionalUserInfo.profile.name
+                    });
+                    this.context.reducers._logInUser(userData);
+                  }
+                })
+                .catch(error => _showToast("error occurred", 3000, "warning"));
             } catch (error) {
-              // console.log(error);
               _showToast("error occurred", 3000, "warning");
             }
           }
         } catch (error) {
-          // console.log(error);
           _showToast("error occurred", 3000, "warning");
         }
       } else {
         // type === 'cancel'
-        // console.log("cancel");
         _showToast("log in to play online", 3000, "warning");
       }
     } catch ({ message }) {
-      // console.log(message);
       // alert(`Facebook Login Error: ${message}`);
       _showToast(`${message}`, 3000, "warning");
     }
