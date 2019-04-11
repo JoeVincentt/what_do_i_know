@@ -222,9 +222,9 @@ export default class ShopScreen extends Component {
                     style={{ backgroundColor: "transparent" }}
                   >
                     {/* // Display a DFP Publisher banner */}
-                    <PublisherBanner
+                    <AdMobBanner
                       bannerSize="fullBanner"
-                      adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                      adUnitID="ca-app-pub-3081883372305625/4998630648" // Test ID, Replace with your-admob-unit-id
                       testDeviceID="EMULATOR"
                       onDidFailToReceiveAdWithError={this.bannerError}
                       onAdMobDispatchAppEvent={this.adMobEvent}
@@ -240,7 +240,7 @@ export default class ShopScreen extends Component {
 
                   <AdMobBanner
                     bannerSize="fullBanner"
-                    adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                    adUnitID="ca-app-pub-3081883372305625/3685548979" // Test ID, Replace with your-admob-unit-id
                     testDeviceID="EMULATOR"
                     onDidFailToReceiveAdWithError={this.bannerError}
                   />

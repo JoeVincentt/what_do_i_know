@@ -1,7 +1,7 @@
 import { AdMobInterstitial, AdMobRewarded, Constants } from "expo";
 
-const INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712";
-const REWARDED_ID = "ca-app-pub-3940256099942544/5224354917";
+const INTERSTITIAL_ID = "ca-app-pub-3081883372305625/1790745894";
+const REWARDED_ID = "ca-app-pub-3081883372305625/8434893915";
 
 AdMobInterstitial.setAdUnitID(INTERSTITIAL_ID);
 AdMobInterstitial.setTestDeviceID("EMULATOR");

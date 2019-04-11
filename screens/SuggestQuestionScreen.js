@@ -320,7 +320,7 @@ export default class ShopScreen extends Component {
                     {/* // Display a banner */}
                     <AdMobBanner
                       bannerSize="fullBanner"
-                      adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
+                      adUnitID="ca-app-pub-3081883372305625/9383640359" // Test ID, Replace with your-admob-unit-id
                       testDeviceID="EMULATOR"
                       onDidFailToReceiveAdWithError={this.bannerError}
                     />

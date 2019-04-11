@@ -92,9 +92,9 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     borderWidth: 2,
     borderColor: "white",
-    shadowColor: "blue",
+    shadowColor: "black",
     shadowOpacity: 0.3,
-    shadowRadius: 7,
+    shadowRadius: 5,
     shadowOffset: { width: 0, height: 1 },
     elevation: 100
   },
