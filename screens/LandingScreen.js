@@ -37,8 +37,6 @@ import BestScoresChart from "../components/BestScoresChart";
 import AnnouncementModal from "../components/AnnouncementModal";
 import { FacebookAds } from "expo";
 
-FacebookAds.AdSettings.addTestDevice(FacebookAds.AdSettings.currentDeviceHash);
-
 export default class LandingScreen extends Component {
   state = {
     isRulesModalVisible: false,
