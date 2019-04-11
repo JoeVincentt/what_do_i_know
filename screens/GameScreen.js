@@ -33,8 +33,7 @@ import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
 import { soundPlay } from "../utils/soundPlay";
 import { database } from "firebase";
-import { AdMobBanner } from "expo";
-require("firebase/firestore");
+import { AdMobBanner, FacebookAds } from "expo";
 
 export default class LandingScreen extends Component {
   state = {
@@ -50,7 +49,8 @@ export default class LandingScreen extends Component {
     loadingQuestion: false,
     maxNumOfQuestions: 10000,
     previousQuestionNumber: null,
-    answeredQuestions: []
+    answeredQuestions: [],
+    answeredEightWrong: 0
   };
 
   componentDidMount() {
@@ -132,9 +132,18 @@ export default class LandingScreen extends Component {
       }
       if (this.state.actualAnswer !== answer) {
         this.setState({
-          choiceMade: true
-          // time: 0
+          choiceMade: true,
+          answeredEightWrong: this.state.answeredEightWrong + 1
         });
+        if (this.state.answeredEightWrong === 8) {
+          this.setState({ answeredEightWrong: 0 });
+          FacebookAds.InterstitialAdManager.showAd(
+            "398250697394647_398254807394236"
+          )
+            .then(() => {})
+            .catch(error => {});
+        }
+
         Vibration.vibrate(300);
         soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast("  I N C O R R E C T ", 500, "danger", "top");
@@ -382,11 +391,11 @@ export default class LandingScreen extends Component {
                     }}
                   >
                     {/* // Display a banner */}
-                    <AdMobBanner
-                      bannerSize="fullBanner"
-                      adUnitID="ca-app-pub-3081883372305625/7829664349" // Test ID, Replace with your-admob-unit-id
-                      testDeviceID="EMULATOR"
-                      onDidFailToReceiveAdWithError={this.bannerError}
+                    <FacebookAds.BannerAd
+                      placementId="398250697394647_398251067394610"
+                      type="standard"
+                      onPress={() => {}}
+                      onError={error => {}}
                     />
                   </Footer>
                 </View>
@@ -668,11 +677,11 @@ export default class LandingScreen extends Component {
                     }}
                   >
                     {/* // Display a banner */}
-                    <AdMobBanner
-                      bannerSize="fullBanner"
-                      adUnitID="ca-app-pub-3081883372305625/7829664349" // Test ID, Replace with your-admob-unit-id
-                      testDeviceID="EMULATOR"
-                      onDidFailToReceiveAdWithError={this.bannerError}
+                    <FacebookAds.BannerAd
+                      placementId="398250697394647_398251067394610"
+                      type="standard"
+                      onPress={() => {}}
+                      onError={error => {}}
                     />
                   </Footer>
                 </View>

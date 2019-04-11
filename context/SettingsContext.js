@@ -2,10 +2,8 @@ import React from "react";
 import { Constants } from "expo";
 import { NetInfo } from "react-native";
 import { _showToast } from "../utils/ShowToast";
-import { initializeApp, firestore, database } from "firebase";
+import { initializeApp, database } from "firebase";
 initializeApp(Constants.manifest.extra.firebaseConfig);
-require("firebase/firestore");
-const db = firestore();
 
 //Create context
 export const SettingsContext = React.createContext();

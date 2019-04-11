@@ -18,13 +18,8 @@ import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import {
-  AdMobBanner,
-  PublisherBanner,
-  AdMobInterstitial,
-  AdMobRewarded
-} from "expo";
-import { showInterstitialAd, showRewardedAd, BANNER_ID } from "../utils/showAd";
+import { AdMobBanner, AdMobInterstitial, AdMobRewarded } from "expo";
+import { showInterstitialAd, showRewardedAd } from "../utils/showAd";
 import { _showToast } from "../utils/ShowToast";
 
 export default class ShopScreen extends Component {

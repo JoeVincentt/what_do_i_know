@@ -7,7 +7,8 @@ import {
   Header,
   Left,
   Right,
-  Item
+  Item,
+  Footer
 } from "native-base";
 import {
   View,
@@ -18,7 +19,7 @@ import {
   TouchableOpacity,
   Image
 } from "react-native";
-import { firestore, auth, database } from "firebase";
+import { auth, database } from "firebase";
 require("firebase/firestore");
 import HeaderText from "../constants/HeaderText";
 import { LinearGradient, Constants, Audio } from "expo";
@@ -34,8 +35,9 @@ import { _showToast } from "../utils/ShowToast";
 import RulesModal from "../components/RulesModal";
 import BestScoresChart from "../components/BestScoresChart";
 import AnnouncementModal from "../components/AnnouncementModal";
+import { FacebookAds } from "expo";
 
-const db = firestore();
+FacebookAds.AdSettings.addTestDevice(FacebookAds.AdSettings.currentDeviceHash);
 
 export default class LandingScreen extends Component {
   state = {
@@ -291,6 +293,23 @@ export default class LandingScreen extends Component {
                 {/* //* best results chart */}
                 <BestScoresChart />
               </Content>
+              <Footer
+                transparent
+                style={{
+                  backgroundColor: "transparent",
+                  borderColor: "transparent",
+                  paddingBottom: Dimensions.window.height * 0.03
+                }}
+              >
+                {/* // Display a banner */}
+                <FacebookAds.BannerAd
+                  placementId="398250697394647_398251067394610"
+                  type="standard"
+                  onPress={() => {}}
+                  onError={error => {}}
+                />
+              </Footer>
+
               {/* rules modal */}
               <RulesModal
                 closeRulesModal={this.closeRulesModal}
