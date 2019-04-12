@@ -35,7 +35,8 @@ import { _showToast } from "../utils/ShowToast";
 import RulesModal from "../components/RulesModal";
 import BestScoresChart from "../components/BestScoresChart";
 import AnnouncementModal from "../components/AnnouncementModal";
-import { FacebookAds } from "expo";
+import FacebookAdBanner from "../utils/showFBbanner";
+import { showFacebookInterstitialAd } from "../utils/showAd";
 
 export default class LandingScreen extends Component {
   state = {
@@ -188,6 +189,7 @@ export default class LandingScreen extends Component {
     soundPlay(require("../assets/sounds/click.wav"));
   };
   closeAnnouncementModal = () => {
+    showFacebookInterstitialAd();
     this.setState({ isAnnouncementModalVisible: false });
     soundPlay(require("../assets/sounds/click.wav"));
   };
@@ -291,22 +293,7 @@ export default class LandingScreen extends Component {
                 {/* //* best results chart */}
                 <BestScoresChart />
               </Content>
-              <Footer
-                transparent
-                style={{
-                  backgroundColor: "transparent",
-                  borderColor: "transparent",
-                  paddingBottom: Dimensions.window.height * 0.03
-                }}
-              >
-                {/* // Display a banner */}
-                <FacebookAds.BannerAd
-                  placementId="398250697394647_398251067394610"
-                  type="standard"
-                  onPress={() => {}}
-                  onError={error => {}}
-                />
-              </Footer>
+              <FacebookAdBanner />
 
               {/* rules modal */}
               <RulesModal

@@ -3,6 +3,7 @@ import { Constants } from "expo";
 import { NetInfo } from "react-native";
 import { _showToast } from "../utils/ShowToast";
 import { initializeApp, database } from "firebase";
+import { showFacebookInterstitialAd } from "../utils/showAd";
 initializeApp(Constants.manifest.extra.firebaseConfig);
 
 //Create context
@@ -63,6 +64,7 @@ export class SettingsProvider extends React.Component {
     crystal: 0,
     life: 3,
     endGame: false,
+    lostEightGames: 0,
     reducers: {
       //Loged in ?
       _logInUser: user => {
@@ -108,6 +110,7 @@ export class SettingsProvider extends React.Component {
             life: 3,
             crystal: 0
           });
+          saveDataToSecureStorage("WordsMeaningScores", this.state.scores);
           saveDataToSecureStorage("WordsMeaningLife", this.state.life);
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
@@ -199,6 +202,12 @@ export class SettingsProvider extends React.Component {
               this.state.user.life
             );
           } else {
+            if (this.state.lostEightGames >= 8) {
+              console.log("lost 8 games");
+              showFacebookInterstitialAd();
+              await this.setState({ lostEightGames: 0 });
+            }
+            this.setState({ lostEightGames: this.state.lostEightGames + 1 });
             this.setState({ endGame: true });
           }
         } else {
@@ -207,6 +216,11 @@ export class SettingsProvider extends React.Component {
             //Set life to ss
             saveDataToSecureStorage("WordsMeaningLife", this.state.life);
           } else {
+            if (this.state.lostEightGames >= 8) {
+              showFacebookInterstitialAd();
+              await this.setState({ lostEightGames: 0 });
+            }
+            this.setState({ lostEightGames: this.state.lostEightGames + 1 });
             this.setState({ endGame: true });
           }
         }
@@ -297,6 +311,7 @@ export class SettingsProvider extends React.Component {
             crystal: this.state.crystal + rating
           });
           //Set crystals to ss
+          saveDataToSecureStorage("WordsMeaningScores", this.state.scores);
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
 
           //Set bestScore
@@ -408,6 +423,12 @@ export class SettingsProvider extends React.Component {
             });
           });
 
+        //Get Score from ss
+        let scores = await retrieveDataFromSecureStorage("WordsMeaningScores");
+        if (scores !== null) {
+          scores = Number(JSON.parse(scores));
+          this.setState({ scores });
+        }
         //Get bestScore from ss
         let bestScores = await retrieveDataFromSecureStorage(
           "WordsMeaningBest"

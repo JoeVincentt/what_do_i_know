@@ -18,9 +18,10 @@ import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { AdMobBanner, AdMobInterstitial, AdMobRewarded } from "expo";
-import { showInterstitialAd, showRewardedAd } from "../utils/showAd";
+import { AdMobInterstitial, AdMobRewarded } from "expo";
+import { showAdmobInterstitialAd, showAdmobRewardedAd } from "../utils/showAd";
 import { _showToast } from "../utils/ShowToast";
+import AdmobBanner from "../utils/showAdmobBanner";
 
 export default class ShopScreen extends Component {
   state = {
@@ -75,10 +76,10 @@ export default class ShopScreen extends Component {
 
   _get150crystalAd = () => {
     soundPlay(require("../assets/sounds/click.wav"));
-    showInterstitialAd().catch(error =>
+    showAdmobInterstitialAd().catch(error =>
       _showToast("Error showing ad", 2000, "warning")
     );
-    showRewardedAd().catch(error => {
+    showAdmobRewardedAd().catch(error => {
       _showToast("Error showing ad", 2000, "warning");
     });
   };
@@ -212,34 +213,13 @@ export default class ShopScreen extends Component {
                 </View>
 
                 <TouchableOpacity onPress={top => this._bannerClick(top, null)}>
-                  <Footer
-                    transparent
-                    style={{ backgroundColor: "transparent" }}
-                  >
-                    {/* // Display a DFP Publisher banner */}
-                    <AdMobBanner
-                      bannerSize="fullBanner"
-                      adUnitID="ca-app-pub-3081883372305625/4998630648" // Test ID, Replace with your-admob-unit-id
-                      testDeviceID="EMULATOR"
-                      onDidFailToReceiveAdWithError={this.bannerError}
-                      onAdMobDispatchAppEvent={this.adMobEvent}
-                    />
-                  </Footer>
+                  <AdmobBanner />
                 </TouchableOpacity>
               </Footer>
               <TouchableOpacity
                 onPress={bottom => this._bannerClick(null, bottom)}
               >
-                <Footer transparent style={{ backgroundColor: "transparent" }}>
-                  {/* // Display a banner */}
-
-                  <AdMobBanner
-                    bannerSize="fullBanner"
-                    adUnitID="ca-app-pub-3081883372305625/3685548979" // Test ID, Replace with your-admob-unit-id
-                    testDeviceID="EMULATOR"
-                    onDidFailToReceiveAdWithError={this.bannerError}
-                  />
-                </Footer>
+                <AdmobBanner />
               </TouchableOpacity>
             </View>
           )}

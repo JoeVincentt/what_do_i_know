@@ -17,8 +17,9 @@ import BaseLayout from "../components/BaseLayout";
 import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { AdMobBanner, AdMobInterstitial } from "expo";
-import { showInterstitialAd } from "../utils/showAd";
+import { AdMobInterstitial } from "expo";
+import { showAdmobInterstitialAd } from "../utils/showAd";
+import AdmobBanner from "../utils/showAdmobBanner";
 
 export default class ShopScreen extends Component {
   state = {
@@ -104,7 +105,7 @@ export default class ShopScreen extends Component {
         soundPlay(require("../assets/sounds/success.wav"));
         this.context.reducers._getLifeAdd(35);
         _showToast("Question added. Thank you!", 3000, "success");
-        showInterstitialAd().catch(error =>
+        showAdmobInterstitialAd().catch(error =>
           _showToast("Error showing ad", 2000, "warning")
         );
       } else {
@@ -310,21 +311,7 @@ export default class ShopScreen extends Component {
                     this._bannerAd();
                   }}
                 >
-                  <Footer
-                    transparent
-                    style={{
-                      backgroundColor: "transparent",
-                      paddingBottom: Dimensions.window.height * 0.03
-                    }}
-                  >
-                    {/* // Display a banner */}
-                    <AdMobBanner
-                      bannerSize="fullBanner"
-                      adUnitID="ca-app-pub-3081883372305625/9383640359" // Test ID, Replace with your-admob-unit-id
-                      testDeviceID="EMULATOR"
-                      onDidFailToReceiveAdWithError={this.bannerError}
-                    />
-                  </Footer>
+                  <AdmobBanner />
                 </TouchableOpacity>
               </Footer>
             </View>
