@@ -36,7 +36,6 @@ import RulesModal from "../components/RulesModal";
 import BestScoresChart from "../components/BestScoresChart";
 import AnnouncementModal from "../components/AnnouncementModal";
 import FacebookAdBanner from "../utils/showFBbanner";
-import { showFacebookInterstitialAd } from "../utils/showAd";
 
 export default class LandingScreen extends Component {
   state = {
@@ -189,7 +188,6 @@ export default class LandingScreen extends Component {
     soundPlay(require("../assets/sounds/click.wav"));
   };
   closeAnnouncementModal = () => {
-    showFacebookInterstitialAd();
     this.setState({ isAnnouncementModalVisible: false });
     soundPlay(require("../assets/sounds/click.wav"));
   };
@@ -199,115 +197,119 @@ export default class LandingScreen extends Component {
       <BaseLayout>
         <SettingsConsumer>
           {context => (
-            <View
-              style={{ flex: 1 }}
-              ref={ref => {
-                this.context = context;
-              }}
-            >
-              <Header
-                transparent
-                style={{
-                  paddingTop: getStatusBarHeight(),
-                  height: 54 + getStatusBarHeight()
+            <>
+              <View
+                style={{ flex: 1 }}
+                ref={ref => {
+                  this.context = context;
                 }}
               >
-                <Left style={styles.headerLeft}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        isAnnouncementModalVisible: true
-                      }),
-                        soundPlay(require("../assets/sounds/click.wav"));
-                    }}
-                  >
-                    <View style={styles.headerLeftButton}>
-                      <Image
-                        source={require("../assets/images/announcement.png")}
-                        style={{ height: 45, width: 45 }}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                </Left>
-                <Right style={styles.headerRight}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({
-                        isRulesModalVisible: true
-                      }),
-                        soundPlay(require("../assets/sounds/click.wav"));
-                    }}
-                  >
-                    <View style={styles.headerRightButton}>
-                      <Image
-                        source={require("../assets/images/info.png")}
-                        style={{ height: 45, width: 45 }}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                </Right>
-              </Header>
-              {/* action buttons area */}
-              <Content
-                contentContainerStyle={{
-                  flex: 1,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <View style={{ height: Dimensions.window.height * 0.17 }}>
-                  {this.state.username !== "" ? (
-                    <AnimTextView
-                      style={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: Dimensions.window.height * 0.15
+                <Header
+                  transparent
+                  style={{
+                    paddingTop: getStatusBarHeight(),
+                    height: 54 + getStatusBarHeight()
+                  }}
+                >
+                  <Left style={styles.headerLeft}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.setState({
+                          isAnnouncementModalVisible: true
+                        }),
+                          soundPlay(require("../assets/sounds/click.wav"));
                       }}
                     >
-                      <HeaderText> Welcome </HeaderText>
-                      <HeaderText> {this.state.username} </HeaderText>
-                    </AnimTextView>
-                  ) : (
-                    <View style={{ height: Dimensions.window.height * 0.17 }} />
-                  )}
-                </View>
+                      <View style={styles.headerLeftButton}>
+                        <Image
+                          source={require("../assets/images/announcement.png")}
+                          style={{ height: 45, width: 45 }}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </Left>
+                  <Right style={styles.headerRight}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.setState({
+                          isRulesModalVisible: true
+                        }),
+                          soundPlay(require("../assets/sounds/click.wav"));
+                      }}
+                    >
+                      <View style={styles.headerRightButton}>
+                        <Image
+                          source={require("../assets/images/info.png")}
+                          style={{ height: 45, width: 45 }}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </Right>
+                </Header>
+                {/* action buttons area */}
+                <Content
+                  contentContainerStyle={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <View style={{ height: Dimensions.window.height * 0.17 }}>
+                    {this.state.username !== "" ? (
+                      <AnimTextView
+                        style={{
+                          alignItems: "center",
+                          justifyContent: "center",
+                          height: Dimensions.window.height * 0.15
+                        }}
+                      >
+                        <HeaderText> Welcome </HeaderText>
+                        <HeaderText> {this.state.username} </HeaderText>
+                      </AnimTextView>
+                    ) : (
+                      <View
+                        style={{ height: Dimensions.window.height * 0.17 }}
+                      />
+                    )}
+                  </View>
 
-                <LandingActionButton
-                  buttonText={" p l a y   g a m e "}
-                  navigation={this.props.navigation}
+                  <LandingActionButton
+                    buttonText={" p l a y   g a m e "}
+                    navigation={this.props.navigation}
+                  />
+
+                  <View style={styles.mainBox}>
+                    <Button
+                      onPress={() => this.userLoginControl()}
+                      style={{ borderRadius: 10 }}
+                    >
+                      <Icon name="logo-facebook" style={{ fontSize: 30 }} />
+                      <HeaderText>
+                        {" "}
+                        l o g{"  "} {this.state.username !== "" ? "out" : "in"}
+                        {"   "}
+                      </HeaderText>
+                    </Button>
+                  </View>
+                  {/* //* best results chart */}
+                  <BestScoresChart />
+                </Content>
+
+                {/* rules modal */}
+                <RulesModal
+                  closeRulesModal={this.closeRulesModal}
+                  isRulesModalVisible={this.state.isRulesModalVisible}
                 />
-
-                <View style={styles.mainBox}>
-                  <Button
-                    onPress={() => this.userLoginControl()}
-                    style={{ borderRadius: 10 }}
-                  >
-                    <Icon name="logo-facebook" style={{ fontSize: 30 }} />
-                    <HeaderText>
-                      {" "}
-                      l o g{"  "} {this.state.username !== "" ? "out" : "in"}
-                      {"   "}
-                    </HeaderText>
-                  </Button>
-                </View>
-                {/* //* best results chart */}
-                <BestScoresChart />
-              </Content>
+                {/* announcement modal */}
+                <AnnouncementModal
+                  closeAnnouncementModal={this.closeAnnouncementModal}
+                  isAnnouncementModalVisible={
+                    this.state.isAnnouncementModalVisible
+                  }
+                />
+              </View>
               <FacebookAdBanner />
-
-              {/* rules modal */}
-              <RulesModal
-                closeRulesModal={this.closeRulesModal}
-                isRulesModalVisible={this.state.isRulesModalVisible}
-              />
-              {/* announcement modal */}
-              <AnnouncementModal
-                closeAnnouncementModal={this.closeAnnouncementModal}
-                isAnnouncementModalVisible={
-                  this.state.isAnnouncementModalVisible
-                }
-              />
-            </View>
+            </>
           )}
         </SettingsConsumer>
       </BaseLayout>

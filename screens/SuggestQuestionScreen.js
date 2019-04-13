@@ -34,25 +34,9 @@ export default class ShopScreen extends Component {
     bannerClicked: false
   };
 
-  componentDidMount() {
-    // Interstitial ad
-    AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidClose", () => {
-      this.props.navigation.pop();
-    });
-    AdMobInterstitial.addEventListener(
-      "interstitialWillLeaveApplication",
-      () => {}
-    );
+  componentDidMount() {}
 
-    //Rewarded Add
-  }
-
-  componentWillUnmount() {
-    AdMobInterstitial.removeAllListeners();
-  }
+  componentWillUnmount() {}
 
   _bannerAd = () => {
     if (this.state.bannerClicked) {
@@ -304,34 +288,6 @@ export default class ShopScreen extends Component {
                     </View>
                   </View>
                 </Content>
-
-                <Footer
-                  style={{
-                    flexDirection: "column",
-                    elevation: 0,
-                    backgroundColor: "transparent",
-                    borderColor: "transparent",
-                    alignItems: "center",
-                    justifyContent: "center"
-                  }}
-                >
-                  <View style={{ flexDirection: "row" }}>
-                    <HeaderText> + 20{"   "}</HeaderText>
-                    <Image
-                      source={require("../assets/images/crystal.png")}
-                      style={{
-                        overflow: "visible",
-                        height: 30,
-                        width: 25,
-                        marginTop:
-                          Platform.OS === "ios"
-                            ? 0
-                            : Dimensions.window.height * 0.025
-                      }}
-                    />
-                    <HeaderText>{"   "}per banner click </HeaderText>
-                  </View>
-                </Footer>
               </View>
               <TouchableOpacity
                 onPress={() => {

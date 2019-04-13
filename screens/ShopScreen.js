@@ -18,10 +18,9 @@ import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import _ from "lodash";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { AdMobInterstitial, AdMobRewarded } from "expo";
-import { showAdmobInterstitialAd, showAdmobRewardedAd } from "../utils/showAd";
 import { _showToast } from "../utils/ShowToast";
 import AdmobBanner from "../utils/showAdmobBanner";
+import { _get150crystalAd } from "../utils/get105crystals";
 
 export default class ShopScreen extends Component {
   state = {
@@ -30,38 +29,9 @@ export default class ShopScreen extends Component {
     bannerBottomClicked: false
   };
 
-  componentDidMount() {
-    // Interstitial ad
-    AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidClose", () => {});
-    AdMobInterstitial.addEventListener(
-      "interstitialWillLeaveApplication",
-      () => {}
-    );
+  componentDidMount() {}
 
-    //Rewarded Add
-
-    AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
-      soundPlay(require("../assets/sounds/success.wav"));
-      this.context.reducers._getLifeAdd(105);
-    });
-    AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidOpen", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {});
-    AdMobRewarded.addEventListener(
-      "rewardedVideoWillLeaveApplication",
-      () => {}
-    );
-  }
-
-  componentWillUnmount() {
-    AdMobInterstitial.removeAllListeners();
-    AdMobRewarded.removeAllListeners();
-  }
+  componentWillUnmount() {}
 
   async componentWillMount() {
     //Ignore Warning on Android
@@ -73,16 +43,6 @@ export default class ShopScreen extends Component {
       }
     };
   }
-
-  _get150crystalAd = () => {
-    soundPlay(require("../assets/sounds/click.wav"));
-    showAdmobInterstitialAd().catch(error =>
-      _showToast("Error showing ad", 2000, "warning")
-    );
-    showAdmobRewardedAd().catch(error => {
-      _showToast("Error showing ad", 2000, "warning");
-    });
-  };
 
   _bannerAd = () => {
     soundPlay(require("../assets/sounds/success.wav"));
@@ -171,7 +131,7 @@ export default class ShopScreen extends Component {
                     <View>
                       <EmojiButton
                         source={require("../assets/images/crystal.png")}
-                        action={this._get150crystalAd}
+                        action={_get150crystalAd}
                         text={"  get  1 0 5    "}
                         style={styles.adText}
                       />

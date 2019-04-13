@@ -4,6 +4,7 @@ import { NetInfo } from "react-native";
 import { _showToast } from "../utils/ShowToast";
 import { initializeApp, database } from "firebase";
 import { showFacebookInterstitialAd } from "../utils/showAd";
+import { showAdmobInterstitialAd, showAdmobRewardedAd } from "../utils/showAd";
 initializeApp(Constants.manifest.extra.firebaseConfig);
 
 //Create context
@@ -65,6 +66,7 @@ export class SettingsProvider extends React.Component {
     life: 3,
     endGame: false,
     lostEightGames: 0,
+    lostTwelveGames: 0,
     reducers: {
       //Loged in ?
       _logInUser: user => {
@@ -202,11 +204,19 @@ export class SettingsProvider extends React.Component {
               this.state.user.life
             );
           } else {
+            if (this.state.lostTwelveGames >= 12) {
+              showAdmobRewardedAd();
+              await this.setState({ lostTwelveGames: 0 });
+            }
             if (this.state.lostEightGames >= 8) {
               showFacebookInterstitialAd();
+              showAdmobInterstitialAd();
               await this.setState({ lostEightGames: 0 });
             }
-            this.setState({ lostEightGames: this.state.lostEightGames + 1 });
+            this.setState({
+              lostEightGames: this.state.lostEightGames + 1,
+              lostTwelveGames: this.state.lostTwelveGames + 1
+            });
             this.setState({ endGame: true });
           }
         } else {
@@ -215,11 +225,19 @@ export class SettingsProvider extends React.Component {
             //Set life to ss
             saveDataToSecureStorage("WordsMeaningLife", this.state.life);
           } else {
+            if (this.state.lostTwelveGames >= 12) {
+              showAdmobRewardedAd();
+              await this.setState({ lostTwelveGames: 0 });
+            }
             if (this.state.lostEightGames >= 8) {
               showFacebookInterstitialAd();
+              showAdmobInterstitialAd();
               await this.setState({ lostEightGames: 0 });
             }
-            this.setState({ lostEightGames: this.state.lostEightGames + 1 });
+            this.setState({
+              lostEightGames: this.state.lostEightGames + 1,
+              lostTwelveGames: this.state.lostTwelveGames + 1
+            });
             this.setState({ endGame: true });
           }
         }

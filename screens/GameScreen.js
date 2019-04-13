@@ -33,7 +33,10 @@ import { _timerSettings } from "../utils/TimerSettings";
 import { EmojiButton } from "../components/HintTimeAdd";
 import { soundPlay } from "../utils/soundPlay";
 import { database } from "firebase";
+import { AdMobInterstitial, AdMobRewarded } from "expo";
+import { _get150crystalAd } from "../utils/get105crystals";
 import FacebookAdBanner from "../utils/showFBbanner";
+import AdmobBanner from "../utils/showAdmobBanner";
 
 export default class LandingScreen extends Component {
   state = {
@@ -55,12 +58,41 @@ export default class LandingScreen extends Component {
   componentDidMount() {
     this.setState({ loading: false });
     this.setState({ maxNumOfQuestions: this.context.maxNumOfQuestions });
+
+    // Interstitial ad
+    AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
+    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
+    AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
+    AdMobInterstitial.addEventListener("interstitialDidClose", () => {});
+    AdMobInterstitial.addEventListener(
+      "interstitialWillLeaveApplication",
+      () => {}
+    );
+
+    //Rewarded Add
+
+    AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
+      soundPlay(require("../assets/sounds/success.wav"));
+      this.context.reducers._getLifeAdd(105);
+    });
+    AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidOpen", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {});
+    AdMobRewarded.addEventListener(
+      "rewardedVideoWillLeaveApplication",
+      () => {}
+    );
   }
 
   async componentWillMount() {
     await this._loadQuestion();
   }
-  componentWillUnmount() {}
+  componentWillUnmount() {
+    AdMobInterstitial.removeAllListeners();
+    AdMobRewarded.removeAllListeners();
+  }
 
   getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -289,390 +321,407 @@ export default class LandingScreen extends Component {
             >
               {/* If no lifes left */}
               {context.endGame ? (
-                <View
-                  style={{
-                    flex: 1
-                  }}
-                >
-                  <Header
-                    transparent
+                <>
+                  <View
                     style={{
-                      paddingTop: getStatusBarHeight(),
-                      height: 54 + getStatusBarHeight()
+                      flex: 1
                     }}
                   >
-                    <Left style={styles.endGameHeaderLeft}>
-                      <HeaderText>
-                        {" "}
-                        s c o r e :{" "}
-                        {context.loggedIn
-                          ? context.user.scores
-                          : context.scores}{" "}
-                      </HeaderText>
-                    </Left>
-
-                    <Right>
-                      <Item style={{ borderBottomColor: "transparent" }}>
-                        <Image
-                          source={require("../assets/images/crystal.png")}
-                          style={{
-                            overflow: "visible",
-                            height: 40,
-                            width: 30,
-                            marginTop:
-                              Platform.OS === "ios"
-                                ? 0
-                                : Dimensions.window.height * 0.05
-                          }}
-                        />
-                        <HeaderText style={styles.endGameHeaderRight}>
-                          {" "}
-                          {context.loggedIn
-                            ? context.user.crystal
-                            : context.crystal}{" "}
-                        </HeaderText>
-                      </Item>
-                    </Right>
-                  </Header>
-                  <View style={styles.endGameBox}>
-                    <View>
-                      <EmojiButton
-                        action={this._unlockGame}
-                        source={require("../assets/images/newgame.png")}
-                        text={"   s t a r t   a    n e w  g a m e "}
-                        style={styles.endGameText}
-                      />
-                      <EmojiButton
-                        source={require("../assets/images/crystal.png")}
-                        action={this._buyLifeEndGame}
-                        text={"  t r a d e  35 for life "}
-                        style={styles.endGameText}
-                      />
-
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          marginTop: 20
-                        }}
-                      >
-                        <Image
-                          source={require("../assets/images/pickaxe.png")}
-                          style={{
-                            height: Platform.OS === "ios" ? 50 : 45,
-                            width: Platform.OS === "ios" ? 40 : 30,
-                            overflow: "visible"
-                          }}
-                        />
-                        <TouchableOpacity
-                          onPress={() => {
-                            this.props.navigation.navigate("Shop");
-                            soundPlay(require("../assets/sounds/click.wav"));
-                          }}
-                        >
-                          <HeaderText style={styles.mineText}>
-                            {"  "}go to the mine{" "}
-                          </HeaderText>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </View>
-                  <FacebookAdBanner
-                    _getLifeAdd={context.reducers._getLifeAdd}
-                  />
-                </View>
-              ) : (
-                // game screen below
-                <View style={{ flex: 1 }}>
-                  <Header
-                    transparent
-                    style={{
-                      paddingTop: getStatusBarHeight(),
-                      height: 54 + getStatusBarHeight()
-                    }}
-                  >
-                    <Left
+                    <Header
+                      transparent
                       style={{
-                        flex: 1,
-                        marginLeft: Dimensions.window.width * 0.05,
-                        marginTop:
-                          Platform.OS === "ios"
-                            ? 0
-                            : Dimensions.window.height * 0.05
+                        paddingTop: getStatusBarHeight(),
+                        height: 54 + getStatusBarHeight()
                       }}
                     >
-                      <Item style={{ borderBottomColor: "transparent" }}>
-                        <Image
-                          source={require("../assets/images/crystal.png")}
-                          style={{
-                            height: 40,
-                            width: 30,
-                            overflow: "visible"
-                          }}
-                        />
+                      <Left style={styles.endGameHeaderLeft}>
                         <HeaderText>
-                          {"  "}
+                          {" "}
+                          s c o r e :{" "}
                           {context.loggedIn
-                            ? context.user.crystal + " "
-                            : context.crystal + " "}
-                          {"  "}
+                            ? context.user.scores
+                            : context.scores}{" "}
                         </HeaderText>
-                      </Item>
-                    </Left>
+                      </Left>
 
-                    <Right
-                      style={{
-                        flex: 1,
-                        marginRight:
-                          Platform.OS === "ios"
-                            ? 0
-                            : Dimensions.window.width * 0.05,
-                        marginTop:
-                          Platform.OS === "ios"
-                            ? 0
-                            : Dimensions.window.height * 0.05
-                      }}
-                    >
-                      <Item style={{ borderBottomColor: "transparent" }}>
-                        <Image
-                          source={require("../assets/images/heart.png")}
-                          style={{
-                            height: Platform.OS === "ios" ? 40 : 40,
-                            width: Platform.OS === "ios" ? 20 : 40,
-                            overflow: "visible",
-                            marginTop:
-                              Platform.OS === "ios"
-                                ? 0
-                                : Dimensions.window.height * 0.015
-                          }}
-                        />
-                        <HeaderText style={styles.gameHeaderRight}>
-                          {"   "}
-                          {context.loggedIn
-                            ? context.user.life
-                            : context.life}{" "}
-                        </HeaderText>
-                      </Item>
-                    </Right>
-                  </Header>
-
-                  <Content
-                    contentContainerStyle={{
-                      flex: 1,
-                      alignItems: "center",
-                      justifyContent: "flex-start"
-                    }}
-                  >
-                    <View style={styles.baseBox}>
-                      <View>
-                        <View>
-                          <HeaderText>
-                            Score:{" "}
-                            {context.loggedIn
-                              ? context.user.scores
-                              : context.scores}{" "}
-                          </HeaderText>
-                        </View>
-                      </View>
-                      <View
-                        style={{
-                          width: Dimensions.window.width * 0.3
-                        }}
-                      >
-                        <View style={styles.starRatingBox}>
-                          <StarRating
-                            containerStyle={styles.starRating}
-                            starStyle={{
-                              marginTop: Platform.OS === "ios" ? 0 : 16
+                      <Right>
+                        <Item style={{ borderBottomColor: "transparent" }}>
+                          <Image
+                            source={require("../assets/images/crystal.png")}
+                            style={{
+                              overflow: "visible",
+                              height: 40,
+                              width: 30,
+                              marginTop:
+                                Platform.OS === "ios"
+                                  ? 0
+                                  : Dimensions.window.height * 0.05
                             }}
-                            disabled={true}
-                            maxStars={3}
-                            rating={rating}
-                            starSize={35}
-                            fullStarColor="#ff8f00"
                           />
-                        </View>
-
+                          <HeaderText style={styles.endGameHeaderRight}>
+                            {" "}
+                            {context.loggedIn
+                              ? context.user.crystal
+                              : context.crystal}{" "}
+                          </HeaderText>
+                        </Item>
+                      </Right>
+                    </Header>
+                    <View style={styles.endGameBox}>
+                      <View>
+                        <EmojiButton
+                          action={this._unlockGame}
+                          source={require("../assets/images/newgame.png")}
+                          text={"   s t a r t   a    n e w  g a m e "}
+                          style={styles.endGameText}
+                        />
+                        <EmojiButton
+                          source={require("../assets/images/crystal.png")}
+                          action={this._buyLifeEndGame}
+                          text={"  t r a d e  35 for life "}
+                          style={styles.endGameText}
+                        />
+                        <EmojiButton
+                          source={require("../assets/images/crystal.png")}
+                          action={_get150crystalAd}
+                          text={"  get  1 0 5    "}
+                          style={styles.adText}
+                        />
                         <View
                           style={{
                             flexDirection: "row",
-                            marginTop: Dimensions.window.height * 0.01
+                            marginTop: 20
                           }}
                         >
+                          <Image
+                            source={require("../assets/images/pickaxe.png")}
+                            style={{
+                              height: Platform.OS === "ios" ? 50 : 45,
+                              width: Platform.OS === "ios" ? 40 : 30,
+                              overflow: "visible"
+                            }}
+                          />
+                          <TouchableOpacity
+                            onPress={() => {
+                              this.props.navigation.navigate("Shop");
+                              soundPlay(require("../assets/sounds/click.wav"));
+                            }}
+                          >
+                            <HeaderText style={styles.mineText}>
+                              {"  "}go to the mine{" "}
+                            </HeaderText>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                  <AdmobBanner />
+                  <FacebookAdBanner
+                    _getLifeAdd={context.reducers._getLifeAdd}
+                  />
+                  <View
+                    style={{ marginBottom: Dimensions.window.height * 0.05 }}
+                  />
+                </>
+              ) : (
+                // game screen below
+                <>
+                  <View style={{ flex: 1 }}>
+                    <Header
+                      transparent
+                      style={{
+                        paddingTop: getStatusBarHeight(),
+                        height: 54 + getStatusBarHeight()
+                      }}
+                    >
+                      <Left
+                        style={{
+                          flex: 1,
+                          marginLeft: Dimensions.window.width * 0.05,
+                          marginTop:
+                            Platform.OS === "ios"
+                              ? 0
+                              : Dimensions.window.height * 0.05
+                        }}
+                      >
+                        <Item style={{ borderBottomColor: "transparent" }}>
+                          <Image
+                            source={require("../assets/images/crystal.png")}
+                            style={{
+                              height: 40,
+                              width: 30,
+                              overflow: "visible"
+                            }}
+                          />
+                          <HeaderText>
+                            {"  "}
+                            {context.loggedIn
+                              ? context.user.crystal + " "
+                              : context.crystal + " "}
+                            {"  "}
+                          </HeaderText>
+                        </Item>
+                      </Left>
+
+                      <Right
+                        style={{
+                          flex: 1,
+                          marginRight:
+                            Platform.OS === "ios"
+                              ? 0
+                              : Dimensions.window.width * 0.05,
+                          marginTop:
+                            Platform.OS === "ios"
+                              ? 0
+                              : Dimensions.window.height * 0.05
+                        }}
+                      >
+                        <Item style={{ borderBottomColor: "transparent" }}>
+                          <Image
+                            source={require("../assets/images/heart.png")}
+                            style={{
+                              height: Platform.OS === "ios" ? 40 : 40,
+                              width: Platform.OS === "ios" ? 20 : 40,
+                              overflow: "visible",
+                              marginTop:
+                                Platform.OS === "ios"
+                                  ? 0
+                                  : Dimensions.window.height * 0.015
+                            }}
+                          />
+                          <HeaderText style={styles.gameHeaderRight}>
+                            {"   "}
+                            {context.loggedIn
+                              ? context.user.life
+                              : context.life}{" "}
+                          </HeaderText>
+                        </Item>
+                      </Right>
+                    </Header>
+
+                    <Content
+                      contentContainerStyle={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "flex-start"
+                      }}
+                    >
+                      <View style={styles.baseBox}>
+                        <View>
                           <View>
-                            <Item
-                              style={{
-                                borderBottomColor: "transparent",
-                                marginRight: Dimensions.window.width * 0.015,
-                                marginLeft: Dimensions.window.width * 0.035,
-                                marginTop:
-                                  Platform.OS === "ios"
-                                    ? 0
-                                    : Dimensions.window.height * 0.017
+                            <HeaderText>
+                              Score:{" "}
+                              {context.loggedIn
+                                ? context.user.scores
+                                : context.scores}{" "}
+                            </HeaderText>
+                          </View>
+                        </View>
+                        <View
+                          style={{
+                            width: Dimensions.window.width * 0.3
+                          }}
+                        >
+                          <View style={styles.starRatingBox}>
+                            <StarRating
+                              containerStyle={styles.starRating}
+                              starStyle={{
+                                marginTop: Platform.OS === "ios" ? 0 : 16
                               }}
-                            >
-                              <Image
-                                source={require("../assets/images/timer.png")}
-                                style={{
-                                  height: 35,
-                                  width: 20,
-                                  overflow: "visible"
-                                }}
-                              />
-                            </Item>
+                              disabled={true}
+                              maxStars={3}
+                              rating={rating}
+                              starSize={35}
+                              fullStarColor="#ff8f00"
+                            />
                           </View>
 
-                          <View>
-                            <TimerCountdown
-                              onTick={milliseconds =>
-                                milliseconds <= 5000
-                                  ? this._timeLowSound()
-                                  : null
-                              }
-                              initialMilliseconds={time}
-                              onExpire={() => this._timeExpired()}
-                              formatMilliseconds={milliseconds =>
-                                _timerSettings(milliseconds)
-                              }
-                              allowFontScaling={true}
-                              style={styles.timerStyle}
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              marginTop: Dimensions.window.height * 0.01
+                            }}
+                          >
+                            <View>
+                              <Item
+                                style={{
+                                  borderBottomColor: "transparent",
+                                  marginRight: Dimensions.window.width * 0.015,
+                                  marginLeft: Dimensions.window.width * 0.035,
+                                  marginTop:
+                                    Platform.OS === "ios"
+                                      ? 0
+                                      : Dimensions.window.height * 0.017
+                                }}
+                              >
+                                <Image
+                                  source={require("../assets/images/timer.png")}
+                                  style={{
+                                    height: 35,
+                                    width: 20,
+                                    overflow: "visible"
+                                  }}
+                                />
+                              </Item>
+                            </View>
+
+                            <View>
+                              <TimerCountdown
+                                onTick={milliseconds =>
+                                  milliseconds <= 5000
+                                    ? this._timeLowSound()
+                                    : null
+                                }
+                                initialMilliseconds={time}
+                                onExpire={() => this._timeExpired()}
+                                formatMilliseconds={milliseconds =>
+                                  _timerSettings(milliseconds)
+                                }
+                                allowFontScaling={true}
+                                style={styles.timerStyle}
+                              />
+                            </View>
+                          </View>
+                        </View>
+                      </View>
+                      <View style={styles.questionBox}>
+                        {loadingQuestion ? (
+                          <Spinner />
+                        ) : (
+                          <Text
+                            style={{
+                              fontSize: 20,
+                              fontWeight: "500",
+                              margin: 10
+                            }}
+                          >
+                            {question}
+                          </Text>
+                        )}
+                      </View>
+                      {/* answers boxes start here */}
+                      <View style={styles.answerBox}>
+                        <View>
+                          <View style={styles.answerGroup}>
+                            <AnswerBoxes
+                              answer={answers[0]}
+                              _checkAnswer={this._checkAnswer}
+                            />
+                            <AnswerBoxes
+                              answer={answers[1]}
+                              _checkAnswer={this._checkAnswer}
+                            />
+                          </View>
+                          <View style={styles.answerGroup}>
+                            <AnswerBoxes
+                              answer={answers[2]}
+                              _checkAnswer={this._checkAnswer}
+                            />
+                            <AnswerBoxes
+                              answer={answers[3]}
+                              _checkAnswer={this._checkAnswer}
                             />
                           </View>
                         </View>
                       </View>
-                    </View>
-                    <View style={styles.questionBox}>
-                      {loadingQuestion ? (
-                        <Spinner />
-                      ) : (
-                        <Text
-                          style={{
-                            fontSize: 20,
-                            fontWeight: "500",
-                            margin: 10
-                          }}
-                        >
-                          {question}
-                        </Text>
-                      )}
-                    </View>
-                    {/* answers boxes start here */}
-                    <View style={styles.answerBox}>
-                      <View>
-                        <View style={styles.answerGroup}>
-                          <AnswerBoxes
-                            answer={answers[0]}
-                            _checkAnswer={this._checkAnswer}
-                          />
-                          <AnswerBoxes
-                            answer={answers[1]}
-                            _checkAnswer={this._checkAnswer}
-                          />
-                        </View>
-                        <View style={styles.answerGroup}>
-                          <AnswerBoxes
-                            answer={answers[2]}
-                            _checkAnswer={this._checkAnswer}
-                          />
-                          <AnswerBoxes
-                            answer={answers[3]}
-                            _checkAnswer={this._checkAnswer}
-                          />
-                        </View>
+                      {/* answer boxes ends here */}
+                      <View
+                        style={{
+                          marginTop: Dimensions.window.height * 0.05,
+                          flexDirection: "row"
+                        }}
+                      >
+                        <TouchableOpacity onPress={() => this._showHint()}>
+                          <View
+                            style={{
+                              shadowColor: "white",
+                              shadowRadius: 30,
+                              shadowOpacity: 3,
+                              elevation: 150,
+                              fontSize: 35,
+                              paddingHorizontal: 20
+                            }}
+                          >
+                            <Image
+                              source={require("../assets/images/key.png")}
+                              style={{
+                                height: Platform.OS === "ios" ? 40 : 45,
+                                width: 40
+                              }}
+                            />
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this._addTime()}>
+                          <View
+                            style={{
+                              shadowColor: "white",
+                              shadowRadius: 30,
+                              shadowOpacity: 3,
+                              elevation: 150,
+                              fontSize: 35,
+                              paddingHorizontal: 20
+                            }}
+                          >
+                            <Image
+                              source={require("../assets/images/timer.png")}
+                              style={{
+                                height: Platform.OS === "ios" ? 40 : 45,
+                                width: 40
+                              }}
+                            />
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this._buyLife()}>
+                          <View
+                            style={{
+                              shadowColor: "white",
+                              shadowRadius: 30,
+                              shadowOpacity: 3,
+                              elevation: 150,
+                              fontSize: 35,
+                              paddingHorizontal: 20
+                            }}
+                          >
+                            <Image
+                              source={require("../assets/images/heart.png")}
+                              style={{
+                                height: Platform.OS === "ios" ? 40 : 45,
+                                width: Platform.OS === "ios" ? 40 : 45
+                              }}
+                            />
+                          </View>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => this._skipQuestion()}>
+                          <View
+                            style={{
+                              shadowColor: "white",
+                              shadowRadius: 30,
+                              shadowOpacity: 3,
+                              elevation: 150,
+                              fontSize: 35,
+                              paddingHorizontal: 20
+                            }}
+                          >
+                            <Image
+                              source={require("../assets/images/skip.png")}
+                              style={{
+                                height: Platform.OS === "ios" ? 40 : 45,
+                                width: 40
+                              }}
+                            />
+                          </View>
+                        </TouchableOpacity>
                       </View>
-                    </View>
-                    {/* answer boxes ends here */}
-                    <View
-                      style={{
-                        marginTop: Dimensions.window.height * 0.05,
-                        flexDirection: "row"
-                      }}
-                    >
-                      <TouchableOpacity onPress={() => this._showHint()}>
-                        <View
-                          style={{
-                            shadowColor: "white",
-                            shadowRadius: 30,
-                            shadowOpacity: 3,
-                            elevation: 150,
-                            fontSize: 35,
-                            paddingHorizontal: 20
-                          }}
-                        >
-                          <Image
-                            source={require("../assets/images/key.png")}
-                            style={{
-                              height: Platform.OS === "ios" ? 40 : 45,
-                              width: 40
-                            }}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => this._addTime()}>
-                        <View
-                          style={{
-                            shadowColor: "white",
-                            shadowRadius: 30,
-                            shadowOpacity: 3,
-                            elevation: 150,
-                            fontSize: 35,
-                            paddingHorizontal: 20
-                          }}
-                        >
-                          <Image
-                            source={require("../assets/images/timer.png")}
-                            style={{
-                              height: Platform.OS === "ios" ? 40 : 45,
-                              width: 40
-                            }}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => this._buyLife()}>
-                        <View
-                          style={{
-                            shadowColor: "white",
-                            shadowRadius: 30,
-                            shadowOpacity: 3,
-                            elevation: 150,
-                            fontSize: 35,
-                            paddingHorizontal: 20
-                          }}
-                        >
-                          <Image
-                            source={require("../assets/images/heart.png")}
-                            style={{
-                              height: Platform.OS === "ios" ? 40 : 45,
-                              width: Platform.OS === "ios" ? 40 : 45
-                            }}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => this._skipQuestion()}>
-                        <View
-                          style={{
-                            shadowColor: "white",
-                            shadowRadius: 30,
-                            shadowOpacity: 3,
-                            elevation: 150,
-                            fontSize: 35,
-                            paddingHorizontal: 20
-                          }}
-                        >
-                          <Image
-                            source={require("../assets/images/skip.png")}
-                            style={{
-                              height: Platform.OS === "ios" ? 40 : 45,
-                              width: 40
-                            }}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  </Content>
-                  <FacebookAdBanner
-                    _getLifeAdd={context.reducers._getLifeAdd}
+                    </Content>
+                  </View>
+                  <AdmobBanner />
+                  <View
+                    style={{
+                      marginBottom: Dimensions.window.height * 0.02,
+                      backgroundColor: "transparent"
+                    }}
                   />
-                </View>
+                </>
               )}
               <Modal
                 isVisible={
