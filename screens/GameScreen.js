@@ -318,7 +318,11 @@ export default class LandingScreen extends Component {
                           style={{
                             overflow: "visible",
                             height: 40,
-                            width: 40
+                            width: 30,
+                            marginTop:
+                              Platform.OS === "ios"
+                                ? 0
+                                : Dimensions.window.height * 0.05
                           }}
                         />
                         <HeaderText style={styles.endGameHeaderRight}>
@@ -348,14 +352,14 @@ export default class LandingScreen extends Component {
                       <View
                         style={{
                           flexDirection: "row",
-                          paddingTop: 20
+                          marginTop: 20
                         }}
                       >
                         <Image
                           source={require("../assets/images/pickaxe.png")}
                           style={{
-                            height: 30,
-                            width: 40,
+                            height: Platform.OS === "ios" ? 50 : 45,
+                            width: Platform.OS === "ios" ? 40 : 30,
                             overflow: "visible"
                           }}
                         />
@@ -401,7 +405,7 @@ export default class LandingScreen extends Component {
                           source={require("../assets/images/crystal.png")}
                           style={{
                             height: 40,
-                            width: 20,
+                            width: 30,
                             overflow: "visible"
                           }}
                         />
@@ -415,14 +419,30 @@ export default class LandingScreen extends Component {
                       </Item>
                     </Left>
 
-                    <Right>
+                    <Right
+                      style={{
+                        flex: 1,
+                        marginRight:
+                          Platform.OS === "ios"
+                            ? 0
+                            : Dimensions.window.width * 0.05,
+                        marginTop:
+                          Platform.OS === "ios"
+                            ? 0
+                            : Dimensions.window.height * 0.05
+                      }}
+                    >
                       <Item style={{ borderBottomColor: "transparent" }}>
                         <Image
                           source={require("../assets/images/heart.png")}
                           style={{
-                            height: 40,
-                            width: 20,
-                            overflow: "visible"
+                            height: Platform.OS === "ios" ? 40 : 40,
+                            width: Platform.OS === "ios" ? 20 : 40,
+                            overflow: "visible",
+                            marginTop:
+                              Platform.OS === "ios"
+                                ? 0
+                                : Dimensions.window.height * 0.015
                           }}
                         />
                         <HeaderText style={styles.gameHeaderRight}>
@@ -483,7 +503,11 @@ export default class LandingScreen extends Component {
                               style={{
                                 borderBottomColor: "transparent",
                                 marginRight: Dimensions.window.width * 0.015,
-                                marginLeft: Dimensions.window.width * 0.035
+                                marginLeft: Dimensions.window.width * 0.035,
+                                marginTop:
+                                  Platform.OS === "ios"
+                                    ? 0
+                                    : Dimensions.window.height * 0.017
                               }}
                             >
                               <Image
@@ -577,7 +601,7 @@ export default class LandingScreen extends Component {
                           <Image
                             source={require("../assets/images/key.png")}
                             style={{
-                              height: 40,
+                              height: Platform.OS === "ios" ? 40 : 45,
                               width: 40
                             }}
                           />
@@ -597,7 +621,7 @@ export default class LandingScreen extends Component {
                           <Image
                             source={require("../assets/images/timer.png")}
                             style={{
-                              height: 40,
+                              height: Platform.OS === "ios" ? 40 : 45,
                               width: 40
                             }}
                           />
@@ -617,8 +641,8 @@ export default class LandingScreen extends Component {
                           <Image
                             source={require("../assets/images/heart.png")}
                             style={{
-                              height: 40,
-                              width: 40
+                              height: Platform.OS === "ios" ? 40 : 45,
+                              width: Platform.OS === "ios" ? 40 : 45
                             }}
                           />
                         </View>
@@ -637,7 +661,7 @@ export default class LandingScreen extends Component {
                           <Image
                             source={require("../assets/images/skip.png")}
                             style={{
-                              height: 40,
+                              height: Platform.OS === "ios" ? 40 : 45,
                               width: 40
                             }}
                           />
@@ -702,14 +726,9 @@ const styles = StyleSheet.create({
   gameHeaderBody: {
     paddingBottom: Platform.OS === "ios" ? Dimensions.window.height * 0.12 : 0,
     paddingLeft: Platform.OS === "ios" ? 0 : Dimensions.window.width * 0.1
-    // paddingTop:
-    //   Platform.OS === "ios"
-    //     ? Dimensions.window.height * 0.03
-    //     : Dimensions.window.height * 0.03
   },
   gameHeaderRight: {
-    marginRight: Dimensions.window.width * 0.04,
-    marginTop: Platform.OS === "ios" ? 0 : Dimensions.window.height * 0.05
+    marginRight: Dimensions.window.width * 0.04
   },
   starRatingBox: {
     shadowColor: "grey",

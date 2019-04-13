@@ -203,7 +203,6 @@ export class SettingsProvider extends React.Component {
             );
           } else {
             if (this.state.lostEightGames >= 8) {
-              console.log("lost 8 games");
               showFacebookInterstitialAd();
               await this.setState({ lostEightGames: 0 });
             }

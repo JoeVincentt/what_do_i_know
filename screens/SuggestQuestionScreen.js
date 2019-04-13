@@ -159,7 +159,11 @@ export default class ShopScreen extends Component {
                     shadowColor: "grey",
                     shadowOpacity: 0.5,
                     shadowRadius: 2,
-                    elevation: 40
+                    elevation: 40,
+                    marginTop:
+                      Platform.OS === "ios"
+                        ? 0
+                        : Dimensions.window.height * 0.025
                   }}
                 >
                   <StarRating
@@ -276,7 +280,8 @@ export default class ShopScreen extends Component {
                       >
                         <View style={styles.submitButton}>
                           <HeaderText style={{ fontSize: 20 }}>
-                            submit
+                            {" "}
+                            submit{" "}
                           </HeaderText>
                         </View>
                       </TouchableOpacity>
@@ -301,7 +306,11 @@ export default class ShopScreen extends Component {
                     style={{
                       overflow: "visible",
                       height: 30,
-                      width: 30
+                      width: 25,
+                      marginTop:
+                        Platform.OS === "ios"
+                          ? 0
+                          : Dimensions.window.height * 0.025
                     }}
                   />
                   <HeaderText>{"   "}per banner click </HeaderText>
@@ -336,7 +345,10 @@ const styles = StyleSheet.create({
   },
   answerBox: {
     width: Dimensions.window.width * 0.4,
-    height: Dimensions.window.height * 0.06,
+    height:
+      Platform.OS === "ios"
+        ? Dimensions.window.height * 0.06
+        : Dimensions.window.height * 0.08,
     backgroundColor: "white",
     borderRadius: 30,
     shadowColor: "black",

@@ -72,7 +72,7 @@ export default class AnnouncementModal extends Component {
                         source={require("../assets/images/cross.png")}
                         style={{
                           height: 40,
-                          width: 40,
+                          width: 60,
                           overflow: "visible"
                         }}
                       />

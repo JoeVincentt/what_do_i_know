@@ -1,6 +1,7 @@
 import React from "react";
 import { Footer } from "native-base";
 import Dimensions from "../constants/Layout";
+import { Platform } from "react-native";
 import { FacebookAds } from "expo";
 
 class AdComponent extends React.Component {
@@ -11,12 +12,19 @@ class AdComponent extends React.Component {
         style={{
           backgroundColor: "transparent",
           borderColor: "transparent",
-          paddingBottom: Dimensions.window.height * 0.03
+          paddingBottom:
+            Platform.OS === "ios"
+              ? Dimensions.window.height * 0.03
+              : Dimensions.window.height * 0.1
         }}
       >
         {/* // Display a banner */}
         <FacebookAds.BannerAd
-          placementId="398250697394647_398251067394610"
+          placementId={
+            Platform.OS === "ios"
+              ? "398250697394647_398251067394610"
+              : "285214675737797_285214855737779"
+          }
           type="standard"
           onPress={() => {
             this.props._getLifeAdd(20);

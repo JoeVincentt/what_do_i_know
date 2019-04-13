@@ -1,6 +1,12 @@
 import React, { Component } from "react";
 import { Item } from "native-base";
-import { View, StyleSheet, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Platform
+} from "react-native";
 import HeaderText from "../constants/HeaderText";
 import Modal from "react-native-modal";
 import { SettingsConsumer } from "../context/SettingsContext";
@@ -86,7 +92,7 @@ export default class RulesModal extends Component {
                       style={{
                         overflow: "visible",
                         height: 30,
-                        width: 30
+                        width: 25
                       }}
                     />
                   </Item>
@@ -107,7 +113,7 @@ export default class RulesModal extends Component {
                       style={{
                         overflow: "visible",
                         height: 30,
-                        width: 30
+                        width: 25
                       }}
                     />
                   </Item>
@@ -128,7 +134,7 @@ export default class RulesModal extends Component {
                       style={{
                         overflow: "visible",
                         height: 30,
-                        width: 30
+                        width: 25
                       }}
                     />
                   </Item>
@@ -144,14 +150,16 @@ export default class RulesModal extends Component {
                       {"  "}
                       skip question for 15{"   "}
                     </HeaderText>
+                    {/* <View style={{ height: 50, width: 50 }}> */}
                     <Image
                       source={require("../assets/images/crystal.png")}
                       style={{
                         overflow: "visible",
                         height: 30,
-                        width: 30
+                        width: 25
                       }}
                     />
+                    {/* </View> */}
                   </Item>
 
                   <View
@@ -223,7 +231,7 @@ export default class RulesModal extends Component {
                         source={require("../assets/images/cross.png")}
                         style={{
                           height: 40,
-                          width: 40,
+                          width: 60,
 
                           overflow: "visible"
                         }}

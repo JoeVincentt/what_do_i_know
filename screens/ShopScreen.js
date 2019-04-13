@@ -206,7 +206,11 @@ export default class ShopScreen extends Component {
                     style={{
                       overflow: "visible",
                       height: 30,
-                      width: 30
+                      width: 25,
+                      marginTop:
+                        Platform.OS === "ios"
+                          ? 0
+                          : Dimensions.window.height * 0.025
                     }}
                   />
                   <HeaderText>{"   "}per banner click </HeaderText>
@@ -266,7 +270,7 @@ export default class ShopScreen extends Component {
                           source={require("../assets/images/cross.png")}
                           style={{
                             height: 40,
-                            width: 40,
+                            width: 60,
                             overflow: "visible"
                           }}
                         />

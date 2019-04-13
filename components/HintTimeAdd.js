@@ -1,17 +1,17 @@
 import React, { Component } from "react";
-import { TouchableOpacity, View, Image } from "react-native";
+import { TouchableOpacity, View, Image, Platform } from "react-native";
 import { Item } from "native-base";
 import HeaderText from "../constants/HeaderText";
 import { _timerSettings } from "../utils/TimerSettings";
 
 export const EmojiButton = ({ action, text, style, source }) => (
-  <Item style={{ borderBottomColor: "transparent", padding: 10 }}>
+  <Item style={{ borderBottomColor: "transparent", margin: 10, height: 60 }}>
     <Image
       source={source}
       style={{
         overflow: "visible",
-        height: 40,
-        width: 40
+        height: Platform.OS === "ios" ? 40 : 50,
+        width: Platform.OS === "ios" ? 40 : 40
       }}
     />
     <TouchableOpacity onPress={() => action()}>
