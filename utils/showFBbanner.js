@@ -10,6 +10,7 @@ class AdComponent extends React.Component {
       <Footer
         transparent
         style={{
+          elevation: 0,
           backgroundColor: "transparent",
           borderColor: "transparent",
           paddingBottom:

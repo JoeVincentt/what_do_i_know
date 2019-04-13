@@ -192,6 +192,7 @@ export default class ShopScreen extends Component {
               <Footer
                 transparent
                 style={{
+                  elevation: 0,
                   backgroundColor: "transparent",
                   borderColor: "transparent",
                   flexDirection: "column",

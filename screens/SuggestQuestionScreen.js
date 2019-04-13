@@ -293,6 +293,7 @@ export default class ShopScreen extends Component {
               <Footer
                 style={{
                   flexDirection: "column",
+                  elevation: 0,
                   backgroundColor: "transparent",
                   borderColor: "transparent",
                   alignItems: "center",

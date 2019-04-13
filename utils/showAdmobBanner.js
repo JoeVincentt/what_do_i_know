@@ -12,6 +12,7 @@ class AdComponent extends React.Component {
         style={{
           backgroundColor: "transparent",
           borderColor: "transparent",
+          elevation: 0,
           marginBottom:
             Platform.OS === "ios"
               ? Dimensions.window.height * 0.03
