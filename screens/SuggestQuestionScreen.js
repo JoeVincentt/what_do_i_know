@@ -122,209 +122,226 @@ export default class ShopScreen extends Component {
       <BaseLayout>
         <SettingsConsumer>
           {context => (
-            <View
-              style={{ flex: 1 }}
-              ref={ref => {
-                this.context = context;
-              }}
-            >
-              <Header
-                transparent
-                style={{
-                  paddingTop: getStatusBarHeight(),
-                  height: 54 + getStatusBarHeight()
+            <>
+              <View
+                style={{ flex: 1 }}
+                ref={ref => {
+                  this.context = context;
                 }}
               >
-                <Left style={styles.headerLeft}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.props.navigation.pop();
-                      soundPlay(require("../assets/sounds/click.wav"));
-                    }}
-                  >
-                    <View style={styles.headerLeftButton}>
-                      <HeaderText style={{ fontSize: 30 }}>
-                        {" "}
-                        go{"   "}back{" "}
-                      </HeaderText>
-                    </View>
-                  </TouchableOpacity>
-                </Left>
-              </Header>
-              {/* action buttons area */}
-              <Content contentContainerStyle={{}}>
-                <View
+                <Header
+                  transparent
                   style={{
-                    alignItems: "center",
-                    shadowColor: "grey",
-                    shadowOpacity: 0.5,
-                    shadowRadius: 2,
-                    elevation: 40,
-                    marginTop:
-                      Platform.OS === "ios"
-                        ? 0
-                        : Dimensions.window.height * 0.025
+                    paddingTop: getStatusBarHeight(),
+                    height: 54 + getStatusBarHeight()
                   }}
                 >
-                  <StarRating
-                    starSize={35}
-                    fullStarColor="#ff8f00"
-                    starStyle={{ padding: 3 }}
-                    disabled={false}
-                    maxStars={3}
-                    rating={this.state.starCount}
-                    selectedStar={rating => this.onStarRatingPress(rating)}
-                  />
-                </View>
-
-                <View>
-                  <View style={styles.questionBox}>
-                    <TextInput
-                      style={{
-                        flex: 1,
-                        fontSize: 20,
-                        fontWeight: "500",
-                        margin: 10
-                      }}
-                      placeholder="Your question..."
-                      editable={true}
-                      defaultValue={this.state.question}
-                      maxLength={100}
-                      multiline={true}
-                      numberOfLines={4}
-                      onChangeText={question => this.setState({ question })}
-                    />
-                  </View>
-                  <View>
-                    <View
-                      style={{ alignItems: "center", justifyContent: "center" }}
-                    >
-                      <View style={{ flexDirection: "row" }}>
-                        <View style={styles.answerBox}>
-                          <TextInput
-                            style={styles.answerPlaceholder}
-                            placeholder="CHOICE 1"
-                            editable={true}
-                            multiline={true}
-                            defaultValue={this.state.choice1}
-                            maxLength={14}
-                            onChangeText={choice1 => this.setState({ choice1 })}
-                          />
-                        </View>
-
-                        <View style={styles.answerBox}>
-                          <TextInput
-                            style={styles.answerPlaceholder}
-                            placeholder="CHOICE 2"
-                            editable={true}
-                            maxLength={14}
-                            defaultValue={this.state.choice2}
-                            multiline={true}
-                            onChangeText={choice2 => this.setState({ choice2 })}
-                          />
-                        </View>
-                      </View>
-                      <View style={{ flexDirection: "row" }}>
-                        <View style={styles.answerBox}>
-                          <TextInput
-                            style={styles.answerPlaceholder}
-                            placeholder="CHOICE 3"
-                            editable={true}
-                            maxLength={14}
-                            defaultValue={this.state.choice3}
-                            multiline={true}
-                            onChangeText={choice3 => this.setState({ choice3 })}
-                          />
-                        </View>
-
-                        <View style={styles.answerBox}>
-                          <TextInput
-                            style={styles.answerPlaceholder}
-                            placeholder="CHOICE 4"
-                            editable={true}
-                            maxLength={14}
-                            defaultValue={this.state.choice4}
-                            multiline={true}
-                            onChangeText={choice4 => this.setState({ choice4 })}
-                          />
-                        </View>
-
-                        <View style={{ marginVertical: 10 }} />
-                      </View>
-                    </View>
-                    <View
-                      style={{ justifyContent: "center", alignItems: "center" }}
-                    >
-                      <View style={styles.answerBox}>
-                        <TextInput
-                          style={styles.answerPlaceholder}
-                          placeholder="RIGHT ANSWER"
-                          editable={true}
-                          maxLength={14}
-                          defaultValue={this.state.answer}
-                          multiline={true}
-                          onChangeText={answer => this.setState({ answer })}
-                        />
-                      </View>
-                    </View>
-                    <View
-                      style={{
-                        justifyContent: "center",
-                        alignItems: "center"
+                  <Left style={styles.headerLeft}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.props.navigation.pop();
+                        soundPlay(require("../assets/sounds/click.wav"));
                       }}
                     >
-                      <TouchableOpacity
-                        onPress={() => {
-                          this.postQuestion();
-                        }}
-                      >
-                        <View style={styles.submitButton}>
-                          <HeaderText style={{ fontSize: 20 }}>
-                            {" "}
-                            submit{" "}
-                          </HeaderText>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </Content>
-
-              <Footer
-                style={{
-                  flexDirection: "column",
-                  elevation: 0,
-                  backgroundColor: "transparent",
-                  borderColor: "transparent",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <View style={{ flexDirection: "row" }}>
-                  <HeaderText> + 20{"   "}</HeaderText>
-                  <Image
-                    source={require("../assets/images/crystal.png")}
+                      <View style={styles.headerLeftButton}>
+                        <HeaderText style={{ fontSize: 30 }}>
+                          {" "}
+                          go{"   "}back{" "}
+                        </HeaderText>
+                      </View>
+                    </TouchableOpacity>
+                  </Left>
+                </Header>
+                {/* action buttons area */}
+                <Content contentContainerStyle={{}}>
+                  <View
                     style={{
-                      overflow: "visible",
-                      height: 30,
-                      width: 25,
+                      alignItems: "center",
+                      shadowColor: "grey",
+                      shadowOpacity: 0.5,
+                      shadowRadius: 2,
+                      elevation: 40,
                       marginTop:
                         Platform.OS === "ios"
                           ? 0
                           : Dimensions.window.height * 0.025
                     }}
-                  />
-                  <HeaderText>{"   "}per banner click </HeaderText>
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    this._bannerAd();
+                  >
+                    <StarRating
+                      starSize={35}
+                      fullStarColor="#ff8f00"
+                      starStyle={{ padding: 3 }}
+                      disabled={false}
+                      maxStars={3}
+                      rating={this.state.starCount}
+                      selectedStar={rating => this.onStarRatingPress(rating)}
+                    />
+                  </View>
+
+                  <View>
+                    <View style={styles.questionBox}>
+                      <TextInput
+                        style={{
+                          flex: 1,
+                          fontSize: 20,
+                          fontWeight: "500",
+                          margin: 10
+                        }}
+                        placeholder="Your question..."
+                        editable={true}
+                        defaultValue={this.state.question}
+                        maxLength={100}
+                        multiline={true}
+                        numberOfLines={4}
+                        onChangeText={question => this.setState({ question })}
+                      />
+                    </View>
+                    <View>
+                      <View
+                        style={{
+                          alignItems: "center",
+                          justifyContent: "center"
+                        }}
+                      >
+                        <View style={{ flexDirection: "row" }}>
+                          <View style={styles.answerBox}>
+                            <TextInput
+                              style={styles.answerPlaceholder}
+                              placeholder="CHOICE 1"
+                              editable={true}
+                              multiline={true}
+                              defaultValue={this.state.choice1}
+                              maxLength={14}
+                              onChangeText={choice1 =>
+                                this.setState({ choice1 })
+                              }
+                            />
+                          </View>
+
+                          <View style={styles.answerBox}>
+                            <TextInput
+                              style={styles.answerPlaceholder}
+                              placeholder="CHOICE 2"
+                              editable={true}
+                              maxLength={14}
+                              defaultValue={this.state.choice2}
+                              multiline={true}
+                              onChangeText={choice2 =>
+                                this.setState({ choice2 })
+                              }
+                            />
+                          </View>
+                        </View>
+                        <View style={{ flexDirection: "row" }}>
+                          <View style={styles.answerBox}>
+                            <TextInput
+                              style={styles.answerPlaceholder}
+                              placeholder="CHOICE 3"
+                              editable={true}
+                              maxLength={14}
+                              defaultValue={this.state.choice3}
+                              multiline={true}
+                              onChangeText={choice3 =>
+                                this.setState({ choice3 })
+                              }
+                            />
+                          </View>
+
+                          <View style={styles.answerBox}>
+                            <TextInput
+                              style={styles.answerPlaceholder}
+                              placeholder="CHOICE 4"
+                              editable={true}
+                              maxLength={14}
+                              defaultValue={this.state.choice4}
+                              multiline={true}
+                              onChangeText={choice4 =>
+                                this.setState({ choice4 })
+                              }
+                            />
+                          </View>
+
+                          <View style={{ marginVertical: 10 }} />
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center"
+                        }}
+                      >
+                        <View style={styles.answerBox}>
+                          <TextInput
+                            style={styles.answerPlaceholder}
+                            placeholder="RIGHT ANSWER"
+                            editable={true}
+                            maxLength={14}
+                            defaultValue={this.state.answer}
+                            multiline={true}
+                            onChangeText={answer => this.setState({ answer })}
+                          />
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center"
+                        }}
+                      >
+                        <TouchableOpacity
+                          onPress={() => {
+                            this.postQuestion();
+                          }}
+                        >
+                          <View style={styles.submitButton}>
+                            <HeaderText style={{ fontSize: 20 }}>
+                              {" "}
+                              submit{" "}
+                            </HeaderText>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </Content>
+
+                <Footer
+                  style={{
+                    flexDirection: "column",
+                    elevation: 0,
+                    backgroundColor: "transparent",
+                    borderColor: "transparent",
+                    alignItems: "center",
+                    justifyContent: "center"
                   }}
                 >
-                  <AdmobBanner />
-                </TouchableOpacity>
-              </Footer>
-            </View>
+                  <View style={{ flexDirection: "row" }}>
+                    <HeaderText> + 20{"   "}</HeaderText>
+                    <Image
+                      source={require("../assets/images/crystal.png")}
+                      style={{
+                        overflow: "visible",
+                        height: 30,
+                        width: 25,
+                        marginTop:
+                          Platform.OS === "ios"
+                            ? 0
+                            : Dimensions.window.height * 0.025
+                      }}
+                    />
+                    <HeaderText>{"   "}per banner click </HeaderText>
+                  </View>
+                </Footer>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  this._bannerAd();
+                }}
+              >
+                <AdmobBanner />
+              </TouchableOpacity>
+              <View style={{ marginBottom: Dimensions.window.height * 0.05 }} />
+            </>
           )}
         </SettingsConsumer>
       </BaseLayout>

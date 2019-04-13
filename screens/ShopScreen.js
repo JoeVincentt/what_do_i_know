@@ -111,122 +111,124 @@ export default class ShopScreen extends Component {
       <BaseLayout>
         <SettingsConsumer>
           {context => (
-            <View
-              style={{ flex: 1 }}
-              ref={ref => {
-                this.context = context;
-              }}
-            >
-              <Header
-                transparent
-                style={{
-                  paddingTop: getStatusBarHeight(),
-                  height: 54 + getStatusBarHeight()
+            <>
+              <View
+                style={{ flex: 1 }}
+                ref={ref => {
+                  this.context = context;
                 }}
               >
-                <Left style={styles.headerLeft}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.props.navigation.pop();
-                      soundPlay(require("../assets/sounds/click.wav"));
-                    }}
-                  >
-                    <View style={styles.headerLeftButton}>
-                      <HeaderText style={{ fontSize: 30 }}>
-                        {" "}
-                        go{"   "}back{" "}
-                      </HeaderText>
-                    </View>
-                  </TouchableOpacity>
-                </Left>
-                <Right style={styles.headerRight}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.setState({ showInfoModal: true });
-                      soundPlay(require("../assets/sounds/click.wav"));
-                    }}
-                  >
-                    <View style={styles.headerLeftButton}>
-                      <Image
-                        source={require("../assets/images/info.png")}
-                        style={{
-                          height: 40,
-                          width: 40
-                        }}
-                      />
-                    </View>
-                  </TouchableOpacity>
-                </Right>
-              </Header>
-              {/* action buttons area */}
-              <Content
-                contentContainerStyle={{
-                  flex: 1,
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <View style={styles.adBox}>
-                  <View>
-                    <EmojiButton
-                      source={require("../assets/images/crystal.png")}
-                      action={this._get150crystalAd}
-                      text={"  get  1 0 5    "}
-                      style={styles.adText}
-                    />
-                  </View>
-                  <View style={{ paddingTop: 40 }}>
+                <Header
+                  transparent
+                  style={{
+                    paddingTop: getStatusBarHeight(),
+                    height: 54 + getStatusBarHeight()
+                  }}
+                >
+                  <Left style={styles.headerLeft}>
                     <TouchableOpacity
                       onPress={() => {
-                        this.props.navigation.navigate("AddQuestion");
+                        this.props.navigation.pop();
+                        soundPlay(require("../assets/sounds/click.wav"));
                       }}
                     >
-                      <View>
-                        <HeaderText> add own question </HeaderText>
+                      <View style={styles.headerLeftButton}>
+                        <HeaderText style={{ fontSize: 30 }}>
+                          {" "}
+                          go{"   "}back{" "}
+                        </HeaderText>
                       </View>
                     </TouchableOpacity>
+                  </Left>
+                  <Right style={styles.headerRight}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.setState({ showInfoModal: true });
+                        soundPlay(require("../assets/sounds/click.wav"));
+                      }}
+                    >
+                      <View style={styles.headerLeftButton}>
+                        <Image
+                          source={require("../assets/images/info.png")}
+                          style={{
+                            height: 40,
+                            width: 40
+                          }}
+                        />
+                      </View>
+                    </TouchableOpacity>
+                  </Right>
+                </Header>
+                {/* action buttons area */}
+                <Content
+                  contentContainerStyle={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <View style={styles.adBox}>
+                    <View>
+                      <EmojiButton
+                        source={require("../assets/images/crystal.png")}
+                        action={this._get150crystalAd}
+                        text={"  get  1 0 5    "}
+                        style={styles.adText}
+                      />
+                    </View>
+                    <View style={{ paddingTop: 40 }}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          this.props.navigation.navigate("AddQuestion");
+                        }}
+                      >
+                        <View>
+                          <HeaderText> add own question </HeaderText>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              </Content>
+                </Content>
 
-              <Footer
-                transparent
-                style={{
-                  elevation: 0,
-                  backgroundColor: "transparent",
-                  borderColor: "transparent",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <View style={{ flexDirection: "row" }}>
-                  <HeaderText> + 20{"   "}</HeaderText>
-                  <Image
-                    source={require("../assets/images/crystal.png")}
-                    style={{
-                      overflow: "visible",
-                      height: 30,
-                      width: 25,
-                      marginTop:
-                        Platform.OS === "ios"
-                          ? 0
-                          : Dimensions.window.height * 0.025
-                    }}
-                  />
-                  <HeaderText>{"   "}per banner click </HeaderText>
-                </View>
-
-                <TouchableOpacity onPress={top => this._bannerClick(top, null)}>
-                  <AdmobBanner />
-                </TouchableOpacity>
-              </Footer>
+                <Footer
+                  transparent
+                  style={{
+                    elevation: 0,
+                    backgroundColor: "transparent",
+                    borderColor: "transparent",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <View style={{ flexDirection: "row" }}>
+                    <HeaderText> + 20{"   "}</HeaderText>
+                    <Image
+                      source={require("../assets/images/crystal.png")}
+                      style={{
+                        overflow: "visible",
+                        height: 30,
+                        width: 25,
+                        marginTop:
+                          Platform.OS === "ios"
+                            ? 0
+                            : Dimensions.window.height * 0.025
+                      }}
+                    />
+                    <HeaderText>{"   "}per banner click </HeaderText>
+                  </View>
+                </Footer>
+              </View>
               <TouchableOpacity
                 onPress={bottom => this._bannerClick(null, bottom)}
               >
                 <AdmobBanner />
               </TouchableOpacity>
-            </View>
+              <TouchableOpacity onPress={top => this._bannerClick(top, null)}>
+                <AdmobBanner />
+              </TouchableOpacity>
+              <View style={{ marginBottom: Dimensions.window.height * 0.05 }} />
+            </>
           )}
         </SettingsConsumer>
         {/* rules modal */}
