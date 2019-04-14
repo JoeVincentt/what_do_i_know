@@ -249,16 +249,16 @@ export default class LandingScreen extends Component {
 
   _showHint = () => {
     if (this.context.loggedIn) {
-      if (this.context.user.crystal < 20) {
+      if (this.context.user.crystal < 50) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 20 crystals ", 1500);
+        _showToast(" Need 50 crystals ", 1500);
         return;
       }
     }
     if (!this.context.loggedIn) {
-      if (this.context.crystal < 20) {
+      if (this.context.crystal < 50) {
         soundPlay(require("../assets/sounds/wrong.wav"));
-        _showToast(" Need 20 crystals ", 1500);
+        _showToast(" Need 50 crystals ", 1500);
         return;
       }
     }
@@ -376,9 +376,10 @@ export default class LandingScreen extends Component {
                           style={styles.endGameText}
                         />
                         <EmojiButton
-                          source={require("../assets/images/crystal.png")}
+                          source={require("../assets/images/heart.png")}
                           action={this._buyLifeEndGame}
-                          text={"  t r a d e  35 for life "}
+                          heart={true}
+                          text={"  t r a d e  35  c r y s t a l s "}
                           style={styles.endGameText}
                         />
                         <EmojiButton

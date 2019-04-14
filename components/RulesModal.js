@@ -35,7 +35,7 @@ export default class RulesModal extends Component {
               <View style={styles.modalBox}>
                 <View>
                   <View style={{ paddingBottom: 10 }}>
-                    <HeaderText> g a m e{"  "}r u l e s : </HeaderText>
+                    <HeaderText> g a m e{"  "}G u i d e : </HeaderText>
                   </View>
                   <Item style={styles.itemStyle}>
                     <Image
@@ -85,7 +85,7 @@ export default class RulesModal extends Component {
                     />
                     <HeaderText style={styles.modalText}>
                       {"   "}
-                      get hint for 20{"  "}
+                      get hint for 50{"  "}
                     </HeaderText>
                     <Image
                       source={require("../assets/images/crystal.png")}

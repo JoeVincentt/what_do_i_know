@@ -4,13 +4,13 @@ import { Item } from "native-base";
 import HeaderText from "../constants/HeaderText";
 import { _timerSettings } from "../utils/TimerSettings";
 
-export const EmojiButton = ({ action, text, style, source }) => (
+export const EmojiButton = ({ action, text, style, source, heart }) => (
   <Item style={{ borderBottomColor: "transparent", margin: 10, height: 60 }}>
     <Image
       source={source}
       style={{
         overflow: "visible",
-        height: Platform.OS === "ios" ? 40 : 50,
+        height: Platform.OS === "ios" ? 40 : heart ? 40 : 50,
         width: Platform.OS === "ios" ? 40 : 40
       }}
     />

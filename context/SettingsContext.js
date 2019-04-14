@@ -139,7 +139,7 @@ export class SettingsProvider extends React.Component {
       _getHint: async () => {
         if (this.state.loggedIn) {
           await this.setState({
-            user: { ...this.state.user, crystal: this.state.user.crystal - 20 }
+            user: { ...this.state.user, crystal: this.state.user.crystal - 50 }
           });
           saveDataToDatabase(
             this.state.user.id,
@@ -148,7 +148,7 @@ export class SettingsProvider extends React.Component {
           );
         } else {
           await this.setState({
-            crystal: this.state.crystal - 20
+            crystal: this.state.crystal - 50
           });
           saveDataToSecureStorage("WordsMeaningCrystal", this.state.crystal);
         }
@@ -362,7 +362,8 @@ export class SettingsProvider extends React.Component {
           if (rawData.bestScores < this.state.user.scores) {
             dataRef.update({
               username: this.state.user.username,
-              bestScores: this.state.user.scores
+              bestScores: this.state.user.scores,
+              email: this.state.user.email
             });
           }
         });
