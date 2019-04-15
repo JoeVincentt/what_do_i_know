@@ -3,7 +3,6 @@ import { Constants } from "expo";
 import { NetInfo } from "react-native";
 import { _showToast } from "../utils/ShowToast";
 import { initializeApp, database } from "firebase";
-import { showFacebookInterstitialAd } from "../utils/showAd";
 import { showAdmobInterstitialAd, showAdmobRewardedAd } from "../utils/showAd";
 initializeApp(Constants.manifest.extra.firebaseConfig);
 
@@ -209,7 +208,6 @@ export class SettingsProvider extends React.Component {
               await this.setState({ lostTwelveGames: 0 });
             }
             if (this.state.lostEightGames >= 8) {
-              showFacebookInterstitialAd();
               showAdmobInterstitialAd();
               await this.setState({ lostEightGames: 0 });
             }
@@ -230,7 +228,6 @@ export class SettingsProvider extends React.Component {
               await this.setState({ lostTwelveGames: 0 });
             }
             if (this.state.lostEightGames >= 8) {
-              showFacebookInterstitialAd();
               showAdmobInterstitialAd();
               await this.setState({ lostEightGames: 0 });
             }

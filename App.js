@@ -48,6 +48,7 @@ export default class App extends React.Component {
         require("./assets/images/info.png"),
         require("./assets/images/newgame.png"),
         require("./assets/images/pickaxe.png"),
+        require("./assets/images/addquestion.png"),
 
         require("./assets/images/skip.png"),
         require("./assets/images/target.png"),

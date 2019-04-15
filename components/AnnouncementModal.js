@@ -29,7 +29,7 @@ export default class AnnouncementModal extends Component {
                   <View
                     style={{ justifyContent: "center", alignItems: "center" }}
                   >
-                    <View>
+                    <View style={styles.viewStyle}>
                       {context.announcement.header !== "" ? (
                         <HeaderText>
                           {"  "}
@@ -38,14 +38,14 @@ export default class AnnouncementModal extends Component {
                         </HeaderText>
                       ) : null}
                     </View>
-                    <View>
+                    <View style={styles.viewStyle}>
                       <HeaderText style={{ fontSize: 25 }}>
                         {"  "}
                         {context.announcement.message}
                         {"  "}
                       </HeaderText>
                     </View>
-                    <View>
+                    <View style={styles.viewStyle}>
                       {context.announcement.footer !== "" ? (
                         <HeaderText style={{ fontSize: 20 }}>
                           {"  "}
@@ -100,5 +100,9 @@ const styles = StyleSheet.create({
   itemStyle: {
     borderBottomColor: "transparent",
     padding: 3
+  },
+  viewStyle: {
+    margin: 10,
+    paddingHorizontal: 40
   }
 });

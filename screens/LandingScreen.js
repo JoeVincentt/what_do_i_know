@@ -35,7 +35,7 @@ import { _showToast } from "../utils/ShowToast";
 import RulesModal from "../components/RulesModal";
 import BestScoresChart from "../components/BestScoresChart";
 import AnnouncementModal from "../components/AnnouncementModal";
-import FacebookAdBanner from "../utils/showFBbanner";
+import AmobBanner from "../utils/showAdmobBanner";
 
 export default class LandingScreen extends Component {
   state = {
@@ -308,7 +308,8 @@ export default class LandingScreen extends Component {
                   }
                 />
               </View>
-              <FacebookAdBanner />
+              <AmobBanner />
+              <View style={{ marginBottom: Dimensions.window.height * 0.05 }} />
             </>
           )}
         </SettingsConsumer>

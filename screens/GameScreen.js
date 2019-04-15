@@ -35,8 +35,8 @@ import { soundPlay } from "../utils/soundPlay";
 import { database } from "firebase";
 import { AdMobInterstitial, AdMobRewarded } from "expo";
 import { _get150crystalAd } from "../utils/get105crystals";
-import FacebookAdBanner from "../utils/showFBbanner";
 import AdmobBanner from "../utils/showAdmobBanner";
+import AdmobBanner2 from "../utils/showAdmobBanner2";
 
 export default class LandingScreen extends Component {
   state = {
@@ -52,7 +52,9 @@ export default class LandingScreen extends Component {
     loadingQuestion: false,
     maxNumOfQuestions: 10000,
     previousQuestionNumber: null,
-    answeredQuestions: []
+    answeredQuestions: [],
+    bannerTopClicked: false,
+    bannerBottomClicked: false
   };
 
   componentDidMount() {
@@ -77,7 +79,10 @@ export default class LandingScreen extends Component {
     });
     AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
     AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {
+      soundPlay(require("../assets/sounds/success.wav"));
+      this.context.reducers._getLifeAdd(105);
+    });
     AdMobRewarded.addEventListener("rewardedVideoDidOpen", () => {});
     AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {});
     AdMobRewarded.addEventListener(
@@ -297,6 +302,28 @@ export default class LandingScreen extends Component {
     soundPlay(require("../assets/sounds/ticking.wav"));
   };
 
+  _bannerAd = () => {
+    soundPlay(require("../assets/sounds/success.wav"));
+    this.context.reducers._getLifeAdd(20);
+  };
+
+  _bannerClick = (top, bottom) => {
+    if (top !== null) {
+      if (this.state.bannerTopClicked) {
+        return;
+      }
+      this._bannerAd();
+      this.setState({ bannerTopClicked: true });
+    }
+    if (bottom !== null) {
+      if (this.state.bannerBottomClicked) {
+        return;
+      }
+      this._bannerAd();
+      this.setState({ bannerBottomClicked: true });
+    }
+  };
+
   render() {
     const {
       question,
@@ -395,31 +422,32 @@ export default class LandingScreen extends Component {
                           }}
                         >
                           <Image
-                            source={require("../assets/images/pickaxe.png")}
+                            source={require("../assets/images/addquestion.png")}
                             style={{
-                              height: Platform.OS === "ios" ? 50 : 45,
-                              width: Platform.OS === "ios" ? 40 : 30,
+                              height: 40,
+                              width: 40,
                               overflow: "visible"
                             }}
                           />
                           <TouchableOpacity
                             onPress={() => {
-                              this.props.navigation.navigate("Shop");
+                              this.props.navigation.navigate("AddQuestion");
                               soundPlay(require("../assets/sounds/click.wav"));
                             }}
                           >
                             <HeaderText style={styles.mineText}>
-                              {"  "}go to the mine{" "}
+                              {"  "}Add own question{" "}
                             </HeaderText>
                           </TouchableOpacity>
                         </View>
                       </View>
                     </View>
                   </View>
+
                   <AdmobBanner />
-                  <FacebookAdBanner
-                    _getLifeAdd={context.reducers._getLifeAdd}
-                  />
+
+                  <AdmobBanner2 />
+
                   <View
                     style={{ marginBottom: Dimensions.window.height * 0.05 }}
                   />

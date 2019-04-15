@@ -17,9 +17,9 @@ import BaseLayout from "../components/BaseLayout";
 import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { AdMobInterstitial } from "expo";
+import { _get150crystalAd } from "../utils/get105crystals";
 import { showAdmobInterstitialAd } from "../utils/showAd";
-import AdmobBanner from "../utils/showAdmobBanner";
+import AdmobBanner2 from "../utils/showAdmobBanner2";
 
 export default class ShopScreen extends Component {
   state = {
@@ -30,22 +30,12 @@ export default class ShopScreen extends Component {
     choice3: "",
     choice4: "",
     answer: "",
-    starCount: 1,
-    bannerClicked: false
+    starCount: 1
   };
 
   componentDidMount() {}
 
   componentWillUnmount() {}
-
-  _bannerAd = () => {
-    if (this.state.bannerClicked) {
-      return;
-    }
-    this.setState({ bannerClicked: true });
-    soundPlay(require("../assets/sounds/success.wav"));
-    this.context.reducers._getLifeAdd(20);
-  };
 
   onStarRatingPress = rating => {
     this.setState({
@@ -87,11 +77,9 @@ export default class ShopScreen extends Component {
         });
 
         soundPlay(require("../assets/sounds/success.wav"));
+        _get150crystalAd();
         this.context.reducers._getLifeAdd(35);
         _showToast("Question added. Thank you!", 3000, "success");
-        showAdmobInterstitialAd().catch(error =>
-          _showToast("Error showing ad", 2000, "warning")
-        );
       } else {
         soundPlay(require("../assets/sounds/wrong.wav"));
         _showToast("fill in all the fields please!", 3000, "warning");
@@ -289,13 +277,8 @@ export default class ShopScreen extends Component {
                   </View>
                 </Content>
               </View>
-              <TouchableOpacity
-                onPress={() => {
-                  this._bannerAd();
-                }}
-              >
-                <AdmobBanner />
-              </TouchableOpacity>
+              <AdmobBanner2 />
+
               <View style={{ marginBottom: Dimensions.window.height * 0.05 }} />
             </>
           )}
