@@ -17,7 +17,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image
+  Image,
+  TouchableB
 } from "react-native";
 import { auth, database } from "firebase";
 require("firebase/firestore");
@@ -55,6 +56,9 @@ export default class LandingScreen extends Component {
       }
     };
   }
+
+  componentDidMount() {}
+
   componentWillUnmount() {}
 
   _alreadyLoggedCheck = async () => {
@@ -274,7 +278,13 @@ export default class LandingScreen extends Component {
                   </View>
 
                   <LandingActionButton
-                    buttonText={" p l a y   g a m e "}
+                    flags={false}
+                    buttonText={" mixed questions"}
+                    navigation={this.props.navigation}
+                  />
+                  <LandingActionButton
+                    flags={true}
+                    buttonText={" International Flags "}
                     navigation={this.props.navigation}
                   />
 

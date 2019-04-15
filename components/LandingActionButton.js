@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import HeaderText from "../constants/HeaderText";
-import { TouchableWithoutFeedback, StyleSheet, Platform } from "react-native";
+import { TouchableOpacity, StyleSheet, Platform, View } from "react-native";
 import * as Animatable from "react-native-animatable";
 import { LinearGradient } from "expo";
 import Dimensions from "../constants/Layout";
@@ -8,26 +8,18 @@ import { SettingsConsumer } from "../context/SettingsContext";
 import { soundPlay } from "../utils/soundPlay";
 
 class LandingActionButton extends Component {
-  handleViewRef = ref => (this.view = ref);
-
-  bounce = async () => {
-    this.view
-      .pulse(800)
-      .then(endState =>
-        endState.finished ? this.props.navigation.navigate("Game") : null
-      );
-  };
-
   render() {
     const { buttonText } = this.props;
     return (
-      <TouchableWithoutFeedback
+      <TouchableOpacity
         onPress={() => {
-          this.bounce();
+          this.props.flags
+            ? this.props.navigation.navigate("FlagGame")
+            : this.props.navigation.navigate("Game");
           soundPlay(require("../assets/sounds/click.wav"));
         }}
       >
-        <Animatable.View ref={this.handleViewRef} style={styles.defaultStyle}>
+        <View style={styles.defaultStyle}>
           <SettingsConsumer>
             {context => (
               <LinearGradient
@@ -54,8 +46,8 @@ class LandingActionButton extends Component {
               </LinearGradient>
             )}
           </SettingsConsumer>
-        </Animatable.View>
-      </TouchableWithoutFeedback>
+        </View>
+      </TouchableOpacity>
     );
   }
 }
@@ -66,6 +58,7 @@ export default LandingActionButton;
 const styles = StyleSheet.create({
   // ... add your default style here
   defaultStyle: {
+    margin: Dimensions.window.height * 0.007,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,

@@ -17,7 +17,7 @@ export default class BestScoreChart extends Component {
               this.context = context;
             }}
             style={{
-              height: Dimensions.window.height * 0.4,
+              height: Dimensions.window.height * 0.35,
               justifyContent: "center",
               alignItems: "center"
             }}

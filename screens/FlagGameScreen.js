@@ -43,15 +43,12 @@ export default class LandingScreen extends Component {
   state = {
     choiceMade: false,
     actualAnswer: "",
-    question: null,
+    imageUrl: "",
     answers: [],
     loading: true,
     rating: null,
     time: 25000,
-    notEnoughCrystals: null,
-    showToast: false,
     loadingQuestion: false,
-    maxNumOfQuestions: 10000,
     previousQuestionNumber: null,
     answeredQuestions: [],
     canGoBack: false
@@ -60,8 +57,6 @@ export default class LandingScreen extends Component {
   componentDidMount() {
     setTimeout(() => this.setState({ canGoBack: true }), 6000);
     this.setState({ loading: false });
-    this.setState({ maxNumOfQuestions: this.context.maxNumOfQuestions });
-
     // Interstitial ad
     AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
     AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
@@ -103,19 +98,20 @@ export default class LandingScreen extends Component {
   getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
+
   _loadQuestion = async () => {
-    let maxNumOfQuestions = this.state.maxNumOfQuestions;
-    let questionId = await this.getRandomInt(0, maxNumOfQuestions);
-    // let questionId = await this.getRandomInt(0, 10);
+    let questionId = await this.getRandomInt(0, 177);
 
     //return new quesstion if prev question id the same as new one
+    if (this.state.answeredQuestions.length === 177) {
+      this.setState({ answeredQuestions: [] });
+    }
     if (
       this.state.previousQuestionNumber === questionId ||
       this.state.answeredQuestions.indexOf(questionId) !== -1
     ) {
       return this._loadQuestion();
     }
-
     //set state and get questions
     this.setState({
       loadingQuestion: true,
@@ -123,7 +119,7 @@ export default class LandingScreen extends Component {
       previousQuestionNumber: questionId
     });
     try {
-      const docRef = database().ref(`questions/${questionId}`);
+      const docRef = database().ref(`countryQuestions/${questionId}`);
       docRef
         .once("value")
         .then(doc => {
@@ -131,11 +127,11 @@ export default class LandingScreen extends Component {
           if (question !== null) {
             this.setState({
               choiceMade: false,
-              question: question.question,
               actualAnswer: question.rightAnswer,
               answers: question.answers,
               rating: Number(question.rating),
               time: 25000,
+              imageUrl: question.url,
               loadingQuestion: false
             });
           } else {
@@ -305,7 +301,7 @@ export default class LandingScreen extends Component {
 
   canGoBack = () => {
     if (this.state.canGoBack) {
-      this.props.navigation.navigate("FlagGame");
+      this.props.navigation.navigate("Game");
       soundPlay(require("../assets/sounds/click.wav"));
     } else {
       showAdmobInterstitialAd();
@@ -314,13 +310,11 @@ export default class LandingScreen extends Component {
 
   render() {
     const {
-      question,
+      imageUrl,
       answers,
       loading,
-      correctAnswer,
       rating,
       time,
-      timeExpired,
       loadingQuestion
     } = this.state;
 
@@ -405,31 +399,6 @@ export default class LandingScreen extends Component {
                         />
                         <View
                           style={{
-                            flexDirection: "row",
-                            marginTop: 20
-                          }}
-                        >
-                          <Image
-                            source={require("../assets/images/addquestion.png")}
-                            style={{
-                              height: 40,
-                              width: 40,
-                              overflow: "visible"
-                            }}
-                          />
-                          <TouchableOpacity
-                            onPress={() => {
-                              this.props.navigation.navigate("AddQuestion");
-                              soundPlay(require("../assets/sounds/click.wav"));
-                            }}
-                          >
-                            <HeaderText style={styles.mineText}>
-                              {"  "}Add own question{" "}
-                            </HeaderText>
-                          </TouchableOpacity>
-                        </View>
-                        <View
-                          style={{
                             margin: 40,
                             justifyContent: "center",
                             alignItems: "center"
@@ -437,7 +406,7 @@ export default class LandingScreen extends Component {
                         >
                           <TouchableOpacity onPress={() => this.canGoBack()}>
                             <HeaderText style={styles.mineText}>
-                              {"  "}Play Flags{" "}
+                              {"  "}Play mixed{" "}
                             </HeaderText>
                           </TouchableOpacity>
                         </View>
@@ -618,15 +587,10 @@ export default class LandingScreen extends Component {
                         {loadingQuestion ? (
                           <Spinner />
                         ) : (
-                          <Text
-                            style={{
-                              fontSize: 20,
-                              fontWeight: "500",
-                              margin: 10
-                            }}
-                          >
-                            {question}
-                          </Text>
+                          <Image
+                            style={{ width: 300, height: 150 }}
+                            source={imageUrl !== "" ? { url: imageUrl } : null}
+                          />
                         )}
                       </View>
                       {/* answers boxes start here */}
