@@ -1,19 +1,8 @@
 import React, { Component } from "react";
-import {
-  Header,
-  Content,
-  Button,
-  Left,
-  Right,
-  Body,
-  Spinner,
-  Item,
-  Footer
-} from "native-base";
+import { Header, Content, Left, Right, Spinner, Item } from "native-base";
 import Modal from "react-native-modal";
 import {
   View,
-  Text,
   Platform,
   Vibration,
   StyleSheet,
@@ -124,6 +113,7 @@ export default class LandingScreen extends Component {
         .once("value")
         .then(doc => {
           const question = doc.val();
+
           if (question !== null) {
             this.setState({
               choiceMade: false,
@@ -587,10 +577,25 @@ export default class LandingScreen extends Component {
                         {loadingQuestion ? (
                           <Spinner />
                         ) : (
-                          <Image
-                            style={{ width: 300, height: 150 }}
-                            source={imageUrl !== "" ? { url: imageUrl } : null}
-                          />
+                          <View
+                            style={{
+                              width: Dimensions.window.width * 0.7,
+                              height: Dimensions.window.height * 0.17,
+                              shadowRadius: 3,
+                              shadowOpacity: 0.3,
+                              shadowColor: "black"
+                            }}
+                          >
+                            <Image
+                              style={{
+                                width: Dimensions.window.width * 0.7,
+                                height: Dimensions.window.height * 0.17
+                              }}
+                              source={
+                                imageUrl !== "" ? { url: imageUrl } : null
+                              }
+                            />
+                          </View>
                         )}
                       </View>
                       {/* answers boxes start here */}
@@ -708,13 +713,17 @@ export default class LandingScreen extends Component {
                       </View>
                     </Content>
                   </View>
-                  <AdmobBanner />
-                  <View
-                    style={{
-                      marginBottom: Dimensions.window.height * 0.02,
-                      backgroundColor: "transparent"
-                    }}
-                  />
+                  {Dimensions.window.height >= 650 ? (
+                    <>
+                      <AdmobBanner />
+                      <View
+                        style={{
+                          marginBottom: Dimensions.window.height * 0.02,
+                          backgroundColor: "transparent"
+                        }}
+                      />
+                    </>
+                  ) : null}
                 </>
               )}
               <Modal

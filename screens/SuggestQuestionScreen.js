@@ -1,11 +1,10 @@
 import React, { Component } from "react";
-import { Content, Header, Left, Footer } from "native-base";
+import { Content, Header, Left } from "native-base";
 import {
   View,
   Platform,
   StyleSheet,
   TouchableOpacity,
-  Image,
   TextInput
 } from "react-native";
 import StarRating from "react-native-star-rating";
@@ -18,7 +17,6 @@ import { SettingsConsumer } from "../context/SettingsContext";
 import Dimensions from "../constants/Layout";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { _get150crystalAd } from "../utils/get105crystals";
-import { showAdmobInterstitialAd } from "../utils/showAd";
 import AdmobBanner2 from "../utils/showAdmobBanner2";
 
 export default class ShopScreen extends Component {

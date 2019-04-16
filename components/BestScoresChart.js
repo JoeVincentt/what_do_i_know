@@ -17,7 +17,7 @@ export default class BestScoreChart extends Component {
               this.context = context;
             }}
             style={{
-              height: Dimensions.window.height * 0.35,
+              height: Dimensions.window.height * 0.3,
               justifyContent: "center",
               alignItems: "center"
             }}
@@ -69,7 +69,7 @@ export default class BestScoreChart extends Component {
             ) : (
               <View
                 style={{
-                  height: Dimensions.window.height * 0.4,
+                  height: Dimensions.window.height * 0.3,
                   justifyContent: "center",
                   alignItems: "center"
                 }}

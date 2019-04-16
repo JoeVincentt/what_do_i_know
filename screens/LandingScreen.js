@@ -36,7 +36,7 @@ import { _showToast } from "../utils/ShowToast";
 import RulesModal from "../components/RulesModal";
 import BestScoresChart from "../components/BestScoresChart";
 import AnnouncementModal from "../components/AnnouncementModal";
-import AmobBanner from "../utils/showAdmobBanner";
+import AdmobBanner from "../utils/showAdmobBanner";
 
 export default class LandingScreen extends Component {
   state = {
@@ -279,14 +279,22 @@ export default class LandingScreen extends Component {
 
                   <LandingActionButton
                     flags={false}
-                    buttonText={" mixed questions"}
+                    buttonText={
+                      Platform.OS === "ios"
+                        ? " mixed questions "
+                        : " p l a y  g a m e "
+                    }
                     navigation={this.props.navigation}
                   />
-                  <LandingActionButton
-                    flags={true}
-                    buttonText={" International Flags "}
-                    navigation={this.props.navigation}
-                  />
+                  {Platform.OS === "ios" ? (
+                    <LandingActionButton
+                      flags={true}
+                      buttonText={" International Flags "}
+                      navigation={this.props.navigation}
+                    />
+                  ) : (
+                    <View />
+                  )}
 
                   <View style={styles.mainBox}>
                     <Button
@@ -318,8 +326,17 @@ export default class LandingScreen extends Component {
                   }
                 />
               </View>
-              <AmobBanner />
-              <View style={{ marginBottom: Dimensions.window.height * 0.05 }} />
+              {Dimensions.window.height >= 650 ? (
+                <>
+                  <AdmobBanner />
+                  <View
+                    style={{
+                      marginBottom: Dimensions.window.height * 0.02,
+                      backgroundColor: "transparent"
+                    }}
+                  />
+                </>
+              ) : null}
             </>
           )}
         </SettingsConsumer>

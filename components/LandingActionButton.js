@@ -39,7 +39,10 @@ class LandingActionButton extends Component {
                 }}
               >
                 <HeaderText
-                  style={{ paddingBottom: Platform.OS === "ios" ? 0 : 10 }}
+                  style={{
+                    fontSize: Dimensions.window.height >= 620 ? 30 : 25,
+                    paddingBottom: Platform.OS === "ios" ? 0 : 10
+                  }}
                 >
                   {buttonText}
                 </HeaderText>

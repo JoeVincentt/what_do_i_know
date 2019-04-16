@@ -5,7 +5,7 @@ import HeaderText from "../constants/HeaderText";
 import { _timerSettings } from "../utils/TimerSettings";
 
 export const EmojiButton = ({ action, text, style, source, heart }) => (
-  <Item style={{ borderBottomColor: "transparent", margin: 10, height: 60 }}>
+  <Item style={{ borderBottomColor: "transparent", margin: 7, height: 60 }}>
     <Image
       source={source}
       style={{

@@ -109,6 +109,9 @@ export default class LandingScreen extends Component {
     // let questionId = await this.getRandomInt(0, 10);
 
     //return new quesstion if prev question id the same as new one
+    if (this.state.answeredQuestions.length === maxNumOfQuestions) {
+      this.setState({ answeredQuestions: [] });
+    }
     if (
       this.state.previousQuestionNumber === questionId ||
       this.state.answeredQuestions.indexOf(questionId) !== -1
@@ -406,7 +409,7 @@ export default class LandingScreen extends Component {
                         <View
                           style={{
                             flexDirection: "row",
-                            marginTop: 20
+                            marginTop: 15
                           }}
                         >
                           <Image
@@ -428,19 +431,23 @@ export default class LandingScreen extends Component {
                             </HeaderText>
                           </TouchableOpacity>
                         </View>
-                        <View
-                          style={{
-                            margin: 40,
-                            justifyContent: "center",
-                            alignItems: "center"
-                          }}
-                        >
-                          <TouchableOpacity onPress={() => this.canGoBack()}>
-                            <HeaderText style={styles.mineText}>
-                              {"  "}Play Flags{" "}
-                            </HeaderText>
-                          </TouchableOpacity>
-                        </View>
+                        {Platform.OS === "ios" ? (
+                          <View
+                            style={{
+                              margin: 40,
+                              justifyContent: "center",
+                              alignItems: "center"
+                            }}
+                          >
+                            <TouchableOpacity onPress={() => this.canGoBack()}>
+                              <HeaderText style={styles.mineText}>
+                                {"  "}Play Flags{" "}
+                              </HeaderText>
+                            </TouchableOpacity>
+                          </View>
+                        ) : (
+                          <View />
+                        )}
                       </View>
                     </View>
                   </View>
@@ -744,13 +751,17 @@ export default class LandingScreen extends Component {
                       </View>
                     </Content>
                   </View>
-                  <AdmobBanner />
-                  <View
-                    style={{
-                      marginBottom: Dimensions.window.height * 0.02,
-                      backgroundColor: "transparent"
-                    }}
-                  />
+                  {Dimensions.window.height >= 650 ? (
+                    <>
+                      <AdmobBanner />
+                      <View
+                        style={{
+                          marginBottom: Dimensions.window.height * 0.02,
+                          backgroundColor: "transparent"
+                        }}
+                      />
+                    </>
+                  ) : null}
                 </>
               )}
               <Modal
