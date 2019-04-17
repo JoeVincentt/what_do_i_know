@@ -102,7 +102,8 @@ export default class LandingScreen extends Component {
       const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync(
         Constants.manifest.facebookAppId,
         {
-          permissions: ["email", "public_profile"]
+          permissions: ["email", "public_profile"],
+          behavior: "web"
         }
       );
       if (type === "success") {

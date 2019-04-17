@@ -39,60 +39,27 @@ export default class LandingScreen extends Component {
     time: 25000,
     loadingQuestion: false,
     previousQuestionNumber: null,
-    answeredQuestions: [],
-    canGoBack: false
+    answeredQuestions: []
   };
 
   componentDidMount() {
-    setTimeout(() => this.setState({ canGoBack: true }), 6000);
     this.setState({ loading: false });
-    // Interstitial ad
-    AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidClose", () => {});
-    AdMobInterstitial.addEventListener(
-      "interstitialWillLeaveApplication",
-      () => {}
-    );
-
-    //Rewarded Add
-
-    AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
-      soundPlay(require("../assets/sounds/success.wav"));
-      this.context.reducers._getLifeAdd(105);
-    });
-    AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {
-      soundPlay(require("../assets/sounds/success.wav"));
-      this.context.reducers._getLifeAdd(105);
-    });
-    AdMobRewarded.addEventListener("rewardedVideoDidOpen", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {});
-    AdMobRewarded.addEventListener(
-      "rewardedVideoWillLeaveApplication",
-      () => {}
-    );
   }
 
   async componentWillMount() {
     await this._loadQuestion();
   }
-  componentWillUnmount() {
-    AdMobInterstitial.removeAllListeners();
-    AdMobRewarded.removeAllListeners();
-  }
+  componentWillUnmount() {}
 
   getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
   _loadQuestion = async () => {
-    let questionId = await this.getRandomInt(0, 177);
+    let questionId = await this.getRandomInt(0, 176);
 
     //return new quesstion if prev question id the same as new one
-    if (this.state.answeredQuestions.length === 177) {
+    if (this.state.answeredQuestions.length === 176) {
       this.setState({ answeredQuestions: [] });
     }
     if (
@@ -290,12 +257,10 @@ export default class LandingScreen extends Component {
   };
 
   canGoBack = () => {
-    if (this.state.canGoBack) {
-      this.props.navigation.navigate("Game");
-      soundPlay(require("../assets/sounds/click.wav"));
-    } else {
-      showAdmobInterstitialAd();
-    }
+    this.props.navigation.navigate("Game");
+    soundPlay(require("../assets/sounds/click.wav"));
+
+    showAdmobInterstitialAd();
   };
 
   render() {

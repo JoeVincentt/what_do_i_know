@@ -3,6 +3,7 @@ import { Constants } from "expo";
 import { NetInfo } from "react-native";
 import { _showToast } from "../utils/ShowToast";
 import { initializeApp, database } from "firebase";
+import { AdMobInterstitial, AdMobRewarded } from "expo";
 import { showAdmobInterstitialAd, showAdmobRewardedAd } from "../utils/showAd";
 initializeApp(Constants.manifest.extra.firebaseConfig);
 
@@ -492,6 +493,41 @@ export class SettingsProvider extends React.Component {
     } catch (error) {
       // console.log(error);
     }
+  }
+
+  componentDidMount() {
+    // Interstitial ad
+    AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
+    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
+    AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
+    AdMobInterstitial.addEventListener("interstitialDidClose", () => {});
+    AdMobInterstitial.addEventListener(
+      "interstitialWillLeaveApplication",
+      () => {}
+    );
+
+    //Rewarded Add
+
+    AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
+      soundPlay(require("../assets/sounds/success.wav"));
+      this.context.reducers._getLifeAdd(105);
+    });
+    AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {
+      soundPlay(require("../assets/sounds/success.wav"));
+      this.context.reducers._getLifeAdd(105);
+    });
+    AdMobRewarded.addEventListener("rewardedVideoDidOpen", () => {});
+    AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {});
+    AdMobRewarded.addEventListener(
+      "rewardedVideoWillLeaveApplication",
+      () => {}
+    );
+  }
+  componentWillUnmount() {
+    AdMobInterstitial.removeAllListeners();
+    AdMobRewarded.removeAllListeners();
   }
 
   render() {

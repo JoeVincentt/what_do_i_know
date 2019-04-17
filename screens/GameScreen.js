@@ -51,54 +51,20 @@ export default class LandingScreen extends Component {
     notEnoughCrystals: null,
     showToast: false,
     loadingQuestion: false,
-    maxNumOfQuestions: 10000,
+    maxNumOfQuestions: 1000,
     previousQuestionNumber: null,
-    answeredQuestions: [],
-    canGoBack: false
+    answeredQuestions: []
   };
 
   componentDidMount() {
-    setTimeout(() => this.setState({ canGoBack: true }), 6000);
     this.setState({ loading: false });
     this.setState({ maxNumOfQuestions: this.context.maxNumOfQuestions });
-
-    // Interstitial ad
-    AdMobInterstitial.addEventListener("interstitialDidLoad", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidFailToLoad", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidOpen", () => {});
-    AdMobInterstitial.addEventListener("interstitialDidClose", () => {});
-    AdMobInterstitial.addEventListener(
-      "interstitialWillLeaveApplication",
-      () => {}
-    );
-
-    //Rewarded Add
-
-    AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
-      soundPlay(require("../assets/sounds/success.wav"));
-      this.context.reducers._getLifeAdd(105);
-    });
-    AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {
-      soundPlay(require("../assets/sounds/success.wav"));
-      this.context.reducers._getLifeAdd(105);
-    });
-    AdMobRewarded.addEventListener("rewardedVideoDidOpen", () => {});
-    AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {});
-    AdMobRewarded.addEventListener(
-      "rewardedVideoWillLeaveApplication",
-      () => {}
-    );
   }
 
   async componentWillMount() {
     await this._loadQuestion();
   }
-  componentWillUnmount() {
-    AdMobInterstitial.removeAllListeners();
-    AdMobRewarded.removeAllListeners();
-  }
+  componentWillUnmount() {}
 
   getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -307,12 +273,10 @@ export default class LandingScreen extends Component {
   };
 
   canGoBack = () => {
-    if (this.state.canGoBack) {
-      this.props.navigation.navigate("FlagGame");
-      soundPlay(require("../assets/sounds/click.wav"));
-    } else {
-      showAdmobInterstitialAd();
-    }
+    this.props.navigation.navigate("FlagGame");
+    soundPlay(require("../assets/sounds/click.wav"));
+
+    showAdmobInterstitialAd();
   };
 
   render() {
