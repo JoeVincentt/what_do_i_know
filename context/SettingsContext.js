@@ -5,6 +5,7 @@ import { _showToast } from "../utils/ShowToast";
 import { initializeApp, database } from "firebase";
 import { AdMobInterstitial, AdMobRewarded } from "expo";
 import { showAdmobInterstitialAd, showAdmobRewardedAd } from "../utils/showAd";
+import { soundPlay } from "../utils/soundPlay";
 initializeApp(Constants.manifest.extra.firebaseConfig);
 
 //Create context
@@ -205,11 +206,11 @@ export class SettingsProvider extends React.Component {
             );
           } else {
             if (this.state.lostTwelveGames >= 12) {
-              showAdmobRewardedAd();
+              // showAdmobRewardedAd();
               await this.setState({ lostTwelveGames: 0 });
             }
             if (this.state.lostEightGames >= 8) {
-              showAdmobInterstitialAd();
+              // showAdmobInterstitialAd();
               await this.setState({ lostEightGames: 0 });
             }
             this.setState({
@@ -225,11 +226,11 @@ export class SettingsProvider extends React.Component {
             saveDataToSecureStorage("WordsMeaningLife", this.state.life);
           } else {
             if (this.state.lostTwelveGames >= 12) {
-              showAdmobRewardedAd();
+              // showAdmobRewardedAd();
               await this.setState({ lostTwelveGames: 0 });
             }
             if (this.state.lostEightGames >= 8) {
-              showAdmobInterstitialAd();
+              // showAdmobInterstitialAd();
               await this.setState({ lostEightGames: 0 });
             }
             this.setState({
@@ -286,7 +287,7 @@ export class SettingsProvider extends React.Component {
             user: {
               ...this.state.user,
               scores: this.state.user.scores + 1,
-              crystal: this.state.user.crystal + (rating + 1)
+              crystal: this.state.user.crystal + rating * 3
             }
           });
           saveDataToDatabase(
@@ -510,13 +511,13 @@ export class SettingsProvider extends React.Component {
 
     AdMobRewarded.addEventListener("rewardedVideoDidRewardUser", () => {
       soundPlay(require("../assets/sounds/success.wav"));
-      this.context.reducers._getLifeAdd(105);
+      this.state.reducers._getLifeAdd(105);
     });
     AdMobRewarded.addEventListener("rewardedVideoDidLoad", () => {});
     AdMobRewarded.addEventListener("rewardedVideoDidStart", () => {});
     AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad", () => {
       soundPlay(require("../assets/sounds/success.wav"));
-      this.context.reducers._getLifeAdd(105);
+      this.state.reducers._getLifeAdd(105);
     });
     AdMobRewarded.addEventListener("rewardedVideoDidOpen", () => {});
     AdMobRewarded.addEventListener("rewardedVideoDidClose", () => {});

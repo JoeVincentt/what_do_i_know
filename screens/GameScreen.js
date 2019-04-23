@@ -276,7 +276,7 @@ export default class LandingScreen extends Component {
     this.props.navigation.navigate("FlagGame");
     soundPlay(require("../assets/sounds/click.wav"));
 
-    showAdmobInterstitialAd();
+    // showAdmobInterstitialAd();
   };
 
   render() {
@@ -364,12 +364,12 @@ export default class LandingScreen extends Component {
                           text={"  t r a d e  35  c r y s t a l s "}
                           style={styles.endGameText}
                         />
-                        <EmojiButton
+                        {/* <EmojiButton
                           source={require("../assets/images/crystal.png")}
                           action={_get150crystalAd}
                           text={"  get  1 0 5    "}
                           style={styles.adText}
-                        />
+                        /> */}
                         <View
                           style={{
                             flexDirection: "row",
@@ -715,7 +715,7 @@ export default class LandingScreen extends Component {
                       </View>
                     </Content>
                   </View>
-                  {Dimensions.window.height >= 650 ? (
+                  {Dimensions.window.height >= 700 ? (
                     <>
                       <AdmobBanner />
                       <View

@@ -75,7 +75,7 @@ export default class ShopScreen extends Component {
         });
 
         soundPlay(require("../assets/sounds/success.wav"));
-        _get150crystalAd();
+        // _get150crystalAd();
         this.context.reducers._getLifeAdd(35);
         _showToast("Question added. Thank you!", 3000, "success");
       } else {

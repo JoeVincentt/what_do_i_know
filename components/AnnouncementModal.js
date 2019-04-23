@@ -27,7 +27,10 @@ export default class AnnouncementModal extends Component {
               <View style={styles.modalBox}>
                 {context.announcement.message !== "" ? (
                   <View
-                    style={{ justifyContent: "center", alignItems: "center" }}
+                    style={{
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
                   >
                     <View style={styles.viewStyle}>
                       {context.announcement.header !== "" ? (
