@@ -327,7 +327,7 @@ export default class LandingScreen extends Component {
                   }
                 />
               </View>
-              {Dimensions.window.height >= 650 ? (
+              {Dimensions.window.height >= 700 ? (
                 <>
                   <AdmobBanner />
                   <View
